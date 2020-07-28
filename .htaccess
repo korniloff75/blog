@@ -1,0 +1,30 @@
+# Кодировка сервера
+AddDefaultCharset UTF-8
+
+# Запрет прямого доступа к системным файлам
+<Files "*.dat"> 
+  deny from all
+</Files>
+
+# Начальный файл
+DirectoryIndex index.php
+
+# Запрет листинга если нет начального файла
+Options -Indexes
+
+# Страницы ошибок
+#-Нет права доступа
+ErrorDocument 401 /pages/401.html
+#-Запрещено
+ErrorDocument 403 /pages/403.html
+#-Не найдено
+ErrorDocument 404 /pages/404.html
+#-Внутренняя ошибка сервера
+ErrorDocument 500 /pages/500.html
+
+# Ссылки 
+RewriteEngine on
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)/?$ /index.php [L]

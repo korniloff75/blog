@@ -1,0 +1,5 @@
+<?php
+if($status == 'admin') echo'</div>'.$ADMIN_END_HTML;
+?>
+</body>
+</html><?php ob_end_flush();?>

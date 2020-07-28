@@ -1,0 +1,113 @@
+<?php
+// Класс для модулей
+class Module
+{
+	
+	public static function pathRun($module, $ex)
+	{
+		return DR.'/modules/'.$module.'/'.$ex.'.php';
+	}
+	
+	public static function exists($module)
+	{
+		return $module?file_exists(DR.'/modules/'.str_replace('..','',$module)):false;
+	}
+	
+	public static function delete($module)
+	{
+		return $module?delldir(DR.'/modules/'.str_replace('..','',$module).''):false;
+	}
+	
+	
+	
+	public static function info($module)
+	{
+		if(self::exists($module)){
+			if(file_exists(DR.'/modules/'.$module.'/config.ini')){
+				$info = parse_ini_file(DR.'/modules/'.$module.'/config.ini');
+			}elseif(file_exists(DR.'/modules/'.$module.'/info.ini')){
+				$info = parse_ini_file(DR.'/modules/'.$module.'/info.ini');
+			}
+			if(!isset($info['name'])){$info['name'] = $module;}
+			if(!isset($info['indexname'])){$info['indexname'] = $info['name'];}
+			if(!isset($info['version'])){$info['version'] = '';}
+			if(!isset($info['developer'])){$info['developer'] = '';}
+			if(!isset($info['site'])){$info['site'] = '';}
+			
+			if(!isset($info['gorizont_menu'])){$info['gorizont_menu'] = 1;}
+			if(!isset($info['left_menu'])){$info['left_menu'] = 1;}
+			if(!isset($info['right_menu'])){$info['right_menu'] = 1;}
+
+			// 5.1.11
+			if(!isset($info['description'])){$info['description'] = '';}
+			if(!isset($info['delete'])){$info['delete'] = 1;}
+			if(!isset($info['version_history'])){$info['version_history'] = 0;}
+
+		}else{
+			$info = false;
+		}
+		return $info;
+	}
+	
+	public static function config($module)
+	{
+		return Module::info($module); // Для более логичного нейминга // 5.1.11
+	}
+
+	public static function isWysiwyg($module)
+	{
+		return file_exists(DR.'/modules/'.$module.'/wysiwyg.php');
+	}
+	
+	public static function isTemlate($module)
+	{
+		return file_exists(DR.'/modules/'.$module.'/template.php');
+	}
+	
+	public static function skrTemlate($module)
+	{
+		return file_exists(DR.'/modules/'.$module.'/skr.png')?'/modules/'.$module.'/skr.png':false;
+	}
+	
+	public static function isAdminPage($module)
+	{
+		return file_exists(DR.'/modules/'.$module.'/admin.php');
+	}
+	
+	public static function icon($module)
+	{
+		return file_exists(DR.'/modules/'.$module.'/icon.png')?'/modules/'.$module.'/icon.png':false;
+	}
+	
+	public static function isIntegrationPage($module)
+	{
+		return file_exists(DR.'/modules/'.$module.'/integration_page.php');
+	}
+	
+	public static function isIntegrationBlok($module)
+	{
+		return file_exists(DR.'/modules/'.$module.'/integration_blok.php');
+	}
+	
+	public static function isIntegrationPages($module)
+	{
+		return file_exists(DR.'/modules/'.$module.'/integration_pages.php');
+	}
+	
+	public static function isIntegrationAdminIndex($module)
+	{
+		return file_exists(DR.'/modules/'.$module.'/integration_admin.php');
+	}
+	
+	public static function isIntegrationSystem($module)
+	{
+		return file_exists(DR.'/modules/'.$module.'/integration_system.php');
+	}
+	
+	public static function isIntegrationEnd($module)
+	{
+		return file_exists(DR.'/modules/'.$module.'/integration_end.php');
+	}
+}
+
+?>

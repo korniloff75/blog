@@ -1,0 +1,6 @@
+[Logger.php:228 2020/Jul/28 22:04:43 ] check bot->is_owner =
+string(17) "_bot NOT exist!!!"
+
+
+[Logger.php:231 2020/Jul/28 22:04:43 code:8] Undefined index: _bot
+

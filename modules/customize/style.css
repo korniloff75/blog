@@ -1,0 +1,36 @@
+#customize{
+	z-index: 1100;
+	position: fixed;
+	left: 30px;
+	bottom: 0;
+	background-color: #ffffff; 
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+	box-shadow: 0 0 15px #333333;
+	line-height: 0;
+	margin: 0;
+	padding: 5px;
+}
+*[contenteditable="true"]{
+	background-color: rgba(0, 0, 255, 0.151); 
+	outline: 1px solid blue;
+	outline-offset: -1px;
+}
+*[contenteditable="true"]:hover{
+	background-color: rgba(0, 0, 255, 0.055); 
+	outline: 1px solid blue;
+	outline-offset: -1px;
+}
+*[contenteditable="true"]:focus{
+	background-color: transparent; 
+	outline: 1px solid red;
+	outline-offset: -1px;
+}
+
+@media screen and (max-width: 600px) {
+	#customize{
+		display: none;
+	}
+}
+
+

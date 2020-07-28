@@ -1,0 +1,218 @@
+<?php
+// Класс для пользователя
+class User
+{
+	public $login; // Логин 
+	public $password; // Пароль
+	public $email; // Почтовый ящик
+
+	public $emailChecked; // Подтвержден ли емайл
+	public $emailChecksum; // Контрольная сумма для проверки емайла
+
+	public $about; // Об пользователе
+	public $ip; // Последний ip пользователя
+	public $ua; // Последний ua пользователя
+	public $numPost; // Количество сообщений на сайте
+	public $causeBan; // Причина блокировки , показывается пользователю
+	public $timeBan; // значение функции time окончания блокировки
+	public $timeActive; // значение функции time последней активности пользователя
+	public $timeRegistration; // значение функции time при регистрации пользователя 
+	public $preferences; // Уровень преференций пользователя
+	public $authorized = false; // Авторизирован ли пользователь: true - авторизирован; false - не авторизирован.
+	
+	public function __construct($login = false, $password = false)
+	{
+		if($login && $password){
+			if(($User = User::getConfig($login)) !== false){
+				
+				foreach($User as $k => $v){
+					$this->$k = $v;
+				}
+				
+				if($this->password == $password){
+					// Постоянно изменяемые параметры авторизованного пользователя
+					$this->login = $login;
+					$this->authorized = true;
+					$this->ip = IP;
+					$this->ua = htmlspecialchars(substr(UA, 0, 255));
+					$this->timeActive = time();
+					$this->save();// сохраняем новые параметры
+				}
+			}
+		}
+	}
+	
+	public function save()
+	{
+		if($this->authorized){
+			if(isset($this->email)) $this->email = strtolower($this->email);
+			
+			
+			$return = filefputs(DR.'/data/users/user_'.$this->login.'.dat', json_encode($this), 'w+');
+		}else{$return = false;}
+		return $return;
+	}
+	
+	public static function registration($login, $password, $salt, $email)
+	{
+		if($login != '' && $password != '' && $email != ''){
+			if(mb_strlen($login, 'utf-8') < 36 && mb_strlen($email, 'utf-8') < 255){
+				if(System::validPath($login)){
+					if(User::exists($login, true)){
+						$return = 1;
+					}else{
+						$json = json_encode(array(
+												'login' => htmlspecialchars($login),
+												'password' => cipherPass($password, $salt),
+												'salt' => $salt,
+												'email' => htmlspecialchars(strtolower($email)),
+												'emailChecked' => 0,
+												'emailChecksum' => random(16),
+												'newPasswordChecksum' => random(100),
+												'about' => '',
+												'ip' => IP,
+												'ua' => htmlspecialchars(substr(UA, 0, 255)),
+												'numPost' => 0,
+												'causeBan' => '',
+												'timeBan' => 0,
+												'timeActive' => time(),
+												'timeRegistration' => time(),
+												'preferences' => 0));
+							
+						$listUsers = System::listUsers(); // Получили список пользователей ввиде массива
+						array_push($listUsers, $login); // Добавили новый элемент массива в конец
+						
+						if(filefputs(DR.'/data/users/user_'.$login.'.dat', $json, 'w+') &&
+							filefputs(DR.'/data/users/list.dat', json_encode($listUsers), 'w+')){
+							
+							$return = 0;
+						}else{
+							$return = 2;
+						}
+
+						$listEmailsUsers = System::listEmailsUsers();
+						$listEmailsUsers[] = strtolower($email);
+						System::updateListEmailsUsers(array_unique($listEmailsUsers));
+
+					}
+				}else{$return = 4;}
+			}else{$return = 5;}
+		}else{
+			$return = 3;
+		}
+		return $return;
+	}
+	
+	public static function exists($login, $similar = false)
+	{
+		if($similar){
+			if (file_exists(DR.'/data/users/user_'.strtolower($login).'.dat') || // нижний регистр
+				file_exists(DR.'/data/users/user_'.strtoupper($login).'.dat') || // верхний регистр
+				file_exists(DR.'/data/users/user_'.lcfirst($login).'.dat') || // первый символ нижний регистр
+				file_exists(DR.'/data/users/user_'.ucfirst($login).'.dat') || // первый символ верхний регистр
+				file_exists(DR.'/data/users/user_'.$login.'.dat')){ // без преобразований
+				$return = true;
+			}else{
+				$return = false;
+			}
+
+		}else{
+			$return = file_exists(DR.'/data/users/user_'.$login.'.dat');
+		}
+		return $return;
+	}
+	
+	public static function delete($login, $dellEmail = true)
+	{
+		global $Config;
+		$return = false;
+		if(($CUser = User::getConfig($login)) !== false){
+			if(unlink(DR.'/data/users/user_'.$CUser->login.'.dat')){
+				$return = true;
+
+				// Удаление аватара
+				if(file_exists(DR.'/'.$Config->userAvatarDir.'/'.$CUser->login.'.jpg')){
+					unlink(DR.'/'.$Config->userAvatarDir.'/'.$CUser->login.'.jpg');
+				}
+
+				// Удаляем из списка
+				$listUsers = System::listUsers(); // Получили список пользователей ввиде массива
+				if(($key = array_search($CUser->login, $listUsers)) !== false){
+					unset($listUsers[$key]); // Удалили найденый элемент массива
+				}
+				$listUsers = array_values($listUsers); // Переиндексировали числовые индексы 
+				filefputs(DR.'/data/users/list.dat', json_encode($listUsers), 'w+'); // Записали
+
+				if ($dellEmail){
+					// Удаляем емайл из списка
+					$listEmailsUsers = System::listEmailsUsers();
+					if(($key = array_search($CUser->email, $listEmailsUsers)) !== false){
+						unset($listEmailsUsers[$key]); // Удалили найденый элемент массива
+					}
+					System::updateListEmailsUsers($listEmailsUsers);
+				}
+			}
+			
+		}
+		return $return;
+	}
+	
+	
+	
+	public static function getConfig($login)
+	{
+		$return = false;
+		if (file_exists(DR.'/data/users/user_'.$login.'.dat')){
+			if(($User = json_decode(file_get_contents(DR.'/data/users/user_'.$login.'.dat'))) != false ){
+				$User->authorized = false;
+
+				// 5.1.8
+				if(!isset($User->emailChecked)){$User->emailChecked = 0;}
+				if(!isset($User->emailChecksum)){$User->emailChecksum = '';}
+				if(!isset($User->newPasswordChecksum)){$User->newPasswordChecksum = '';}
+
+
+
+				$return = $User;
+			}
+		}
+		return $return;
+	}
+	
+	public static function setConfig($login, $config)
+	{
+		if(self::exists($login)){
+			
+			if($login !== $config->login){// если был изменен логин
+				if(self::exists($config->login) == false && System::validPath($config->login)){
+					
+					rename(DR.'/data/users/user_'.$login.'.dat',
+								DR.'/data/users/user_'.$config->login.'.dat');
+					
+					// Замена страницы в списке
+					$listUsers = System::listUsers(); // Получили список пользователей ввиде массива
+					if(($key = array_search($login, $listUsers)) !== false){
+						$listUsers[$key] = $config->login;
+					}
+					//$listUsers = array_values($listUsers); // Переиндексировали числовые индексы 
+					filefputs(DR.'/data/users/list.dat', json_encode($listUsers), 'w+'); // Записали
+					
+					$login = $config->login;
+					
+				}else{
+					$config->login = $login;
+				}
+			}
+			
+			if(isset($config->email)) $config->email = strtolower($config->email); // Всегда приводим емайл к нижнему регистру
+
+			$json = json_encode($config);
+			$return = filefputs(DR.'/data/users/user_'.$login.'.dat', $json, 'w+');
+			
+		}else{ $return = false; }
+		return $return;
+	}
+
+}
+
+?>

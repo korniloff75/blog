@@ -1,0 +1,141 @@
+<?php
+
+// ФУНКЦИИ PHP
+
+
+// Функция шифрования паролей
+function cipherPass($pass, $salt = ''){
+	return md5(md5($pass).$pass.$salt);
+}
+
+// Генерация случайной строки
+function random($x){
+	$rezult = '';
+	$str = str_split('0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM');
+	$count = count($str);
+	for($i = 0; $i < $x; ++$i){
+		$rezult.= $str[mt_rand(0,$count-1)]; 
+	}
+	return $rezult;
+}
+
+// функция отправки письма на email
+function addmail($to, $theme, $messeg, $from = ''){
+	//$to - Адрес получателя
+	//$theme - Тема письма
+	//$messeg - Текст письма
+	//$from - Адрес отправителя
+	$subject = '=?utf-8?B?'.trim(base64_encode($theme)).'?=';
+	$headers = '';
+	if($from != ''){$headers .= "From: $from\r\n";}
+		$headers .= "MIME-Version: 1.0\r\n";
+			$headers .= "Content-Transfer-Encoding: 8bit\r\n";
+				$headers .= "Content-Type: text/plain; charset=\"utf-8\"\r\n";
+					$headers .= "X-Mailer: PHP v.".phpversion();
+	return mail($to,$subject,$messeg,$headers); 
+}
+
+
+// функция фильтрации текста
+function specfilter($txt){
+	$txt = str_replace("\n",'',$txt);
+	$txt = str_replace("\r",'',$txt);
+	$txt = str_replace("\0",'',$txt);
+	$txt = str_replace("\x0B",'',$txt);
+	return $txt;
+}
+
+
+// функция записи строки в файл
+function filefputs($file, $str, $q){
+	if(file_put_contents($file, $str, $q=='a+'?FILE_APPEND|LOCK_EX:LOCK_EX)){
+		$rezult = true;
+	}else{
+		$rezult = false;
+	}
+	return $rezult;
+}
+
+
+// функция удаления папки
+function delldir($fldr){
+	if(($dh = scandir($fldr)) !== false){
+		foreach($dh as $key => $f){
+			if($f != '.' && $f != '..'){
+				$path = $fldr.'/'.$f;
+				if(is_dir($path)){
+					delldir($path);
+				}elseif(is_file($path)){
+					chmod($path, 0777);
+					unlink($path);
+				}
+			}
+		}
+		chmod($fldr, 0777);
+		if(rmdir($fldr)){$rezult = true;}else{$rezult = false;}
+	}else{$rezult = false;}
+	return $rezult;
+}
+
+
+// Функция вывода размера файла
+function convert_size($file_size){
+	if($file_size >= 1073741824){
+		$file_size = round($file_size / 1073741824 * 100) / 100 . ' Gb';
+	}elseif($file_size >= 1048576){
+		$file_size = round($file_size / 1048576 * 100) / 100 . ' Mb';
+	}elseif($file_size >= 1024){
+		$file_size = round($file_size / 1024 * 100) / 100 . ' Kb';
+	}else{
+		$file_size = round($file_size) . ' b';
+	}
+	return $file_size;
+}
+
+
+// Функция русского склонения для чисел
+// $suffix это массив из 3-х склонений , например: "минуту", "минуты", "минут"
+function numDec($number, $suffix) {
+	$keys = array(2, 0, 1, 1, 1, 2);
+	$mod = $number % 100;
+	$suffix_key = ($mod > 7 && $mod < 20) ? 2: $keys[min($mod % 10, 5)];
+	return $suffix[$suffix_key];
+}
+
+
+// Функция вывода "сколько прошло времени"
+function human_time($time){
+	if($time >= 31536000){
+		$n = round($time / 31536000);
+		$time = $n.' '.numDec($n, array('год', 'года', 'лет'));
+	}elseif($time >= 2592000){
+		$n = round($time / 2592000);
+		$time = $n.' '.numDec($n, array('месяц', 'месяца', 'месяцев'));
+	}elseif($time >= 604800){
+		$n = round($time / 604800);
+		$time = $n.' '.numDec($n, array('неделю', 'недели', 'недель'));
+	}elseif($time >= 86400){
+		$n = round($time / 86400);
+		$time = $n.' '.numDec($n, array('день', 'дня', 'дней'));
+	}elseif($time >= 3600){
+		$n = round($time / 3600);
+		$time = $n.' '.numDec($n, array('час', 'часа', 'часов'));
+	}elseif($time >= 60){
+		$n = round($time / 60);
+		$time = $n.' '.numDec($n, array('минуту', 'минуты', 'минут'));
+	}else{
+		$n = round($time);
+		$time = $n.' '.numDec($n, array('секунду', 'секунды', 'секунд'));
+	}
+	return $time;
+}
+
+// dirname с уровнями как в php7 для php5
+function dirname7($path, $levels = 1){
+	$arr = explode(DIRECTORY_SEPARATOR, dirname($path));
+	array_splice($arr, count($arr) + 1 - $levels);
+	return implode(DIRECTORY_SEPARATOR, $arr);
+}
+
+
+?>

@@ -1,0 +1,194 @@
+<?php
+
+class System
+{
+	
+	public static function validPath($path)
+	{
+		if(preg_match('/^[a-zA-Z0-9]+([\._-][a-zA-Z0-9]+)*$/', $path)){
+			$rezult = true;
+		}else{
+			$rezult = false;
+		}
+		return $rezult;
+	}
+	
+	
+	public static function saveConfig($Config)
+	{
+		$json = json_encode($Config);
+		return filefputs(DR.'/data/cfg/config.dat', $json, 'w+');
+	}
+	
+
+	public static function getConfig()
+	{
+		$Config = json_decode(file_get_contents(DR.'/data/cfg/config.dat'))
+			or exit('CONFIG ERROR');
+		// Настройки поумолчанию
+		// 5.1.0
+		if(!isset($Config->header)) $Config->header = 'Заголовок';
+		if(!isset($Config->template)) $Config->template = 'deftpl';
+		if(!isset($Config->slogan)) $Config->slogan = 'Добро пожаловать на наш сайт';
+		if(!isset($Config->wysiwyg)) $Config->wysiwyg = 'ckeditor_4.5.8_standard';
+		if(!isset($Config->slashRule)) $Config->slashRule = 1;
+		if(!isset($Config->gzip)) $Config->gzip = 0;
+		if(!isset($Config->adminEmail)) $Config->adminEmail = 'example@example.com';
+		if(!isset($Config->adminStyleFile)) $Config->adminStyleFile = 'style_blue.css';
+		if(!isset($Config->timeAuth)) $Config->timeAuth = 1800;
+		if(!isset($Config->timeZone)) $Config->timeZone = 'default';
+		if(!isset($Config->adminPassword)) $Config->adminPassword = 'd36d27e3aca875fe3e0d929e3ec6e91b';
+		if(!isset($Config->salt)) $Config->salt = 'vozwnjqyaPMipntrx9fGgQIRRJyHgBzyWJdU4gNEwjwEX3W2v4KDSIiU77iHWzjzfR35dpiyuq2UTdQHINaAXWZBNuEzwDSL7wJREYAeFi5ZTIAjzi3VoA4uRMvRkogI1UarOVrtwgrjh0b7Fjctx8hcwqo2Cc37nhensPcerRByhf17oqR2cKDtBsgbeb5mUGxMqnmTqwF8vXOnIx0tT0RamuMk8VkyKz2XfGhNolsbzoaJdwqBfEH32BmMJoh';
+		if(!isset($Config->ticketSalt)) $Config->ticketSalt = '123';
+		// 5.1.3
+		if(!isset($Config->uriRule)) $Config->uriRule = 1;
+		// 5.1.4
+		if(!isset($Config->ipBan)) if(!is_array($Config->ipBan)) $Config->ipBan = array();
+		// 5.1.8
+		if(!isset($Config->registration)) $Config->registration = 1;
+		if(!isset($Config->userEmailChecked)) $Config->userEmailChecked = 1;
+		if(!isset($Config->userEmailFilterList)) $Config->userEmailFilterList = 1;
+		if(!isset($Config->userNewPassword)) $Config->userNewPassword = 1;
+		// 5.1.9
+		if(!isset($Config->indexPage)) $Config->indexPage = 'index';
+		if(!isset($Config->userEmailChange)) $Config->userEmailChange = 1;
+		// 5.1.17
+		if(!isset($Config->ipBanRule)) $Config->ipBanRule = 0;
+		// 5.1.24
+		if(!isset($Config->protocol)) $Config->protocol = 'http';
+		if(!isset($Config->userAvatarUpload)) $Config->userAvatarUpload = 0;
+		if(!isset($Config->userAvatarSize)) $Config->userAvatarSize = 300;
+		if(!isset($Config->userAvatarDir)) $Config->userAvatarDir = 'files/avatars';
+		if(!isset($Config->userAvatarMinNumPost)) $Config->userAvatarMinNumPost = 0;
+
+		return $Config;
+	}
+	
+	
+	public static function getTimeZones()
+	{
+		return file(DR.'/data/cfg/time_zones.dat', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+	}
+	
+	
+	public static function notification($text, $color='g')
+	{
+		if($color=='g')$color='#009900';
+		if($color=='r')$color='#ff0000';
+		if($color=='y')$color='#cc9900';
+		if(filesize(DR.'/data/cfg/notifications.dat') > 102400){
+			$file = file(DR.'/data/cfg/notifications.dat');
+			$f = fopen(DR.'/data/cfg/notifications.dat', 'w+');
+			for($count = count($file), $i = round($count / 3); $i < $count; ++$i){
+				fwrite($f, $file[$i]);
+			}
+			fwrite($f, '#B8860B|'.date("d.m.Y H:i").'|Выполнена очистка уведомлений от старых записей т.к. был превышен лимит хранилища в 100кб'."\n");
+			fclose($f);
+		}
+		return filefputs(DR.'/data/cfg/notifications.dat', $color.'|'.date("d.m.Y H:i").'|'.htmlspecialchars(specfilter(substr($text, 0, 5000)))."\n", 'a+');
+	}
+	
+	
+	
+	
+	public static function listModules()
+	{
+		$return = array();
+		$dir = scandir(DR.'/modules/');
+		foreach($dir as $value){
+			if($value != '.' && $value != '..' && is_dir(DR.'/modules/'.$value)){
+				$return[] = $value;
+			}
+		}
+		return $return;
+	}
+	
+	
+	public static function listRunModules()
+	{
+		return json_decode(file_get_contents(DR.'/data/cfg/modules.dat'));
+	}
+	
+	
+	public static function listEmailsUsers()
+	{
+		return json_decode(file_get_contents(DR.'/data/cfg/emails.dat'));
+	}
+
+
+	public static function updateListEmailsUsers($arr)
+	{
+		$arr = array_map('strtolower', $arr);
+		$arr = array_values($arr); // Переиндексировали числовые индексы 
+		return filefputs(DR.'/data/cfg/emails.dat', json_encode($arr), 'w+'); // Записали
+	}
+	
+
+	public static function isBadMailDomain($email)
+	{
+		$domain = stristr(strtolower($email), '@');
+		return in_array($domain, file(DR.'/data/cfg/bad_mail_domains.dat', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES));
+	}
+	
+
+	public static function listUsers()
+	{
+		$return = json_decode(file_get_contents(DR.'/data/users/list.dat'), true);
+		if(!$return){
+			$return = array();
+		}
+		return $return;
+	}
+	
+	
+	public static function listPages()
+	{
+		return json_decode(file_get_contents(DR.'/data/pages/list.dat'), true);
+	}
+
+
+	public static function addAdminHeadHtml($html)
+	{
+		global $ADMIN_HEAD_HTML;
+		$ADMIN_HEAD_HTML .= $html."\n";
+	}
+
+
+	public static function addAdminEndHtml($html)
+	{
+		global $ADMIN_END_HTML;
+		$ADMIN_END_HTML .= $html."\n";
+	}
+	
+	
+	public static function initModules()
+	{
+		$dir = scandir(DR.'/modules/');
+		
+		$list['system'] = array();
+		$list['pages'] = array();
+		$list['end'] = array();
+		
+		foreach($dir as $key => $module){
+			if($module != '.' && $module != '..'){
+				if(Module::isIntegrationSystem($module)){
+					$list['system'][] = $module;
+				}
+				
+				if(Module::isIntegrationPages($module)){
+					$list['pages'][] = $module;
+				}
+				
+				if(Module::isIntegrationEnd($module)){
+					$list['end'][] = $module;
+				}
+			}
+		}
+		
+		filefputs(DR.'/data/cfg/modules.dat', json_encode($list), 'w+'); // Записали
+		
+	}
+
+}
+
+?>

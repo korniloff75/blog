@@ -1,0 +1,6 @@
+<?php
+$module_news="module.news1";
+$id_cat="news1";
+$name_cat="Моя категория новостей 1";
+$url_cat="Moya_kategoriya_novostej_1";
+?>

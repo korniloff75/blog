@@ -1,0 +1,145 @@
+<?php
+// Класс для работы хранилища данных
+class EngineStorage
+{
+	private $storageDir;
+	private $storage;
+	
+	// Определение параметров
+	public function __construct($storage)
+	{
+		$this->storage = $storage;
+		$this->storageDir = DR.'/data/storage';
+	}
+	
+	// Проверка на существование хранилища
+	public function exists()
+	{
+		return file_exists($this->storageDir.'/'.$this->storage);
+	}
+	
+	// Проверка на существование ключа
+	public function iss($key)
+	{	
+		return file_exists($this->storageDir.'/'.$this->storage.'/'.$key.'.dat');
+	}
+	
+	// Создание ключа
+	public function set($key, $value, $q = 'w+')
+	{
+		if(!$this->exists()){
+			mkdir($this->storageDir.'/'.$this->storage);
+		}
+		return filefputs($this->storageDir.'/'.$this->storage.'/'.$key.'.dat', $value, $q);
+	}
+	
+	// Получение значения ключа
+	public function get($key)
+	{
+		return $this->iss($key)?
+			file_get_contents($this->storageDir.'/'.$this->storage.'/'.$key.'.dat'):false;
+	}
+
+	// Получение time последнего изменения ключа
+	public function time($key)
+	{
+		return $this->iss($key)?
+			filemtime($this->storageDir.'/'.$this->storage.'/'.$key.'.dat'):false;
+	}
+
+	// Получение размера ключа ключа
+	public function size($key)
+	{
+		return $this->iss($key)?
+			filesize($this->storageDir.'/'.$this->storage.'/'.$key.'.dat'):false;
+	}
+
+	// Получение значения ключа с разбивкой строк на массивы
+	public function getArray($key)
+	{
+		return $this->iss($key)?
+			file($this->storageDir.'/'.$this->storage.'/'.$key.'.dat', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES):false;
+	}
+	
+	// Удаление ключа
+	public function delete($key)
+	{
+		return $this->iss($key)?
+			unlink($this->storageDir.'/'.$this->storage.'/'.$key.'.dat'):false;
+	}
+	
+	// Получение список ключей в виде массива
+	public function scan()
+	{
+		$return = array();
+		if(file_exists($this->storageDir.'/'.$this->storage)){
+			$arr = scandir($this->storageDir.'/'.$this->storage);
+			foreach($arr as $value){
+				if($value != '.' && $value != '..'){
+					$return[] = basename($value, '.dat');
+				}
+			}
+		}else{$return = false;}
+		return $return;
+	}
+	
+	// Удаление хранилища 
+	public function deleteStorage()
+	{
+		return $this->exists()?
+			delldir($this->storageDir.'/'.$this->storage):false;
+	}
+	
+	// Экспорт хранилища в zip файл
+	public function exportStorage($to)
+	{
+		$return = true;
+			if($this->exists()){
+				if(class_exists('ZipArchive')){
+					$zip = new ZipArchive;
+					if($zip->open($to, ZipArchive::CREATE) === TRUE){
+						$zip->addEmptyDir($this->storage);
+						$storageFile = scandir($this->storageDir.'/'.$this->storage);
+						foreach($storageFile as $value){
+							if($value != '.' && $value != '..'){
+								$zip->addFile($this->storageDir.'/'.$this->storage.'/'.$value, $this->storage.'/'.$value);
+								//echo $this->storage.'/'.$value.' - '.$this->storageDir.'/'.$this->storage.'/'.$value.'<br>';
+							}
+						}
+						$zip->close();
+					}else{
+						$return = false;
+					}
+					
+				}else{$return = false;}
+			}else{$return = false;}
+		return $return;
+	}
+	
+	// Импорт хранилища // Пока не отлажено , удалить после // если ты это видишь значит забыл
+	public function importStorage($from, $replace=false)
+	{
+		$return = true;
+			if($this->exists()){
+				if(class_exists('ZipArchive')){
+					
+						// $zip = new ZipArchive;
+						// if($zip->open('../data/temp/'.$file_name) === TRUE){
+							// $zip->extractTo('../modules/');
+							// $dirindex = explode('/',$zip->getNameIndex(0));
+							// $zip->close();
+							// $extracted = true;
+							// notification('Распакован архив '.$file_name.', использован ZipArchive', 'g');
+						// }else{
+							// $extracted = false;
+							// notification('Ошибка при распаковке архива '.$file_name.', использован ZipArchive', 'r');
+						// }
+					
+					
+				}else{$return = false;}
+			}else{$return = false;}
+		return $return;
+	}
+}
+
+?>
