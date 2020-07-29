@@ -18,11 +18,7 @@
 <?= file_get_contents('modules/customize/jloader/jloader.js');?>
 </script>
 
-<!--Slick-->
-<link href="/modules/tpl.robotix/slick/slick.css" rel="stylesheet">
-<link href="/modules/tpl.robotix/slick/slick-theme.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-<script src="/modules/tpl.robotix/slick/slick.min.js"></script>
 
 
 </head>
@@ -68,6 +64,11 @@
 <div class="container bgcontent">
 
 	<?php if($Page->isIndexPage()):?>
+		<!--Slick-->
+		<link href="/modules/tpl.robotix/slick/slick.css" rel="stylesheet">
+		<link href="/modules/tpl.robotix/slick/slick-theme.css" rel="stylesheet">
+		<script src="/modules/tpl.robotix/slick/slick.min.js"></script>
+
 		<div class="bgslider">
 			<div class="slider">
 				<section>
@@ -142,13 +143,33 @@
 			';?>
 			</section>
 		</div>
+
+		<!-- Page script -->
+		<script>
+		$('.slider').slick({
+			autoplay: true,
+			arrows: false,
+			dots: true
+		});
+
+		document.getElementById('menu').onclick = function(){
+			var menu = document.getElementById('nav');
+			if(menu.style.height == menu.scrollHeight + 'px'){
+				menu.style.height = '0px';
+			}else{
+				menu.style.height = menu.scrollHeight + 'px';
+			}
+		}
+		</script>
+
 	<?php endif;?>
 
 
 	<div class="content">
 		<section id="cats">
 		<?php
-		if(Module::exists('admin_pages_category')) echo Get_PagesCategory(); else echo "NO nodule admin_pages_category";
+		if(Module::exists('admin_pages_category')) echo Get_PagesCategory();
+		elseif($status == 'admin') echo "NO nodule admin_pages_category";
 		?>
 		</section>
 		<main>
@@ -167,47 +188,63 @@
 
 
 	<div class="ads">
-		<div class="anews">
-			<?php // Вывод последней новости
-				/* echo NewsCategory(false, 1, '
-											<article><h2><a href="#uri#">#header#</a></h2>
-											<p><img src="#img#" alt="#header#"></p>
-											#content#
-											<p><a href="#uri#">Читать подробнее &#8594;</a></p></article>
-										'); */
-			?>
-		</div>
-		<div class="bnews">
-			<h3 class="bhnews editable" id="nh"><?=$Customize->iss('nh')?$Customize->get('nh'):'Другие новости';?></h3>
-			<?php // Вывод последних 5 новостей, кроме самой последней
-				/* echo NewsCategory(false, 5, '
-											<article>
-											<h3><a href="#uri#">#header#</a></h3>
-											#content#
-											</article>
-										', '<p>Новостей пока нет</p>', 1); */
-			?>
-		</div>
+
 	</div>
 
+	<?php
+	$log->add('$Page = ',null,[$Page]);
+
+	if($Page->module === 'mail'):
+	?>
+
 	<div class="contact">
-		<div class="map">
+		<!-- <div class="map">
 			<script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3Ac0f6d89d5c475219392d254f4b1b2e8ed0a6f81ec72355edc8454bf43615a01a&amp;width=100%25&amp;height=400&amp;lang=ru_RU&amp;scroll=true"></script>
-		</div>
+		</div> -->
+
+		<div id="my_map" class="map"><!-- Карта. --></div>
+
 		<div class="addres editable" id="addres"><?=$Customize->iss('addres')?$Customize->get('addres'):'
 			<h3>Регионы деятельности</h3>
-			<p>Московская область, Нижегородская область, Костромская область, республика Марий Эл, республика Чувашия, республика Мордовия, Владимирская область.</p>
-			<h3>Адрес офиса в Москве</h3>
-			<p>108841, Московская обл. г. Москва, пл. Ленина, д. 1а</p>
-			<h3>Контактные телефоны</h3>
-			<ul>
-				<li>+7 (123) 456-78-90</li>
-				<li>+7 (098) 765-43-21</li>
-				<li>+7 (345) 678-90-12</li>
-			</ul>
+			<p>Республика Крым.</p>
+			<h3>написать через TELEGRAM</h3>
+			<p>Даже если ваша учётная запись заблокирована за СПАМ, вы сможете написать мне через этого бота - <a data-cke-saved-href="https://t.me/js_master_bot" target="_blank" href="https://t.me/js_master_bot">@js_master_bot</a></p>
 		';?>
 		</div>
 	</div>
+
+
+	<script>
+	var ymapsLoadind = ymapsLoadind || new Promise( (resolve, reject) => {
+	 let script = document.createElement('script');
+	 script.src = 'https://api-maps.yandex.ru/2.1/?lang=ru_RU';
+	 document.head.append(script);
+	 // Отслеживаем загрузку библиотеки
+	 script.onload = () => {
+		// Отслеживаем готовность ymaps
+		window.ymaps.ready(() => resolve(window.ymaps))
+	 }
+	 script.onerror = () => reject(new Error(`Ошибка загрузки скрипта ${src}`));
+	});
+
+	ymapsLoadind.then(
+		ymaps => {
+		// console.log('ymaps.Map = ', ymaps.Map, ymaps.ready);
+		var myMap = new ymaps.Map('my_map', {
+			center: [ 45.47574, 34.21895 ],
+			zoom: 8,
+			controls: [],
+		}, {
+			// Optional
+			// Задаем поиск по карте
+			searchControlProvider: 'yandex#search'
+		})
+		}
+	);
+ </script>
+
+
+	<?php endif; ?>
 
 
 	<footer>
@@ -215,26 +252,7 @@
 	</footer>
 
 </div>
-<div class="copiright">Сайт сделан на <a href="//my-engine.ru">My-Engine CMS</a></div>
-
-
-<!-- Page script -->
-<script>
-$('.slider').slick({
-	autoplay: true,
-	arrows: false,
-	dots: true
-});
-
-document.getElementById('menu').onclick = function(){
-	var menu = document.getElementById('nav');
-	if(menu.style.height == menu.scrollHeight + 'px'){
-		menu.style.height = '0px';
-	}else{
-		menu.style.height = menu.scrollHeight + 'px';
-	}
-}
-</script>
+<div class="copiright">Сайт сделан на <a href="//my-engine.ru" rel="nofollow">My-Engine CMS</a></div>
 
 <?php if(function_exists('CustomizeInit')) CustomizeInit(); ?>
 

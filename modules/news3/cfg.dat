@@ -1,0 +1,6 @@
+<?php
+$module_news="module.news3";
+$id_cat="news3";
+$name_cat="test cat";
+$url_cat="test_cat";
+?>

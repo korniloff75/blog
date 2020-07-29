@@ -5,7 +5,7 @@ $newsParam = json_decode($newsStorage->get('news_'.$listIdNews[$i]));
 if ($newsParam != false){
 if($newsConfig->sortPrev == 2){
 $return.= '<div class="link"><a href="/'.$newsConfig->idPage.'/'.$listIdNews[$i].'">'.$newsParam->header.'</a></div>';
-}else{	
+}else{
 $return.= '<div class="prev-news">';
 if($newsConfig->sortPrev == 1){
 $return.= '<h3>'.$newsParam->header.'</h3>
@@ -13,7 +13,7 @@ $return.= '<h3>'.$newsParam->header.'</h3>
 <span style="background:url('.$newsParam->img.') no-repeat;background-size: 100% auto;background-position:50% 50%;"></span>
 </div>';
 }else{
-$return.= '<h3><a href="/'.$newsConfig->idPage.'/'.$listIdNews[$i].'">'.$newsParam->header.'</a></h3>';	
+$return.= '<h3><a href="/'.$newsConfig->idPage.'/'.$listIdNews[$i].'">'.$newsParam->header.'</a></h3>';
 }
 $return.= '<div class="prev-txt">
 '.$newsParam->prev.'</div>

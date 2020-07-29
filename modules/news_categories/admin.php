@@ -16,135 +16,135 @@ return '<div class="a">Подтвердите удаление категори�
 <?php
 
 if($act=='index'){
-    if(is_dir('../modules/news_categories/file')){
+		if(is_dir('../modules/news_categories/file')){
 	echo'<div class="header"><h1>Инициализация модуля</h1></div>
 	<div class="content">
-    <p>Все компоненты модуля установлены. Для начала работы модуля необходимо выполнить инициализацию.</p>
-    <form name="settingform" action="module.php?module='.$MODULE.'" method="post">
-    <INPUT TYPE="hidden" NAME="act" VALUE="addin1">
-    <input type="submit" name="" value="Начать инициализацию">
-    </form>
-    </div>';
-   }else{	
+		<p>Все компоненты модуля установлены. Для начала работы модуля необходимо выполнить инициализацию.</p>
+		<form name="settingform" action="module.php?module='.$MODULE.'" method="post">
+		<INPUT TYPE="hidden" NAME="act" VALUE="addin1">
+		<input type="submit" name="" value="Начать инициализацию">
+		</form>
+		</div>';
+	 }else{
 	echo'<div class="header"><h1>Управление модулем "Категории новостей"</h1></div>
 	<div class="menu_page"><a href="index.php">&#8592; Вернуться назад</a> | <a href="module.php?module='.$MODULE.'&act=cfg_category">Общие настройки</a></div>';
 	if(!file_exists('../modules/'.$Config->template.'/news.blok.php')){
 	echo'<div class="error">В подключенном шаблоне отсутствуют компоненты необходимые для корректной работы расширения. <a href="module.php?module='.$MODULE.'&act=addin2" style="text-decoration: underline;">Загрузить компоненты</a>.</div>';
-    }
+		}
 	echo'
 	<div class="content"><h2>Список категорий</h2>
-	
+
 	<div class="row">
 		<form name="settingform" action="module.php?module='.$MODULE.'&act=category_search" method="post">
 		<input style="width: 250px;" type="text" name="q" value="" placeholder="Поиск по заголовку" autofocus>
-		<input type="submit" name="" value="Поиск"> 
+		<input type="submit" name="" value="Поиск">
 		</form>
-    </div>
-	
+		</div>
+
 	<table class="tables">
-    <tr>
-    <td class="tables_head" colspan="2">Категории</td>
+		<tr>
+		<td class="tables_head" colspan="2">Категории</td>
 	<td class="tables_head">Ссылка на страницу</td>
 	<td class="tables_head">Директория</td>
 	<td class="tables_head">Папка с фото</td>
-    <td class="tables_head" style="text-align: right;"><a href="module.php?module=news_categories&act=new_category" class="button addlink" title="Создать категорию">Создать категорию</a></td>
-    </tr>';
+		<td class="tables_head" style="text-align: right;"><a href="module.php?module=news_categories&act=new_category" class="button addlink" title="Создать категорию">Создать категорию</a></td>
+		</tr>';
 	if(file_exists('../modules/news_categories/list.dat')){
-    $link_data = file('../modules/news_categories/list.dat');
-    $nom = count($link_data);
-    if($nom == 0){
-    echo'<tr><td>Категории еще не созданы</td><td></td><td></td><td></td><td></td><td>---</td></tr>';
-    }
-    for($q = 0; $q < $nom; ++$q){
-    $link_cfg = explode('^',$link_data[$q]);
+		$link_data = file('../modules/news_categories/list.dat');
+		$nom = count($link_data);
+		if($nom == 0){
+		echo'<tr><td>Категории еще не созданы</td><td></td><td></td><td></td><td></td><td>---</td></tr>';
+		}
+		for($q = 0; $q < $nom; ++$q){
+		$link_cfg = explode('^',$link_data[$q]);
 	$newsStorage = new EngineStorage('module.'.$link_cfg[1].'');
-    if(($listIdNews = json_decode($newsStorage->get('list'), true)) !== false){
-    $col = count($listIdNews);
-    }
-    echo'<tr>
-    <td class="img"><img src="../modules/news_categories/icon1.svg" alt=""></td>
+		if(($listIdNews = json_decode($newsStorage->get('list'), true)) != false){
+		$col = count($listIdNews);
+		}
+		echo'<tr>
+		<td class="img"><img src="../modules/news_categories/icon1.svg" alt=""></td>
 	<td style="text-align: left;">'.$link_cfg[0].' ('.$col.')</td>
 	<td>';
 	if(file_exists('../data/pages/cfg_'.$link_cfg[2].'.dat')){
 	echo'<a href="//'.SERVER.'/'.$link_cfg[2].'" target="_blank">'.SERVER.'/'.$link_cfg[2].'</a>';
 	}else{
-	echo'<span class="r">Страница еще не создана</span>';	
+	echo'<span class="r">Страница еще не создана</span>';
 	}
 	echo'</td>
 	<td>/modules/'.$link_cfg[1].'</td>
 	<td>/files/news_categories/'.$link_cfg[1].'</td>
 	<td style="text-align: right;">
-	<a href="module.php?module=news_categories&act=up_link&amp;str_file='.$q.'" title="Переместить вверх">Вверх</a> &nbsp; 
-	<a href="module.php?module=news_categories&act=down_link&amp;str_file='.$q.'" title="Переместить вниз">Вниз</a> &nbsp; 
-	<a href="module.php?module=news_categories&act=ed_category&id_category='.$link_cfg[1].'&amp;str_file='.$q.'" title="Открыть категорию">Открыть</a> &nbsp; 
+	<a href="module.php?module=news_categories&act=up_link&amp;str_file='.$q.'" title="Переместить вверх">Вверх</a> &nbsp;
+	<a href="module.php?module=news_categories&act=down_link&amp;str_file='.$q.'" title="Переместить вниз">Вниз</a> &nbsp;
+	<a href="module.php?module=news_categories&act=ed_category&id_category='.$link_cfg[1].'&amp;str_file='.$q.'" title="Открыть категорию">Открыть</a> &nbsp;
 	<a href="javascript:void(0);" onclick="openwindow(\'window\', 650, \'auto\', dellcategory(\''.$link_cfg[1].'\'));" title="Удалить категорию">Удалить</a>
 	</td>
 	</tr>';
-    }
-    }else{
-    echo'<tr><td style="color:#f00;">Ошибка</td><td>&nbsp;</td><td></td><td></td><td>---</td></tr>';
-    }
+		}
+		}else{
+		echo'<tr><td style="color:#f00;">Ошибка</td><td>&nbsp;</td><td></td><td></td><td>---</td></tr>';
+		}
 	echo'</table>
-    </div>
-    ';
+		</div>
+		';
 }
 }
 
 if($act=='category_search'){
-	
+
 if(isset($_POST['q'])){$q = $_POST['q'];}
 $result = 0;
 echo'<div class="header"><h1>Управление модулем "Категории новостей"</h1></div>
 	<div class="menu_page"><a href="module.php?module='.$MODULE.'">&#8592; Вернуться назад</a></div>
 	<div class="content">';
 	if(trim($q)){
-    echo'<h2>Результат поиска</h2>';
-	
-    $link_data = file('../modules/news_categories/list.dat');
-    $nom = count($link_data);
-    for($i = 0; $i < $nom; ++$i){
-    $link_cfg = explode('^',$link_data[$i]);
+		echo'<h2>Результат поиска</h2>';
+
+		$link_data = file('../modules/news_categories/list.dat');
+		$nom = count($link_data);
+		for($i = 0; $i < $nom; ++$i){
+		$link_cfg = explode('^',$link_data[$i]);
 	if($q == $link_cfg[0]){
-    echo'<table class="tables">
-    <tr>
-    <td class="tables_head" colspan="2">Категории</td>
+		echo'<table class="tables">
+		<tr>
+		<td class="tables_head" colspan="2">Категории</td>
 	<td class="tables_head">Ссылка на страницу</td>
 	<td class="tables_head">Директория</td>
 	<td class="tables_head">Папка с фото</td>
-    <td class="tables_head"></td>
-    </tr>
+		<td class="tables_head"></td>
+		</tr>
 	<tr>
-    <td class="img"><img src="../modules/news_categories/icon1.svg" alt=""></td>
+		<td class="img"><img src="../modules/news_categories/icon1.svg" alt=""></td>
 	<td style="text-align: left;">'.$link_cfg[0].'</td>
 	<td><a href="//'.SERVER.'/'.$link_cfg[2].'" target="_blank">'.SERVER.'/'.$link_cfg[2].'</a></td>
 	<td>/modules/'.$link_cfg[1].'</td>
 	<td>/files/news_categories/'.$link_cfg[1].'</td>
-	<td style="text-align: right;"> 
-	<a href="module.php?module=news_categories&act=ed_theme&id_theme='.$link_cfg[1].'&amp;str_file='.$i.'" title="Открыть тему">Открыть</a> &nbsp; 
+	<td style="text-align: right;">
+	<a href="module.php?module=news_categories&act=ed_theme&id_theme='.$link_cfg[1].'&amp;str_file='.$i.'" title="Открыть тему">Открыть</a> &nbsp;
 	<a href="javascript:void(0);" onclick="openwindow(\'window\', 650, \'auto\', dellcategory(\''.$link_cfg[1].'\'));" title="Удалить категорию">Удалить</a>
 	</td>
 	</tr>';
-	$result = 1;	
-    }
-    }
+	$result = 1;
+		}
+		}
 	echo'</table>';
 	if($result == 0){
-    echo'<div class="msg">Ничего не найдено</div>';
-    header('Refresh: 2; URL=module.php?module='.$MODULE.'');
-    }
+		echo'<div class="msg">Ничего не найдено</div>';
+		header('Refresh: 2; URL=module.php?module='.$MODULE.'');
+		}
 	}else{
-    echo'<div class="msg">Ошибка! Поле поиска пустое.</div>';
-    header('Refresh: 2; URL=module.php?module='.$MODULE.'');		
-    }
-    echo'</div>
-    ';
+		echo'<div class="msg">Ошибка! Поле поиска пустое.</div>';
+		header('Refresh: 2; URL=module.php?module='.$MODULE.'');
+		}
+		echo'</div>
+		';
 }
 
 if($act=='cfg_category'){
-	
+
 $check_st = ($news_style == 1)?' checked':'';
 $check_lib = ($lib_jquery == 1)?' checked':'';
-	
+
 echo'<div class="header"><h1>Управление модулем "Категории новостей"</h1></div>
 <div class="menu_page"><a href="module.php?module='.$MODULE.'">&#8592; Вернуться назад</a></div>
 <div class="content">
@@ -252,23 +252,23 @@ function random(n)
 <?php
 
 if($act=='ed_category'){
-	
+
 if(isset($_GET['id_category'])){$id_category = $_GET['id_category'];}
 if(isset($_GET['str_file'])){$str_file = $_GET['str_file'];}
 require('../modules/'.$id_category.'/cfg.php');
 
-    $link_data = file('../modules/news_categories/list.dat');
-    $nom = count($link_data);
-    for($i = 0; $i < $nom; ++$i){
-    $link_cfg = explode('^',$link_data[$i]);
+		$link_data = file('../modules/news_categories/list.dat');
+		$nom = count($link_data);
+		for($i = 0; $i < $nom; ++$i){
+		$link_cfg = explode('^',$link_data[$i]);
 	if($id_category == $link_cfg[1]){
-	$name_category = $link_cfg[0];	
+	$name_category = $link_cfg[0];
 	}
 	}
-	
+
 echo'<div class="header"><h1>Управление категорией "'.$name_category.'"</h1></div>
 <div class="menu_page">
-        <a class="link" href="module.php?module='.$MODULE.'">Все категории</a>
+				<a class="link" href="module.php?module='.$MODULE.'">Все категории</a>
 		<a class="link" href="module.php?module='.$MODULE.'&amp;act=ed_category&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Добавление новости</a>
 		<a class="link " href="module.php?module='.$MODULE.'&amp;act=edit&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Редактирование новостей</a>
 		<a class="link" href="module.php?module='.$MODULE.'&amp;act=comment&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Комментарии пользователей</a>
@@ -290,7 +290,7 @@ echo'<div class="header"><h1>Управление категорией "'.$name_
 			<td>Заголовок новости:</td>
 			<td><input type="text" name="header" id="header" value=""></td>
 		</tr>
-		
+
 		<tr>
 			<td class="top">Превью новости:</td>
 			<td><TEXTAREA NAME="prev" ROWS="20" COLS="100" style="height:150px;">'.htmlspecialchars('<p>Превью новости</p>').'</TEXTAREA></td>
@@ -306,7 +306,7 @@ echo'<div class="header"><h1>Управление категорией "'.$name_
 		<tr>
 			<td>URL иллюстр. картинки:</td>
 			<td>
-				<input type="text" name="img" id="inputimg" value="/modules/news_categories/default.jpg"> 
+				<input type="text" name="img" id="inputimg" value="/modules/news_categories/default.jpg">
 				<button type="button" onClick="openwindow(\'window\', 750, \'auto\', iframefiles);">Выбрать файл</button>
 			</td>
 		</tr>
@@ -347,12 +347,12 @@ if(isset($_GET['id_category'])){$id_category = $_GET['id_category'];}
 if(isset($_GET['str_file'])){$str_file = $_GET['str_file'];}
 require('../modules/'.$id_category.'/cfg.php');
 
-    $link_data = file('../modules/news_categories/list.dat');
-    $nom = count($link_data);
-    for($i = 0; $i < $nom; ++$i){
-    $link_cfg = explode('^',$link_data[$i]);
+		$link_data = file('../modules/news_categories/list.dat');
+		$nom = count($link_data);
+		for($i = 0; $i < $nom; ++$i){
+		$link_cfg = explode('^',$link_data[$i]);
 	if($id_category == $link_cfg[1]){
-	$name_category = $link_cfg[0];	
+	$name_category = $link_cfg[0];
 	}
 	}
 
@@ -376,14 +376,14 @@ return '<div class="a">Подтвердите удаление новости: <
 		<a class="link" href="module.php?module='.$MODULE.'&amp;act=comment&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Комментарии пользователей</a>
 		<a class="link" href="module.php?module='.$MODULE.'&amp;act=cfg&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Настройки категории</a>
 		<a class="link" href="module.php?module='.$MODULE.'&amp;act=info&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">RSS информация</a>
-	    </div>
+			</div>
 		<div class="content">
 		<h2>Редактирование новостей</h2>';
 		if(($listIdNews = json_decode($newsStorage->get('list'), true)) == false){
 			echo'<div class="msg">Новостей ещё не создано</div>';
 		}else{
-			
-			
+
+
 			echo'<table class="tables">
 			<tr>
 				<td class="tables_head" colspan="2">Заголовок новостей</td>
@@ -392,29 +392,29 @@ return '<div class="a">Подтвердите удаление новости: <
 				<td class="tables_head">Дата</td>
 				<td class="tables_head">&nbsp;</td>
 			</tr>';
-			
+
 			//перевернули масив для вывода новостей в обратном порядке
 			$listIdNews = array_reverse($listIdNews);
-			
+
 			//
 			$nom = count($listIdNews);
-			
+
 			//определили количество страниц
-			$kol_page = ceil($nom / 50); 
-			
+			$kol_page = ceil($nom / 50);
+
 			//проверка правельности переменной с номером страницы
 			if(isset($_GET['nom_page'])){$nom_page = $_GET['nom_page'];}else{ $nom_page = 1; }
 			if(!is_numeric($nom_page) || $nom_page <= 0 || $nom_page > $kol_page){ $nom_page = 1; }
-			
+
 			//начало навигации
 			if($nom_page > 0){$i = ($nom_page - 1) * 50;}
 			$var = $i + 50;
-			
+
 			while($i < $var){
 				if($i < $nom){
 					if($newsStorage->iss('news_'.$listIdNews[$i])){
 						$newsParam = json_decode($newsStorage->get('news_'.$listIdNews[$i]));
-						
+
 						$comments = ($newsParam->comments == '1')?'<span style="color: green;">Включено</span>':'<span style="color: red;">Выключено</span>';
 						echo'<tr>
 						<td class="img"><img src="../modules/news_categories/icon2.svg" alt=""></td>
@@ -438,7 +438,7 @@ return '<div class="a">Подтвердите удаление новости: <
 				++$i;
 			}
 			echo'</table>';
-			
+
 			//навигация по номерам страниц
 			if($kol_page > 1){//Если количество страниц больше 1, то показываем навигацию
 				echo'<div style="margin-top: 25px; text-align: center;">';
@@ -458,50 +458,50 @@ return '<div class="a">Подтвердите удаление новости: <
 }
 
 if($act=='editnews'){
-	
-	    if(isset($_GET['id_category'])){$id_category = $_GET['id_category'];}
-        if(isset($_GET['str_file'])){$str_file = $_GET['str_file'];}
-        require('../modules/'.$id_category.'/cfg.php');
-		
-        $link_data = file('../modules/news_categories/list.dat');
-        $nom = count($link_data);
-        for($i = 0; $i < $nom; ++$i){
-        $link_cfg = explode('^',$link_data[$i]);
-	    if($id_category == $link_cfg[1]){
-	    $name_category = $link_cfg[0];	
-	    }
-	    }		
-		
-		
+
+			if(isset($_GET['id_category'])){$id_category = $_GET['id_category'];}
+				if(isset($_GET['str_file'])){$str_file = $_GET['str_file'];}
+				require('../modules/'.$id_category.'/cfg.php');
+
+				$link_data = file('../modules/news_categories/list.dat');
+				$nom = count($link_data);
+				for($i = 0; $i < $nom; ++$i){
+				$link_cfg = explode('^',$link_data[$i]);
+			if($id_category == $link_cfg[1]){
+			$name_category = $link_cfg[0];
+			}
+			}
+
+
 		$news = htmlspecialchars(specfilter($_GET['news']));
 		$nom_page = htmlspecialchars(specfilter($_GET['nom_page']));
-		
+
 		if(($newsParam = json_decode($newsStorage->get('news_'.$news))) != false){
 			echo'<div class="header"><h1>Управление категорией "'.$name_category.'"</h1></div>
 			<div class="menu_page">
-		    <a class="link" href="module.php?module='.$MODULE.'">Все категории</a>
-		    <a class="link" href="module.php?module='.$MODULE.'&amp;act=ed_category&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Добавление новости</a>
-		    <a class="link " href="module.php?module='.$MODULE.'&amp;act=edit&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Редактирование новостей</a>
-		    <a class="link" href="module.php?module='.$MODULE.'&amp;act=comment&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Комментарии пользователей</a>
-		    <a class="link" href="module.php?module='.$MODULE.'&amp;act=cfg&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Настройки категории</a>
-		    <a class="link" href="module.php?module='.$MODULE.'&amp;act=info&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">RSS информация</a>
-	        </div>
+				<a class="link" href="module.php?module='.$MODULE.'">Все категории</a>
+				<a class="link" href="module.php?module='.$MODULE.'&amp;act=ed_category&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Добавление новости</a>
+				<a class="link " href="module.php?module='.$MODULE.'&amp;act=edit&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Редактирование новостей</a>
+				<a class="link" href="module.php?module='.$MODULE.'&amp;act=comment&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Комментарии пользователей</a>
+				<a class="link" href="module.php?module='.$MODULE.'&amp;act=cfg&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Настройки категории</a>
+				<a class="link" href="module.php?module='.$MODULE.'&amp;act=info&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">RSS информация</a>
+					</div>
 			<div class="content">
 			<h2>Редактирование новости "'.$newsParam->header.'"</h2>
 			<form name="form_name" action="module.php?module='.$MODULE.'&amp;" method="post" style="margin:0px; padding:0px;">
-            <INPUT TYPE="hidden" NAME="act" VALUE="addedit">
+						<INPUT TYPE="hidden" NAME="act" VALUE="addedit">
 			<INPUT TYPE="hidden" NAME="id_category" VALUE="'.$id_category.'">
-		    <INPUT TYPE="hidden" NAME="str_file" VALUE="'.$str_file.'">
-      	    <INPUT TYPE="hidden" NAME="news" VALUE="'.$news.'">
+				<INPUT TYPE="hidden" NAME="str_file" VALUE="'.$str_file.'">
+						<INPUT TYPE="hidden" NAME="news" VALUE="'.$news.'">
 			<INPUT TYPE="hidden" NAME="nom_page" VALUE="'.$nom_page.'">
 			<input type="hidden" name="time" value="'.(isset($newsParam->time)?$newsParam->time:strtotime($newsParam->date)).'">
-			
+
 			<table class="tblform">
 			<tr>
 				<td>Заголовок новости:</td>
 				<td><input type="text" name="header" id="header" value="'.$newsParam->header.'"></td>
 			</tr>
-			
+
 			<tr>
 				<td class="top">Превью новости:</td>
 				<td><TEXTAREA NAME="prev" ROWS="20" COLS="100" style="height: 150px;">'.htmlspecialchars($newsParam->prev).'</TEXTAREA></td>
@@ -519,7 +519,7 @@ if($act=='editnews'){
 			<tr>
 				<td>URL иллюстр. картинки:</td>
 				<td>
-					<input type="text" name="img" id="inputimg" value="'.$newsParam->img.'"> 
+					<input type="text" name="img" id="inputimg" value="'.$newsParam->img.'">
 					<button type="button" onClick="openwindow(\'window\', 700, \'auto\', iframefiles);">Выбрать файл</button>
 				</td>
 			</tr>
@@ -535,7 +535,7 @@ if($act=='editnews'){
 				<td>Описание (description):</td>
 				<td><input type="text" name="description" value="'.$newsParam->description.'"></td>
 			</tr>
-			
+
 			<tr>
 				<td>Идентификатор (исп. для URL):</td>
 				<td><input type="text" name="id" id="id" value="'.$news.'"><br><a href="javascript:void(0);" onclick="document.getElementById(\'id\').value = urlRusLat(document.getElementById(\'header\').value)">Сгенерировать из заголовка новости</a></td>
@@ -564,14 +564,14 @@ setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>&act
 }
 
 if($act=='addcfgcategory'){
-	
+
 	$id_categorys = htmlspecialchars(specfilter($_POST['id_categorys']));
-    $amtpr_page = htmlspecialchars(specfilter($_POST['amtpr_page']));
+		$amtpr_page = htmlspecialchars(specfilter($_POST['amtpr_page']));
 	$nom_blok = htmlspecialchars(specfilter($_POST['nom_blok']));
-    $txt_link = htmlspecialchars(specfilter($_POST['txt_link']));
-    $news_style = ($_POST['news_style'] == 'y')?'1':'0';
+		$txt_link = htmlspecialchars(specfilter($_POST['txt_link']));
+		$news_style = ($_POST['news_style'] == 'y')?'1':'0';
 	$lib_jquery = ($_POST['lib_jquery'] == 'j')?'1':'0';
-	
+
 $inset = '<?php
 $id_categorys="'.$id_categorys.'";
 $amtpr_page="'.$amtpr_page.'";
@@ -579,10 +579,10 @@ $nom_blok="'.$nom_blok.'";
 $txt_link="'.$txt_link.'";
 $news_style="'.$news_style.'";
 $lib_jquery="'.$lib_jquery.'";
-?>';	
+?>';
 
 filefputs('../modules/news_categories/cfg.dat', $inset, 'w+');
-	
+
 echo'<div class="msg">Настройки успешно сохранены</div>';
 System::notification('Изменены настройки модуля Категории новостей');
 
@@ -594,33 +594,33 @@ setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>&act
 }
 
 if($act=='cfg'){
-	
+
 	if(isset($_GET['id_category'])){$id_category = $_GET['id_category'];}
 	if(isset($_GET['id'])){$id = $_GET['id'];}else{$id = '';}
-    if(isset($_GET['str_file'])){$str_file = $_GET['str_file'];}
-    require('../modules/'.$id_category.'/cfg.php');
+		if(isset($_GET['str_file'])){$str_file = $_GET['str_file'];}
+		require('../modules/'.$id_category.'/cfg.php');
 
-        $link_data = file('../modules/news_categories/list.dat');
-        $nom = count($link_data);
-        for($i = 0; $i < $nom; ++$i){
-        $link_cfg = explode('^',$link_data[$i]);
-	    if($id_category == $link_cfg[1]){
-	    $name_category = $link_cfg[0];	
-	    }
-	    }
-	
+				$link_data = file('../modules/news_categories/list.dat');
+				$nom = count($link_data);
+				for($i = 0; $i < $nom; ++$i){
+				$link_cfg = explode('^',$link_data[$i]);
+			if($id_category == $link_cfg[1]){
+			$name_category = $link_cfg[0];
+			}
+			}
+
 		$checked = ($newsConfig->commentEngine == 1)?'checked':'';
 		$checkedz = ($newsConfig->style == 1)?'checked':'';
-		
+
 		echo'<div class="header"><h1>Управление категорией "'.$name_category.'"</h1></div>
 			<div class="menu_page">
-		    <a class="link" href="module.php?module='.$MODULE.'">Все категории</a>
-		    <a class="link" href="module.php?module='.$MODULE.'&amp;act=ed_category&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Добавление новости</a>
-		    <a class="link " href="module.php?module='.$MODULE.'&amp;act=edit&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Редактирование новостей</a>
-		    <a class="link" href="module.php?module='.$MODULE.'&amp;act=comment&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Комментарии пользователей</a>
-		    <a class="link" href="module.php?module='.$MODULE.'&amp;act=cfg&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Настройки категории</a>
-		    <a class="link" href="module.php?module='.$MODULE.'&amp;act=info&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">RSS информация</a>
-	        </div>
+				<a class="link" href="module.php?module='.$MODULE.'">Все категории</a>
+				<a class="link" href="module.php?module='.$MODULE.'&amp;act=ed_category&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Добавление новости</a>
+				<a class="link " href="module.php?module='.$MODULE.'&amp;act=edit&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Редактирование новостей</a>
+				<a class="link" href="module.php?module='.$MODULE.'&amp;act=comment&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Комментарии пользователей</a>
+				<a class="link" href="module.php?module='.$MODULE.'&amp;act=cfg&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Настройки категории</a>
+				<a class="link" href="module.php?module='.$MODULE.'&amp;act=info&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">RSS информация</a>
+					</div>
 		<div class="content">
 		<h2>Настройки категории</h2>
 		<form name="form_name" action="module.php?module='.$MODULE.'&amp;" method="post" style="margin:0px; padding:0px;">
@@ -628,14 +628,14 @@ if($act=='cfg'){
 		<INPUT TYPE="hidden" NAME="id_category" VALUE="'.$id_category.'">
 		<INPUT TYPE="hidden" NAME="id" VALUE="'.$id.'">
 		<INPUT TYPE="hidden" NAME="str_file" VALUE="'.$str_file.'">
-		
+
 		<table class="tblform">
-		
+
 		<tr>
 			<td>Заголовк RSS канала:</td>
 			<td><input type="text" name="name_rss" value="'.$newsConfig->name_rss.'" size="50"></td>
 		</tr>
-		
+
 		<tr>
 			<td>Количество превью записей на странице:</td>
 			<td><input type="text" name="navigation" value="'.$newsConfig->navigation.'" maxlength="3"></td>
@@ -645,7 +645,7 @@ if($act=='cfg'){
 			<td>Количество превью при выводе в блоке:</td>
 			<td><input type="text" name="countInBlok" value="'.$newsConfig->countInBlok.'" maxlength="3"></td>
 		</tr>
-		
+
 		<tr>
 			<td>Вид превью при выводе в блоке:</td>
 			<td>
@@ -661,32 +661,32 @@ if($act=='cfg'){
 				}elseif($newsConfig->sortPrev == 2){
 				echo'<OPTION VALUE="0">Только текст
 				<OPTION VALUE="1">Текст и фото превью
-				<OPTION VALUE="2" selected>Только ссылки';	
+				<OPTION VALUE="2" selected>Только ссылки';
 				}
 				echo'</SELECT>
 			</td>
 		</tr>
-		
+
 		<tr>
 			<td>Формат вывода даты (Формат функции date):</td>
 			<td><input type="text" name="formatDate" value="'.$newsConfig->formatDate.'"></td>
 		</tr>
-		
+
 		<tr>
 			<td>Идентификатор страницы с новостями:</td>
 			<td><input type="text" name="idPage" value="'.$newsConfig->idPage.'"></td>
 		</tr>
-		
+
 		<tr>
 			<td>Идентификатор страницы пользователей:</td>
 			<td><input type="text" name="idUser" value="'.$newsConfig->idUser.'"></td>
 		</tr>
-		
+
 		<tr>
 			<td>Шаблон для вывода превью:</td>
 			<td class="middle">'.(file_exists(Module::pathRun($Config->template, 'news.prev.template'))?'<a class="link" target="_blank" href="files.php?act=editor&amp;dir=../modules/'.$Config->template.'&file=../modules/'.$Config->template.'/news.prev.template.php">Открыть редактор для правки шаблона</a>':'<span class="comment">Не предусмотрен</span>').'</td>
 		</tr>
-		
+
 		<tr>
 			<td>Шаблон для вывода новости:</td>
 			<td class="middle">'.(file_exists(Module::pathRun($Config->template, 'news.content.template'))?'<a class="link" target="_blank" href="files.php?act=editor&amp;dir=../modules/'.$Config->template.'&file=../modules/'.$Config->template.'/news.content.template.php">Открыть редактор для правки шаблона</a>':'<span class="comment">Не предусмотрен</span>').'</td>
@@ -694,7 +694,7 @@ if($act=='cfg'){
 		<tr>
 			<td>Ссылка на фото превью:</td>
 			<td>
-				<input type="text" name="img_category" id="inputimg" value="'.$newsConfig->imgCategory.'"> 
+				<input type="text" name="img_category" id="inputimg" value="'.$newsConfig->imgCategory.'">
 				<button type="button" onClick="openwindow(\'window\', 750, \'auto\', iframefiles);">Выбрать файл</button>
 			</td>
 		</tr>
@@ -710,7 +710,7 @@ if($act=='cfg'){
 			<td class="top">Код сервиса комментариев:<br><span class="comment">Подробнее о сервисах комментариев <a href="http://my-engine.ru/newscomments">тут</a></span></td>
 			<td><TEXTAREA NAME="commentTemplate" id="textareaCommentTemplate" ROWS="20" COLS="100" style="height:150px;">'.htmlspecialchars($newsConfig->commentTemplate).'</TEXTAREA></td>
 		</tr>
-		
+
 		<tr>
 			<td>&nbsp;</td>
 			<td><button type="button" onClick="submit();">Сохранить</button></td>
@@ -752,17 +752,17 @@ if(isset($_GET['id_category'])){$id_category = $_GET['id_category'];}
 if(isset($_GET['str_file'])){$str_file = $_GET['str_file'];}
 require('../modules/'.$id_category.'/cfg.php');
 
-        $link_data = file('../modules/news_categories/list.dat');
-        $nom = count($link_data);
-        for($i = 0; $i < $nom; ++$i){
-        $link_cfg = explode('^',$link_data[$i]);
-	    if($id_category == $link_cfg[1]){
-	    $name_category = $link_cfg[0];	
-	    }
-	    }	
-	
-	
-	
+				$link_data = file('../modules/news_categories/list.dat');
+				$nom = count($link_data);
+				for($i = 0; $i < $nom; ++$i){
+				$link_cfg = explode('^',$link_data[$i]);
+			if($id_category == $link_cfg[1]){
+			$name_category = $link_cfg[0];
+			}
+			}
+
+
+
 		function ptext($text){
 			$text = str_replace("\n",'<br>',$text);
 			$text = specfilter($text);
@@ -775,53 +775,53 @@ require('../modules/'.$id_category.'/cfg.php');
 			'<button type="button" onClick="submitDell();">Удалить</button> '+
 			'<button type="button" onclick="closewindow(\'window\');">Отмена</button>'+
 			'</div>';
-			
+
 		var listDell = '<div class="a"><span class="r">Внимание!</span> Очистится только список в панели администратора, комментарии опубликованные на страницах останутся не тронутыми</div>' +
 			'<div class="b">' +
 			'<button type="button" onClick="window.location.href = \'module.php?module=<?php echo $MODULE;?>&act=listdellcoment&id_category=<?php echo $id_category;?>&str_file=<?php echo $str_file;?>\';">Очистить</button> '+
 			'<button type="button" onclick="closewindow(\'window\');">Отмена</button>'+
 			'</div>';
-			
+
 		var wDell = '<div class="a"><span class="r">Внимание!</span> Список последних комментариев переполнен. Рекомендуется очистить список, что-бы разгрузить систему.</div>' +
 			'<div class="b">' +
 			'<button type="button" onClick="window.location.href = \'module.php?module=<?php echo $MODULE;?>&act=listdellcoment&id_category=<?php echo $id_category;?>&str_file=<?php echo $str_file;?>\';">Очистить сейчас</button> '+
 			'<button type="button" onclick="closewindow(\'window\');">Закрыть</button>'+
 			'</div>';
-			
+
 		function submitDell(){
 			document.form.act.value = "dellcoment";
 			form.submit();
 		}
 		</script>
 		<?php
-		
+
 		echo'<div class="header"><h1>Управление категорией "'.$name_category.'"</h1></div>
 			<div class="menu_page">
-		    <a class="link" href="module.php?module='.$MODULE.'">Все категории</a>
-		    <a class="link" href="module.php?module='.$MODULE.'&amp;act=ed_category&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Добавление новости</a>
-		    <a class="link " href="module.php?module='.$MODULE.'&amp;act=edit&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Редактирование новостей</a>
-		    <a class="link" href="module.php?module='.$MODULE.'&amp;act=comment&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Комментарии пользователей</a>
-		    <a class="link" href="module.php?module='.$MODULE.'&amp;act=cfg&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Настройки категории</a>
-		    <a class="link" href="module.php?module='.$MODULE.'&amp;act=info&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">RSS информация</a>
-	        </div>';
-		
+				<a class="link" href="module.php?module='.$MODULE.'">Все категории</a>
+				<a class="link" href="module.php?module='.$MODULE.'&amp;act=ed_category&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Добавление новости</a>
+				<a class="link " href="module.php?module='.$MODULE.'&amp;act=edit&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Редактирование новостей</a>
+				<a class="link" href="module.php?module='.$MODULE.'&amp;act=comment&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Комментарии пользователей</a>
+				<a class="link" href="module.php?module='.$MODULE.'&amp;act=cfg&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Настройки категории</a>
+				<a class="link" href="module.php?module='.$MODULE.'&amp;act=info&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">RSS информация</a>
+					</div>';
+
 		if ($newsConfig->commentEngine){
-			
-			
+
+
 			echo'
 			<div class="content">
-		    <h2>Комментарии пользователей</h2>';
-			 		
+				<h2>Комментарии пользователей</h2>';
+
 			if(($lastComments = json_decode($newsStorage->get('lastComments'), true)) == false){
 				echo'<div class="row"><a class="button" href="module.php?module='.$MODULE.'&amp;act=cfgcomment&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Настройки комментариев</a></div>
 				<div class="msg">Нет ни одного комментария</div>';
 			}else{
-							
+
 				echo'<form name="form" action="module.php?module='.$MODULE.'&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'" method="post">
 					<INPUT TYPE="hidden" NAME="act" VALUE="pubcoment">
 					<INPUT TYPE="hidden" NAME="id_category" VALUE="'.$id_category.'">
-		            <INPUT TYPE="hidden" NAME="str_file" VALUE="'.$str_file.'">
-					
+								<INPUT TYPE="hidden" NAME="str_file" VALUE="'.$str_file.'">
+
 					<div class="row">
 					<input type="submit" name="" value="Опубликовать выделенное" title="Опубликовать выделенные комментарии">
 					<button type="button" onClick="openwindow(\'window\', 650, \'auto\', dell);" title="Удалить выделенные комментарии">Удалить выделенное</button>
@@ -829,43 +829,43 @@ require('../modules/'.$id_category.'/cfg.php');
 					<a class="link button" href="module.php?module='.$MODULE.'&amp;act=cfgcomment&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Настройки комментариев</a>
 					</div>
 				';
-				
+
 				//перевернули масив для вывода новостей в обратном порядке
 				$lastComments = array_reverse($lastComments);
-				
+
 				//
 				$nom = count($lastComments);
-				
+
 				if ($nom > 3000){
 					echo'<script type="text/javascript">openwindow(\'window\', 650, \'auto\', wDell);</script>';
 				}
-				
+
 				//определили количество страниц
-				$kol_page = ceil($nom / 50); 
-				
+				$kol_page = ceil($nom / 50);
+
 				//проверка правельности переменной с номером страницы
 				if(isset($_GET['nom_page'])){$nom_page = $_GET['nom_page'];}else{ $nom_page = 1; }
 				if(!is_numeric($nom_page) || $nom_page <= 0 || $nom_page > $kol_page){ $nom_page = 1; }
-				
+
 				//начало навигации
 				if($nom_page > 0){$i = ($nom_page - 1) * 50;}
 				$var = $i + 50;
-				
+
 				while($i < $var){
 					if($i < $nom){
-						
-						
+
+
 						echo'<div class="box">
 							<div><INPUT TYPE="checkbox" NAME="comment[]" VALUE="'.$lastComments[$i]['idComment'].'"> '.($lastComments[$i]['published']?'':'<span class="r">Не опубликованно</span>').' Страница: <a href="//'.SERVER.'/'.$newsConfig->idPage.'/'.$lastComments[$i]['idNews'].'" target="_blank">'.SERVER.'/'.$newsConfig->idPage.'/'.$lastComments[$i]['idNews'].'</a></div>';
 							if(file_exists('../modules/users/images/'.$lastComments[$i]['login'].'.jpg')){
-		                    echo'<h3 class="av"><img src="/modules/users/images/'.$lastComments[$i]['login'].'.jpg" width="30" height="30" alt=""> <span>'.$lastComments[$i]['login'].'</span></h3>';
-		                    }else{
+												echo'<h3 class="av"><img src="/modules/users/images/'.$lastComments[$i]['login'].'.jpg" width="30" height="30" alt=""> <span>'.$lastComments[$i]['login'].'</span></h3>';
+												}else{
 							echo'<h3 class="av"><img src="/modules/news_categories/user.png" width="30" height="30" alt=""> <span>'.$lastComments[$i]['login'].'</span></h3>';
-							}						
+							}
 							echo''.NewsFormatText($lastComments[$i]['text']).'
 							<div class="comment">Написанно '.human_time(time() - $lastComments[$i]['time']).' назад ( '.date("d.m.Y H:i", $lastComments[$i]['time']).' ) ; '.($lastComments[$i]['status']=='user'?'Зарегистрированный':'Гость').'; IP '.$lastComments[$i]['ip'].'</div>
 						</div>';
-						
+
 					}
 					++$i;
 				}
@@ -874,7 +874,7 @@ require('../modules/'.$id_category.'/cfg.php');
 					<button type="button" onClick="openwindow(\'window\', 650, \'auto\', dell);" title="Удалить выделенные комментарии">Удалить выделенное</button>
 					</div>
 				</form>';
-				
+
 				//навигация по номерам страниц
 				if($kol_page > 1){//Если количество страниц больше 1, то показываем навигацию
 					echo'<div style="margin-top: 25px; text-align: center;">';
@@ -889,28 +889,28 @@ require('../modules/'.$id_category.'/cfg.php');
 					echo'</div>';
 				}
 				//конец навигации
-				
+
 			}
 			echo'</div>';
-			
+
 		}else{
 			echo'<div class="msg">Используется сторонний сервис комментариев</div>';
 		}
-			
+
 }
 
 if($act=='cfgcomment'){
 if(isset($_GET['id_category'])){$id_category = $_GET['id_category'];}
 if(isset($_GET['str_file'])){$str_file = $_GET['str_file'];}
 require('../modules/'.$id_category.'/cfg.php');
-		
+
 		echo'<div class="header"><h1>Комментарии пользователей</h1></div>
 		'.$menu_page.'
 		<div class="menu_page">
 			<a href="module.php?module='.$MODULE.'&amp;act=comment&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">&#8592; Вернуться назад</a>
 		</div>
-		
-		
+
+
 		<div class="content">
 		<form name="form_name" action="module.php?module='.$MODULE.'&amp;" method="post">
 		<INPUT TYPE="hidden" NAME="act" VALUE="addcfgcomment">
@@ -926,7 +926,7 @@ require('../modules/'.$id_category.'/cfg.php');
 				</SELECT><br><span class="comment">Эта настройка глобальна для всех новостей</span>
 			</td>
 		</tr>
-		
+
 		<tr>
 			<td>Кто может писать комментарии:</td>
 			<td>
@@ -938,7 +938,7 @@ require('../modules/'.$id_category.'/cfg.php');
 				</SELECT>
 			</td>
 		</tr>
-		
+
 		<tr>
 			<td>Модерация перед публикацией:</td>
 			<td>
@@ -949,36 +949,36 @@ require('../modules/'.$id_category.'/cfg.php');
 				</SELECT>
 			</td>
 		</tr>
-		
+
 		<tr>
 			<td>Количество сообщений новичка:</td>
 			<td><input type="text" name="commentModerationNumPost" value="'.$newsConfig->commentModerationNumPost.'">
 			<br><span class="comment">Максимальное количество сообщений при котором пользователь считается новичком</span>
 			</td>
 		</tr>
-		
+
 		<tr>
 			<td>Макс. символов для одного комментария:</td>
 			<td><input type="text" name="commentMaxLength" value="'.$newsConfig->commentMaxLength.'"></td>
 		</tr>
-		
+
 		<tr>
 			<td>Кол-во выводимых комментариев за раз:</td>
 			<td><input type="text" name="commentNavigation" value="'.$newsConfig->commentNavigation.'"></td>
 		</tr>
-		
+
 		<tr>
 			<td>Макс. комментариев для одной новости:</td>
 			<td><input type="text" name="commentMaxCount" value="'.$newsConfig->commentMaxCount.'"></td>
 		</tr>
-		
+
 		<tr>
 			<td>Задержка на проверку новых комментарий:</td>
 			<td><input type="text" name="commentCheckInterval" value="'.$newsConfig->commentCheckInterval.'">
 			<br><span class="comment">Задержка указывается в милисекундах. Если указать "0", то проверка на наличие новых комментариев выполняться не будет.</span>
 			</td>
 		</tr>
-		
+
 		<tr>
 			<td>&nbsp;</td>
 			<td><button type="button" onClick="submit();">Сохранить</button> &nbsp; <a href="module.php?module='.$MODULE.'&amp;act=comment&amp;id_category='.$id_category.'&amp;str_file='.$str_file.'">Вернуться назад</a></td>
@@ -987,20 +987,20 @@ require('../modules/'.$id_category.'/cfg.php');
 		</form>
 		</div>';
 }
-		
+
 if($act=='info'){
 if(isset($_GET['id_category'])){$id_category = $_GET['id_category'];}
 if(isset($_GET['str_file'])){$str_file = $_GET['str_file'];}
 require('../modules/'.$id_category.'/cfg.php');
 
-        $link_data = file('../modules/news_categories/list.dat');
-        $nom = count($link_data);
-        for($i = 0; $i < $nom; ++$i){
-        $link_cfg = explode('^',$link_data[$i]);
-	    if($id_category == $link_cfg[1]){
-	    $name_category = $link_cfg[0];	
-	    }
-	    }
+				$link_data = file('../modules/news_categories/list.dat');
+				$nom = count($link_data);
+				for($i = 0; $i < $nom; ++$i){
+				$link_cfg = explode('^',$link_data[$i]);
+			if($id_category == $link_cfg[1]){
+			$name_category = $link_cfg[0];
+			}
+			}
 
 		echo'<div class="header"><h1>Управление категорией "'.$name_category.'"</h1></div>
 		<div class="menu_page">
@@ -1020,10 +1020,10 @@ require('../modules/'.$id_category.'/cfg.php');
 }
 
 if($act=='addcategory'){
-	
-$name_category = htmlspecialchars(specfilter($_POST['name_category']));	
+
+$name_category = htmlspecialchars(specfilter($_POST['name_category']));
 $id_page = htmlspecialchars(specfilter($_POST['id_page']));
-	
+
 if(trim($name_category)){
 $f=fopen('../modules/news_categories/stat.dat','a+');
 flock($f,LOCK_EX);
@@ -1033,14 +1033,14 @@ ftruncate($f,0);
 fwrite($f,$count);
 fflush($f);
 flock($f,LOCK_UN);
-fclose($f);	
-$idn=file_get_contents('../modules/news_categories/stat.dat');	
-$id_category = 'news'.$idn.'';	
+fclose($f);
+$idn=file_get_contents('../modules/news_categories/stat.dat');
+$id_category = 'news'.$idn.'';
 if(file_exists('../modules/news_categories/list.dat')){
 $kod1 = ''.$name_category.'^'.$id_category.'^'.$id_page.'^';
 $fp=fopen('../modules/news_categories/list.dat','a+');
 fputs($fp,$kod1."\n");
-fclose($fp);	
+fclose($fp);
 $dir = mkdir('../modules/'.$id_category.'/');
 $dir = mkdir('../files/news_categories/'.$id_category.'/');
 $dir = mkdir('../data/storage/module.'.$id_category.'/');
@@ -1056,7 +1056,7 @@ developer = "<span style=\'color:green;\'>Расширение «Категор�
 site = ""
 delete = 0
 description = "<p>Модуль создан автоматически с помощью расширения «Категории новостей».<br>
-Управление модулем осуществляется через административную панель управления<br> 
+Управление модулем осуществляется через административную панель управления<br>
 расширением «Категории новостей». <a href=\'module.php?module=news\'>Перейти в панель управления</a></p>"
 ';
 $kod3 = '<?php
@@ -1072,45 +1072,45 @@ $kod4 = 'var Comments={run:function(e){this.id=e.id,this.newCommentCheckInterval
 
 filefputs('../modules/'.$id_category.'/comments.min.js', $kod4, 'w+');
 
-        $pages = System::listPages();
-	    $nom = count($pages);
-		
-	    for($i=0;$i<$nom;$i++){
-			 		
-		if($pages[$i] == $id_page || !trim($id_page)){				
+				$pages = System::listPages();
+			$nom = count($pages);
 
-		    System::notification('Созданаи категория новостей "'.$name_category.'" с идентификатором '.$id_category.'', 'g');
-            echo'<div class="msg">Категория успешно создана</div>';
+			for($i=0;$i<$nom;$i++){
+
+		if($pages[$i] == $id_page || !trim($id_page)){
+
+				System::notification('Созданаи категория новостей "'.$name_category.'" с идентификатором '.$id_category.'', 'g');
+						echo'<div class="msg">Категория успешно создана</div>';
 
 ?>
 <script type="text/javascript">
 setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>\';', 3000);
 </script>
-<?php			
+<?php
 			exit;
-	    }
-			
-		}		
-		$page = $id_page;
-		
-		Page::add(
-				$page, 
-				$name_category, 
-				$name_category, 
-				'', 
-				'', 
-				1, 
-				$id_category, 
-				'def/template', 
-				'');
-			if(is_dir('../breadcrumbs')){	
-		    $cod1 = ''.$page.'<||>'.$name.'<||>'.time().''.mt_rand(0, 1000).'<||>';					
-		    $fp=fopen('../modules/breadcrumbs/links.dat','a+');
-            fputs($fp,$cod1."\n");
-            fclose($fp);	    
-		    }
+			}
 
-        System::notification('Создана новая страница с идентификатором '.$page.', ссылка на страницу http://'.$_SERVER['SERVER_NAME'].'/'.$page, 'g');
+		}
+		$page = $id_page;
+
+		Page::add(
+				$page,
+				$name_category,
+				$name_category,
+				'',
+				'',
+				1,
+				$id_category,
+				'def/template',
+				'');
+			if(is_dir('../breadcrumbs')){
+				$cod1 = ''.$page.'<||>'.$name.'<||>'.time().''.mt_rand(0, 1000).'<||>';
+				$fp=fopen('../modules/breadcrumbs/links.dat','a+');
+						fputs($fp,$cod1."\n");
+						fclose($fp);
+				}
+
+				System::notification('Создана новая страница с идентификатором '.$page.', ссылка на страницу http://'.$_SERVER['SERVER_NAME'].'/'.$page, 'g');
 
 System::notification('Созданаи категория новостей "'.$name_category.'" с идентификатором '.$id_category.'', 'g');
 echo'<div class="msg">Категория успешно создана</div>';
@@ -1133,24 +1133,24 @@ setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>&act
 }
 
 if($act=='dell'){
-	
+
 if(isset($_GET['category'])){
 $category = $_GET['category'];
 if(is_dir('../modules/'.$category.'/')){
-	
-    $fopen=@file('../modules/news_categories/list.dat');
-    foreach($fopen as $key=>$value){  
-    if(substr_count($value,$category)){
-    array_splice($fopen, $key, 1);
-    }
-    }
 
-    $f=fopen('../modules/news_categories/list.dat', 'w');
-    for($i=0;$i<count($fopen);$i++){
-    fwrite($f,$fopen[$i]);
-    }
-    fclose($f);
-	
+		$fopen=@file('../modules/news_categories/list.dat');
+		foreach($fopen as $key=>$value){
+		if(substr_count($value,$category)){
+		array_splice($fopen, $key, 1);
+		}
+		}
+
+		$f=fopen('../modules/news_categories/list.dat', 'w');
+		for($i=0;$i<count($fopen);$i++){
+		fwrite($f,$fopen[$i]);
+		}
+		fclose($f);
+
 	if(is_dir('../files/'.$category.'')){delldir('../files/'.$category.'/');}
 	if(is_dir('../modules/'.$category.'')){delldir('../modules/'.$category.'/');}
 	System::notification('Удалена категория новостей с идентификатором "'.$category.'"', 'g');
@@ -1163,8 +1163,8 @@ if(is_dir('../modules/'.$category.'/')){
 setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>\';', 3000);
 </script>
 <?php
-    }
-	
+		}
+
 if(isset($_GET['id_category'])){
 $id_category = $_GET['id_category'];
 $str_file = $_GET['str_file'];
@@ -1173,18 +1173,18 @@ require('../modules/'.$id_category.'/cfg.php');
 $news = htmlspecialchars(specfilter($_GET['news']));
 		$nom_page = htmlspecialchars(specfilter($_GET['nom_page']));
 		if($newsStorage->delete('news_'.$news)){ // Удадляем новость
-			
+
 			//Удаляем страницу из списка
 			$listIdNews = json_decode($newsStorage->get('list'), true); // Получили список ввиде массива
 			if(($key = array_search($news, $listIdNews)) !== false){
 				unset($listIdNews[$key]); // Удалили найденый элемент массива
 			}
-			$listIdNews = array_values($listIdNews); // Переиндексировали числовые индексы 
+			$listIdNews = array_values($listIdNews); // Переиндексировали числовые индексы
 			$newsStorage->set('list', json_encode($listIdNews)); // Записали массив в виде json
-			
+
 			$newsStorage->delete('comments_'.$news); // Удаляем комментарии
 			$newsStorage->delete('count_'.$news); // Удаляем счетчик комментариев
-			
+
 			System::notification('Удалена новость с идентификатором '.$news.'', 'g');
 			echo'<div class="msg">Новость успешно удалена</div>';
 		}else{
@@ -1195,9 +1195,9 @@ $news = htmlspecialchars(specfilter($_GET['news']));
 <script type="text/javascript">
 setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>&act=edit&nom_page=<?php echo $nom_page; ?>&id_category=<?php echo $id_category;?>&str_file=<?php echo $str_file;?>\';', 3000);
 </script>
-<?php	
-	
-	
+<?php
+
+
 }
 }
 
@@ -1263,12 +1263,12 @@ setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>\';'
 
 
 	if($act=='addnews'){
-		
+
 		$id_category = htmlspecialchars(specfilter($_POST['id_category']));
 		$str_file = htmlspecialchars(specfilter($_POST['str_file']));
-		
+
 		require('../modules/'.$id_category.'/cfg.php');
-		
+
 		$param = array();
 		$param['header'] = ($_POST['header'] == '')?'Без названия':htmlspecialchars(specfilter($_POST['header']));
 		$param['keywords'] = htmlspecialchars(specfilter($_POST['keywords']));
@@ -1283,54 +1283,54 @@ setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>\';'
 		$param['date'] = date($newsConfig->formatDate, $param['time']);
 
 		$id = ($newsStorage->iss('news_'.$_POST['id']) == false && System::validPath($_POST['id']))?$_POST['id']:uniqid();
-		
+
 		if($newsStorage->set('news_'.$id, json_encode($param))){
-			
+
 			// Добавляем ID новости в список
 			$listIdNews = json_decode($newsStorage->get('list'), true); // Получили список ввиде массива
 			$listIdNews[] = $id;// Добавили новый элемент массива в конец
 			$newsStorage->set('list', json_encode($listIdNews)); // Записали массив в виде json
-			
+
 			file_put_contents('../data/storage/module.'.$id_category.'/views_'.$_POST['id'].'.dat', '0');
 			file_put_contents('../data/storage/module.'.$id_category.'/yes_'.$_POST['id'].'.dat', '0');
 			file_put_contents('../data/storage/module.'.$id_category.'/no_'.$_POST['id'].'.dat', '0');
-			
+
 			echo'<div class="msg">Новость успешно добавлена</div>';
-			
+
 			System::notification('Добавлена новость с заголовком: '.$param['header']);
-			
+
 		}else{
-			
+
 			echo'<div class="msg">Произошла ошибка при добавлении новости</div>';
-			
+
 			System::notification('Произошла ошибка при добавлении новости', 'r');
-			
+
 		}
-		
-	 
+
+
 ?>
 <script type="text/javascript">
 setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>&act=ed_category&id_category=<?php echo $id_category;?>&str_file=<?php echo $str_file;?>\';', 3000);
 </script>
-<?php	
+<?php
 	}
 
 
 if($act=='addedit'){
-	
-	    $id_category = htmlspecialchars(specfilter($_POST['id_category']));
+
+			$id_category = htmlspecialchars(specfilter($_POST['id_category']));
 		$str_file = htmlspecialchars(specfilter($_POST['str_file']));
-		
+
 		require('../modules/'.$id_category.'/cfg.php');
-		 
+
 		$news = htmlspecialchars(specfilter($_POST['news']));
 		$nom_page = htmlspecialchars(specfilter($_POST['nom_page']));
 		$id_news = htmlspecialchars(specfilter($_POST['id'])); // Новый id для новости
-		
 
-		
+
+
 			if(($newsParam = json_decode($newsStorage->get('news_'.$news))) != false){
-				
+
 				$newsParam->header = ($_POST['header'] == '')?'Без названия':htmlspecialchars(specfilter($_POST['header']));
 				$newsParam->img = htmlspecialchars(specfilter($_POST['img']));
 				$newsParam->keywords = htmlspecialchars(specfilter($_POST['keywords']));
@@ -1344,28 +1344,28 @@ if($act=='addedit'){
 					$newsParam->time = strtotime($newsParam->date);
 					$newsParam->date = date($newsConfig->formatDate, $newsParam->time);
 				}
-				
-				
+
+
 				if($newsStorage->set('news_'.$news, json_encode($newsParam))){
 					if($id_news != $news){
 						if($newsStorage->iss('news_'.$id_news) == false && System::validPath($id_news)){
-							
+
 							if($newsStorage->set('news_'.$id_news, json_encode($newsParam)) == false){
 								System::notification('Ошибка при записи ключа news_'.$id_news.'', 'r');
 							}
-							
+
 							if($newsStorage->delete('news_'.$news) == false){
 								System::notification('Ошибка при удалении ненужного ключа news_'.$news.'', 'r');
 							}
-							
+
 							// Замена страницы в списке
 							$listIdNews = json_decode($newsStorage->get('list'), true); // Получили список ввиде массива
 							if(($key = array_search($news, $listIdNews)) !== false){
 								$listIdNews[$key] = $id_news; // Заменили найденый элемент массива
 							}
-							$listIdNews = array_values($listIdNews); // Переиндексировали числовые индексы 
+							$listIdNews = array_values($listIdNews); // Переиндексировали числовые индексы
 							$newsStorage->set('list', json_encode($listIdNews)); // Записали массив в виде json
-							
+
 							System::notification('Отредактирована новость со сменой идентификатора '.$news.' на идентификатор '.$id_news.', ссылка на страницу http://'.$_SERVER['SERVER_NAME'].'/'.$id_page_news.'/'.$id_news, 'g');
 							echo'<div class="msg">Новость успешно сохранена</div>';
 						}else{
@@ -1379,13 +1379,13 @@ if($act=='addedit'){
 				}else{
 					System::notification('Ошибка при сохранении страницы с идентификатором '.$news.', ошибка записи', 'r');
 					echo'<div class="msg">Ошибка при сохранении страницы</div>';
-					
+
 				}
 			}else{
 				System::notification('Ошибка при сохранении страницы с идентификатором '.$news.', страница ненайдена', 'r');
 				echo'<div class="msg">Неудалось получить параметры записи</div>';
 			}
-		
+
 ?>
 <script type="text/javascript">
 setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>&act=edit&id_category=<?php echo $id_category;?>&str_file=<?php echo $str_file;?>\';', 3000);
@@ -1394,22 +1394,22 @@ setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>&act
 }
 
 if($act=='addcfg'){
-	
+
 	$id_category = htmlspecialchars(specfilter($_POST['id_category']));
 	$id = htmlspecialchars(specfilter($_POST['id']));
 	$str_file = htmlspecialchars(specfilter($_POST['str_file']));
-		
+
 	require('../modules/'.$id_category.'/cfg.php');
-		
-		if( !is_numeric($_POST['navigation']) || 
-			!is_numeric($_POST['countInBlok']) || 
+
+		if( !is_numeric($_POST['navigation']) ||
+			!is_numeric($_POST['countInBlok']) ||
 			$_POST['formatDate'] == ''||
-			!System::validPath($_POST['idPage']) || 
+			!System::validPath($_POST['idPage']) ||
 			!System::validPath($_POST['idUser'])
 		){
 			echo'<div class="msg">Не все поля заполнены, или заполнены неправильно</div>';
 		}else{
-            $newsConfig->name_rss = htmlspecialchars(specfilter($_POST['name_rss']));			
+						$newsConfig->name_rss = htmlspecialchars(specfilter($_POST['name_rss']));
 			$newsConfig->navigation = htmlspecialchars(specfilter($_POST['navigation']));
 			$newsConfig->countInBlok = htmlspecialchars(specfilter($_POST['countInBlok']));
 			$newsConfig->formatDate = htmlspecialchars(specfilter($_POST['formatDate']));
@@ -1422,13 +1422,13 @@ if($act=='addcfg'){
 			$newsConfig->sortPrev = htmlspecialchars(specfilter($_POST['sort_prev']));
 			$newsConfig->commentEngine = ($_POST['commentEngine'] == 'y')?'1':'0';
 			$newsConfig->style = ($_POST['style'] == 'z')?'1':'0';
-			
-			
+
+
 			if($newsStorage->set('newsConfig', json_encode($newsConfig))){
 				if($id == 'config'){
 				echo'<div class="msg">Файл конфигурации хранилища создан.</div>';
 				System::notification('Изменена конфигурация хранилища информации');
-			    }else{
+					}else{
 				echo'<div class="msg">Настройки успешно сохранены</div>';
 				System::notification('Изменены параметры модуля новостей');
 				}
@@ -1436,8 +1436,8 @@ if($act=='addcfg'){
 				echo'<div class="msg">Произошла ошибка записи настроек</div>';
 				System::notification('Произошла ошибка при сохранении параметров модуля новостей', 'r');
 			}
-			
-			
+
+
 		}
 if($id == 'config'){
 ?>
@@ -1450,17 +1450,17 @@ setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>&act
 <script type="text/javascript">
 setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>&act=cfg&id_category=<?php echo $id_category;?>&str_file=<?php echo $str_file;?>\';', 3000);
 </script>
-<?php	
-}	
+<?php
+}
 }
 
 if($act=='addcfgcomment'){
-	
+
 	$id_category = htmlspecialchars(specfilter($_POST['id_category']));
 	$str_file = htmlspecialchars(specfilter($_POST['str_file']));
-		
+
 	require('../modules/'.$id_category.'/cfg.php');
-		
+
 		if( !is_numeric($_POST['commentEnable'])||
 			!is_numeric($_POST['commentRules'])||
 			!is_numeric($_POST['commentModeration'])||
@@ -1470,8 +1470,8 @@ if($act=='addcfgcomment'){
 			!is_numeric($_POST['commentMaxCount'])||
 			!is_numeric($_POST['commentCheckInterval'])){
 			echo'<div class="msg">Не все поля заполнены, или заполнены неправильно</div>';
-		}else{ 
-			
+		}else{
+
 			$newsConfig->commentEnable = $_POST['commentEnable'];
 			$newsConfig->commentRules = $_POST['commentRules'];
 			$newsConfig->commentModeration = $_POST['commentModeration'];
@@ -1480,7 +1480,7 @@ if($act=='addcfgcomment'){
 			$newsConfig->commentNavigation = $_POST['commentNavigation'];
 			$newsConfig->commentMaxCount = $_POST['commentMaxCount'];
 			$newsConfig->commentCheckInterval = $_POST['commentCheckInterval'];
-			
+
 			if($newsStorage->set('newsConfig', json_encode($newsConfig))){
 				echo'<div class="msg">Настройки успешно сохранены</div>';
 				System::notification('Изменены параметры комментарий модуля новостей');
@@ -1493,16 +1493,16 @@ if($act=='addcfgcomment'){
 <script type="text/javascript">
 setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>&act=cfgcomment&id_category=<?php echo $id_category;?>&str_file=<?php echo $str_file;?>\';', 3000);
 </script>
-<?php	
+<?php
 }
 
 if($act=='pubcoment'){
-	    
+
 		$id_category = htmlspecialchars(specfilter($_POST['id_category']));
-	    $str_file = htmlspecialchars(specfilter($_POST['str_file']));
-		
-	    require('../modules/'.$id_category.'/cfg.php');
-	
+			$str_file = htmlspecialchars(specfilter($_POST['str_file']));
+
+			require('../modules/'.$id_category.'/cfg.php');
+
 		// Даже и не пытайтесь разобраться ;)
 		if(($lastComments = json_decode($newsStorage->get('lastComments'), true)) == false){
 				echo'<div class="msg">Ошибка. Нет ни одного сообщения.</div>';
@@ -1526,33 +1526,33 @@ if($act=='pubcoment'){
 			}
 			$newsStorage->set('lastComments', json_encode($lastComments));
 			unset($lastComments);
-			
-			
+
+
 			foreach($addComment as $key => $value){
 				$arrayComments = json_decode($newsStorage->get('comments_'.$key), true);
-				
+
 				foreach($value as $row){
 					$arrayComments[] = $row;
-					
+
 					if(($CUser = User::getConfig($row['login'])) != false){
 						++$CUser->numPost;
 						User::setConfig($row['login'], $CUser);
 					}
 				}
-				
-				
+
+
 				$arrayCount = count($arrayComments);
 				if($arrayCount >= $newsConfig->commentMaxCount){
 					$arrayStart = $arrayCount -  round($newsConfig->commentMaxCount / 1.5);
 					$arrayComments = array_slice($arrayComments, $arrayStart, $arrayCount);
 				}
-				
+
 				if($newsStorage->set('comments_'.$key, json_encode($arrayComments))){
-					
+
 					$count = $newsStorage->iss('count_'.$key)?$newsStorage->get('count_'.$key):0;
 					$count+= $countPP;
 					$newsStorage->set('count_'.$key, $count);
-					
+
 				}
 			}
 			echo'<div class="msg">Публикация успешно завершена</div>';
@@ -1561,15 +1561,15 @@ if($act=='pubcoment'){
 <script type="text/javascript">
 setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>&act=comment&id_category=<?php echo $id_category;?>&str_file=<?php echo $str_file;?>\';', 3000);
 </script>
-<?php	
+<?php
 }
 
 if($act=='dellcoment'){
-	
-	    if(isset($_GET['id_category'])){$id_category = $_GET['id_category'];}
-        if(isset($_GET['str_file'])){$str_file = $_GET['str_file'];}
-        require('../modules/'.$id_category.'/cfg.php');
-	
+
+			if(isset($_GET['id_category'])){$id_category = $_GET['id_category'];}
+				if(isset($_GET['str_file'])){$str_file = $_GET['str_file'];}
+				require('../modules/'.$id_category.'/cfg.php');
+
 		if(($lastComments = json_decode($newsStorage->get('lastComments'), true)) == false){
 				echo'<div class="msg">Ошибка. Нет ни одного сообщения.</div>';
 		}else{
@@ -1580,12 +1580,12 @@ if($act=='dellcoment'){
 					unset($lastComments[$key]);
 				}
 			}
-			// Переиндексировали числовые индексы 
-			$lastComments = array_values($lastComments); 
+			// Переиндексировали числовые индексы
+			$lastComments = array_values($lastComments);
 			$newsStorage->set('lastComments', json_encode($lastComments));
 			unset($lastComments);
-			
-			
+
+
 			foreach($dellComment as $key => $value){
 				$arrayComments = json_decode($newsStorage->get('comments_'.$key), true);
 				foreach($arrayComments as $i => $row){
@@ -1593,8 +1593,8 @@ if($act=='dellcoment'){
 						unset($arrayComments[$i]);
 					}
 				}
-				// Переиндексировали числовые индексы 
-				$arrayComments = array_values($arrayComments); 
+				// Переиндексировали числовые индексы
+				$arrayComments = array_values($arrayComments);
 				$newsStorage->set('comments_'.$key, json_encode($arrayComments));
 			}
 			echo'<div class="msg">Удаление успешно завершено</div>';
@@ -1603,15 +1603,15 @@ if($act=='dellcoment'){
 <script type="text/javascript">
 setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>&act=comment&id_category=<?php echo $id_category;?>&str_file=<?php echo $str_file;?>\';', 3000);
 </script>
-<?php	
+<?php
 }
 
 if($act=='listdellcoment'){
-	
-	    if(isset($_GET['id_category'])){$id_category = $_GET['id_category'];}
-        if(isset($_GET['str_file'])){$str_file = $_GET['str_file'];}
-        require('../modules/'.$id_category.'/cfg.php');
-	
+
+			if(isset($_GET['id_category'])){$id_category = $_GET['id_category'];}
+				if(isset($_GET['str_file'])){$str_file = $_GET['str_file'];}
+				require('../modules/'.$id_category.'/cfg.php');
+
 		$newsStorage->set('lastComments', json_encode(array()));
 		echo'<div class="msg">Очистка успешно завершена</div>';
 
@@ -1619,24 +1619,24 @@ if($act=='listdellcoment'){
 <script type="text/javascript">
 setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>&act=comment&id_category=<?php echo $id_category;?>&str_file=<?php echo $str_file;?>\';', 3000);
 </script>
-<?php	
+<?php
 }
 
 if($act=='addin1'){
-		
+
 		$file1 = file_get_contents('../modules/news_categories/file/uninstall.php');
-        file_put_contents('uninstall.php', $file1);
+				file_put_contents('uninstall.php', $file1);
 		file_put_contents('../system/classes/dco.dat', '');
 
-		
+
 		$dir = mkdir('../files/news_categories');
-				
+
 echo'
 		<div class="header">
 			<h1>Инициализация модуля</h1>
 		</div>
-		
-		<div class="content">		
+
+		<div class="content">
 		<div class="msg">
 		<img src="../modules/news_categories/file/busy.gif" alt=""><br><br>
 		Подождите! Проводится инициализация модуля.
@@ -1652,17 +1652,17 @@ setTimeout('window.location.href = \'uninstall.php?&module=<?php echo $MODULE;?>
 }
 
 if($act=='addin2'){
-		
-		$file1 = file_get_contents('../modules/news_categories/tmp/news.blok.template.php');
-        file_put_contents('../modules/'.$Config->template.'/news.blok.template.php', $file1);
-		$file2 = file_get_contents('../modules/news_categories/tmp/news.content.template.php');
-        file_put_contents('../modules/'.$Config->template.'/news.content.template.php', $file2);
-		$file3 = file_get_contents('../modules/news_categories/tmp/news.prev.template.php');
-        file_put_contents('../modules/'.$Config->template.'/news.prev.template.php', $file3);
-		$file4 = file_get_contents('../modules/news_categories/tmp/news.blok.php');
-        file_put_contents('../modules/'.$Config->template.'/news.blok.php', $file4);
 
-				
+		$file1 = file_get_contents('../modules/news_categories/tmp/news.blok.template.php');
+				file_put_contents('../modules/'.$Config->template.'/news.blok.template.php', $file1);
+		$file2 = file_get_contents('../modules/news_categories/tmp/news.content.template.php');
+				file_put_contents('../modules/'.$Config->template.'/news.content.template.php', $file2);
+		$file3 = file_get_contents('../modules/news_categories/tmp/news.prev.template.php');
+				file_put_contents('../modules/'.$Config->template.'/news.prev.template.php', $file3);
+		$file4 = file_get_contents('../modules/news_categories/tmp/news.blok.php');
+				file_put_contents('../modules/'.$Config->template.'/news.blok.php', $file4);
+
+
 echo'<div class="msg">Компоненты успешно загружены.</div>';
 
 ?>

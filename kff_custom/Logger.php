@@ -51,7 +51,8 @@ class Logger
 	{
 		$bt = debug_backtrace();
 		$caller = array_shift($bt);
-		$fileName = basename($caller['file']);
+		// $fileName = basename($caller['file']);
+		$fileName = $this->_getFileName($caller['file']);
 
 		$log = $this->_formatLog($fileName, $caller['line'], $message, $level);
 
@@ -73,6 +74,11 @@ class Logger
 	public function get()
 	{
 		return $this->log;
+	}
+
+	private function _getFileName($fileName)
+	{
+		return basename(dirname($fileName)) . DIRECTORY_SEPARATOR . basename($fileName);
 	}
 
 	private function _CutLength($item, $message)
@@ -172,7 +178,7 @@ class Logger
 		)
 			return false;
 
-		$fileName = basename($errfile);
+		$fileName = $this->_getFileName($errfile);
 
 		switch ($errno) {
 			case E_ERROR:

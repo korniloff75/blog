@@ -1,6 +1,155 @@
-[Logger.php:228 2020/Jul/28 22:04:43 ] check bot->is_owner =
+[tpl.robotix_my\news.blok.php:4 2020/Jul/30 17:42:05 code:8] Undefined offset: 2
+
+[tpl.robotix_my\template.php:195 2020/Jul/30 17:42:05 ] $Page = 
+object(Page)#8 (17) {
+  ["id"]=>
+  string(7) "contact"
+  ["name"]=>
+  string(16) "Контакты"
+  ["title"]=>
+  string(16) "Контакты"
+  ["keywords"]=>
+  string(40) "Связь письмо контакты"
+  ["description"]=>
+  string(84) "Страница отправки письма администрации сайта"
+  ["show"]=>
+  string(1) "1"
+  ["module"]=>
+  string(4) "mail"
+  ["time"]=>
+  string(10) "1585014294"
+  ["headhtml"]=>
+  string(20584) "
+
+.category-pages { font-weight: normal!important; }
+.category-pages-name {}
+.category-pages-count { font-size: 75%!important; }
+.category-subpages {}
+.category-subpages p {}
+.category-subpages a {}
+
+.spoiler p { 
+  margin: 0!important; padding: 0!important; 
+  line-height: 2em!important; 
+}
+
+.spoiler p a { 
+  color: #434E74!important; 
+  display: block; 
+  height: 100%;
+  /*padding: 1px 5px!important;*/
+  
+  background: url(/modules/admin_pages_category/img_js_css/link.svg) 5px 50% no-repeat;
+  padding: 1px 0px 1px 30px!important;
+  font-size: 14px!important;
+}
+.spoiler p a:hover { 
+  /*color: #AE8FB1!important;*/ 
+  text-decoration: none!important;
+  background-color: #F5F6F7!important;
+}
+
+.category-pages input[type="checkbox"] + label:before { display: none!important; }
+.category-pages input[type="checkbox"]:checked + label:before { display: none!important; }
+.category-pages input[type="checkbox"] + label { padding: 0!important; margin: 0!important; }
+
+
+.category-pages input[type=checkbox] + label {
+  background: url(/modules/admin_pages_category/img_js_css/more-24px.svg) 5px 50% no-repeat!important;
+  background-color: #CFD6DB!important;
+  padding: 0!important;
+  transition: none!important;
+}
+
+.category-pages input[type=checkbox]:checked + label {
+  background: url(/modules/admin_pages_category/img_js_css/less-24px.svg) 5px 50% no-repeat!important;
+  background-color: #ccc!important;
+  padding: 0!important;
+  transition: none!important;
+}
+
+input[id^="spoiler"]{
+ display: none;
+}
+input[id^="spoiler"] + label {
+ display: block;
+ background: #CFD6DB; /*#5E5E5E*/
+ border-radius: 2px;
+ color: #000; /*##fff*/
+ text-align: center;
+ font-size: 18px;
+ cursor: pointer;
+ transition: all .6s;
+ margin: 0 auto; 
+ width: 100%;
+ /*padding: 5px 0px 5px 0px;*/
+ 
+ /* ширина */
+ height: 35px!important;
+ line-height: 1.9em!important;
+}
+input[id^="spoiler"]:checked + label {
+ color: #333;
+ background: #ccc;
+}
+input[id^="spoiler"] ~ .spoiler {
+ /*width: 90%;*/
+ height: 0;
+ overflow: hidden;
+ opacity: 0;
+ margin: 5px auto 0; 
+ /*
+ padding: 5px;
+ padding-left: 10px;
+ */ 
+ background: #eee;
+ border: 1px solid #ddd;
+  border-radius: 2px;
+ transition: all .6s;
+}
+input[id^="spoiler"]:checked + label + .spoiler{
+ height: auto;
+ opacity: 1;
+ margin-bottom: 5px;
+}
+
+
+
+
+
+
+function getStateText(e){var t="Error";switch(e){case 0:t="Uninitialized";break;case 1:t="Loading";break;case 2:t="Loaded";break;case 3:t="Interactive";break;case 4:t="Complete"}return t}var JLoader={request:function(e,t){if(!t)var t={};var s=t.data?"POST":"GET";window.XMLHttpRequest?(request=new XMLHttpRequest,request.open(s,e,!0),request.send(t.data),request.onreadystatechange=function(){t.statusToId&&document.getElementById(t.statusToId)&&(document.getElementById(t.statusToId).innerHTML=getStateText(request.readyState)),4==request.readyState&&(200==request.status?(t.responseToId&&document.getElementById(t.responseToId)&&(document.getElementById(t.responseToId).innerHTML=request.responseText),t.responseToIdAdd&&document.getElementById(t.responseToIdAdd)&&(document.getElementById(t.responseToIdAdd).innerHTML+=request.responseText),t.success&&t.success(request.responseText),t.complete&&t.complete()):t.error&&t.error("Response status code is not 200"))}):t.error&&t.error("XMLHttpRequest is not supported")}};
+
+
+function customizeSave(e,o){console.log("customize: save"),console.log("customize: "+e),console.log("customize: "+o);var t=new FormData;if(t.append("customize","save"),t.append("ticket",e),document.getElementsByClassName)for(var i=document.getElementsByClassName("editable"),s=0;s li{display:inline;} #pagination ul.pagination > li > a,#pagination ul.pagination > li > span{ position:relative; float:left; padding:6px 12px; margin:0px 0px 0px 1px; line-height:1.428571429; text-decoration:none; color:#666 !important; border:1px solid #ccc !important; background:#ebebeb; -moz-border-radius:2px; -webkit-border-radius:2px; -khtml-border-radius:2px; border-radius:2px; } #pagination ul.pagination > li.punkt{ position:relative; float:left; padding:7px 12px; margin:0 0 2px 1px; line-height:1.428571429; text-decoration:none; color:#666 !important; } #pagination ul.pagination > li > a:hover, #pagination ul.pagination > li > span:hover{ border:1px solid #333 !important; background:#555 !important; color:#fff !important; -moz-border-radius:2px; -webkit-border-radius:2px; -khtml-border-radius:2px; border-radius:2px; } #pagination ul.pagination > .active > a, #pagination ul.pagination > .active > span, #pagination ul.pagination > .active > a:hover, #pagination ul.pagination > .active > span:hover{ z-index:2; color:#fff !important; font-weight:bold; cursor:default; border:1px solid #333 !important; background:#333; -moz-border-radius:2px; -webkit-border-radius:2px; -khtml-border-radius:2px; border-radius:2px; } #pagination ul.pagination > .disabled > span, #pagination ul.pagination > .disabled > span:hover, #pagination ul.pagination > .disabled > a, #pagination ul.pagination > .disabled > a:hover{ color:#666 !important; cursor:not-allowed; border:1px solid #ccc !important; background:#ebebeb !important; -moz-border-radius:2px !important; -webkit-border-radius:2px !important; -khtml-border-radius:2px !important; border-radius:2px !important; } .noComments{display:block;max-width:100%;overflow:hidden;margin:10px 0;padding:10px !important;text-align:center;font-size:13px;font-family: Arial, sans-serif;border:2px solid #FFE25B;background:#FFF2B1;-moz-border-radius:4px; -webkit-border-radius:4px; -khtml-border-radius:4px; border-radius:4px;color:#000;} .msg{display:block;max-width:100%;overflow:hidden;margin:10px 0;padding:10px !important;text-align:center;color:#444;font-size:13px;font-family: Arial, sans-serif;border:2px solid #FFE25B;background:#FFF2B1;-moz-border-radius:4px; -webkit-border-radius:4px; -khtml-border-radius:4px; border-radius:4px;}"
+  ["endhtml"]=>
+  NULL
+  ["content"]=>
+  string(903) "
+
+Ваше имя
+Ваш email (Нужен для ответа)
+Содержимое письма Я согласен на обработку моих персональных данных
+
+"
+  ["template"]=>
+  string(12) "def/template"
+  ["clear"]=>
+  bool(false)
+  ["error"]=>
+  string(244) "Ошибка вывода модуля. Возможно, модуль был удален."
+  ["header"]=>
+  string(18) "Заголовок"
+  ["slogan"]=>
+  string(52) "Добро пожаловать на наш сайт"
+  ["indexPage"]=>
+  string(5) "index"
+}
+
+
+[kff_custom\Logger.php:236 2020/Jul/30 17:42:05 ] check bot->is_owner =
 string(17) "_bot NOT exist!!!"
 
 
-[Logger.php:231 2020/Jul/28 22:04:43 code:8] Undefined index: _bot
+[kff_custom\Logger.php:239 2020/Jul/30 17:42:05 code:8] Undefined index: _bot
 
