@@ -151,15 +151,6 @@
 			arrows: false,
 			dots: true
 		});
-
-		document.getElementById('menu').onclick = function(){
-			var menu = document.getElementById('nav');
-			if(menu.style.height == menu.scrollHeight + 'px'){
-				menu.style.height = '0px';
-			}else{
-				menu.style.height = menu.scrollHeight + 'px';
-			}
-		}
 		</script>
 
 	<?php endif;?>
@@ -172,8 +163,11 @@
 		elseif($status == 'admin') echo "NO nodule admin_pages_category";
 		?>
 		</section>
+
+
 		<main>
 			<article>
+			<!-- <article class="editable"> -->
 				<?php if(!$Page->isIndexPage()):?><h1 class="name"><?php $Page->get_name();?></h1><?php endif;?>
 				<?php $Page->get_content();?>
 			</article>
@@ -192,7 +186,7 @@
 	</div>
 
 	<?php
-	$log->add('$Page = ',null,[$Page]);
+	// $log->add('$Page = ',null,[$Page]);
 
 	if($Page->module === 'mail'):
 	?>
@@ -202,7 +196,38 @@
 			<script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3Ac0f6d89d5c475219392d254f4b1b2e8ed0a6f81ec72355edc8454bf43615a01a&amp;width=100%25&amp;height=400&amp;lang=ru_RU&amp;scroll=true"></script>
 		</div> -->
 
-		<div id="my_map" class="map"><!-- Карта. --></div>
+		<div id="my_map" class="map">
+			<!-- Карта -->
+			<script>
+			var ymapsLoadind = ymapsLoadind || new Promise( (resolve, reject) => {
+			let script = document.createElement('script');
+			script.src = 'https://api-maps.yandex.ru/2.1/?lang=ru_RU';
+			document.head.append(script);
+			// Отслеживаем загрузку библиотеки
+			script.onload = () => {
+				// Отслеживаем готовность ymaps
+				window.ymaps.ready(() => resolve(window.ymaps))
+			}
+			script.onerror = () => reject(new Error(`Ошибка загрузки скрипта ${src}`));
+			});
+
+			ymapsLoadind.then(
+				ymaps => {
+				// console.log('ymaps.Map = ', ymaps.Map, ymaps.ready);
+				var myMap = new ymaps.Map('my_map', {
+					center: [ 45.47574, 34.21895 ],
+					zoom: 8,
+					controls: [],
+				}, {
+					// Optional
+					// Задаем поиск по карте
+					searchControlProvider: 'yandex#search'
+				})
+				}
+			);
+		</script>
+
+		</div>
 
 		<div class="addres editable" id="addres"><?=$Customize->iss('addres')?$Customize->get('addres'):'
 			<h3>Регионы деятельности</h3>
@@ -214,36 +239,6 @@
 	</div>
 
 
-	<script>
-	var ymapsLoadind = ymapsLoadind || new Promise( (resolve, reject) => {
-	 let script = document.createElement('script');
-	 script.src = 'https://api-maps.yandex.ru/2.1/?lang=ru_RU';
-	 document.head.append(script);
-	 // Отслеживаем загрузку библиотеки
-	 script.onload = () => {
-		// Отслеживаем готовность ymaps
-		window.ymaps.ready(() => resolve(window.ymaps))
-	 }
-	 script.onerror = () => reject(new Error(`Ошибка загрузки скрипта ${src}`));
-	});
-
-	ymapsLoadind.then(
-		ymaps => {
-		// console.log('ymaps.Map = ', ymaps.Map, ymaps.ready);
-		var myMap = new ymaps.Map('my_map', {
-			center: [ 45.47574, 34.21895 ],
-			zoom: 8,
-			controls: [],
-		}, {
-			// Optional
-			// Задаем поиск по карте
-			searchControlProvider: 'yandex#search'
-		})
-		}
-	);
- </script>
-
-
 	<?php endif; ?>
 
 
@@ -253,6 +248,61 @@
 
 </div>
 <div class="copiright">Сайт сделан на <a href="//my-engine.ru" rel="nofollow">My-Engine CMS</a></div>
+
+<script>
+// *burger button
+$('#menu').on('click', function(){
+	var menu = document.getElementById('nav');
+	menu.style.height = menu.style.height === menu.scrollHeight + 'px'
+		? '0px'
+		: menu.scrollHeight + 'px';
+});
+
+<?php if($status === 'admin'):?>
+// *contentEditable
+var CE = {
+	$item: $('article .news'),
+	init: function() {
+		if(this.$item.length != 1) {
+			console.log(`missing $item= `, this.$item);
+			return;
+		}
+		this.$item[0].contentEditable= true;
+
+		this.save();
+
+		/* $item.on('dblclick', (e)=>{
+			e.currentTarget.contentEditable= true;
+		}) */
+	},
+	save: function(){
+		$('<img src="/modules/customize/save.svg" style="cursor:pointer;" alt="SAVE" title="SAVE">')
+		.insertAfter(this.$item)
+		.on('click', this.request.bind(this));
+	},
+	request: function(e){
+		console.log(
+			`$module_news= <?=$module_news?>\n`,
+			this.$item.html(), location
+		);
+
+		$.post(
+			'/kff_custom/SaveNewsHandler.php?dev=1',
+			{
+				act: 'addedit',
+				basePath: location.pathname,
+				module_news: "<?=$module_news?>",
+				content: this.$item.html(),
+			}
+		).then(response=>{
+			console.log('response= ',response);
+		});
+	}
+}
+
+CE.init();
+<?php endif;?>
+</script>
 
 <?php if(function_exists('CustomizeInit')) CustomizeInit(); ?>
 

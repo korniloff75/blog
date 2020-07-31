@@ -2,9 +2,13 @@
 AddDefaultCharset UTF-8
 
 # Запрет прямого доступа к системным файлам
-<Files "*.dat"> 
+<Files "*.dat">
   deny from all
 </Files>
+
+# <Files "news_*.dat">
+#   allow from all
+# </Files>
 
 # Начальный файл
 DirectoryIndex index.php
@@ -22,7 +26,7 @@ ErrorDocument 404 /pages/404.html
 #-Внутренняя ошибка сервера
 ErrorDocument 500 /pages/500.html
 
-# Ссылки 
+# Ссылки
 RewriteEngine on
 RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-f

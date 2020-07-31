@@ -76,7 +76,8 @@ if($Config->timeZone != 'default'){
 
 
 // act get/post параметр
-if(isset($_GET['act'])){$act = $_GET['act'];}elseif(isset($_POST['act'])){$act = $_POST['act'];}else{$act='index';}
+$act= $_REQUEST['act'] ?? 'index';
+// if(isset($_REQUEST['act'])){$act = $_GET['act'];}elseif(isset($_POST['act'])){$act = $_POST['act'];}else{$act='index';}
 
 
 

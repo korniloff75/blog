@@ -1,0 +1,10 @@
+<?php
+$rubric="Статья";
+$data_article="31.07.2020";
+$data_for_rss="Fri, 31 Jul 2020";
+$time_for_rss="20:39:38 +0300";
+$link_img="/modules/mod_articles/default.jpg";
+$show_img="0";
+$amt_words="25";
+$show_article="1";
+?>

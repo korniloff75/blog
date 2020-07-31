@@ -2,7 +2,7 @@
 $id_categorys="blog_all_cats";
 $amtpr_page="10";
 $nom_blok="10";
-$txt_link="Все категории";
+$txt_link="Все разделы блога";
 $news_style="0";
 $lib_jquery="0";
 ?>

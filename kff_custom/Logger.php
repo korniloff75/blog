@@ -233,21 +233,26 @@ class Logger
 
 	public function __destruct()
 	{
-		$this->add('check bot->is_owner =',null,[$GLOBALS['_bot']->is_owner ?? '_bot NOT exist!!!']);
-
-		if(
-			is_object(@$GLOBALS['_bot'])
-			&& !$GLOBALS['_bot']->is_owner
-		)
+		$txt = __METHOD__;
+		$dump = null;
+		// $this->add();
+		if(!empty($GLOBALS['_bot']))
 		{
-			echo __METHOD__ . " is_owner = {$GLOBALS['_bot']->is_owner}";
-			return;
+			$txt .= ": check bot->is_owner =";
+			$dump = [$GLOBALS['_bot']->is_owner ?? '_bot NOT exist!!!'];
 		}
+		else
+		{
+			$txt .= ": was started without bot";
+		}
+
+		$this->add($txt,null,$dump);
 
 		$this->log = array_map(function($i) {
 			return strip_tags($i);
 		}, $this->log );
 		// echo __METHOD__ . " {$this->file} " . realpath($this->file);
+
 		if(!empty($_GET['dev']))
 		{
 			$this->print();
