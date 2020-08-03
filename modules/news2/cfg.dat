@@ -1,6 +1,0 @@
-<?php
-$module_news="module.news2";
-$id_cat="news2";
-$name_cat="Моя категория новостей 2";
-$url_cat="Moya_kategoriya_novostej_2";
-?>

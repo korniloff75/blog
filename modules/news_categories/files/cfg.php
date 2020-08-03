@@ -2,6 +2,7 @@
 if (!isset($Config)) global $Config;
 
 require('cfg.dat');
+// require(__DIR__.'/../cfg.dat');
 
 $newsStorage = new EngineStorage($module_news);
 if($newsStorage->iss('newsConfig')){

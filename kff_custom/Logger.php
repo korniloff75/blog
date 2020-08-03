@@ -27,6 +27,8 @@ class Logger
 		# array with a current log
 		$log = [];
 
+	static $printed = false;
+
 	/**
 	 * @name - name of the log file
 	 * optional @dir - realpath to the directory
@@ -125,6 +127,8 @@ class Logger
 				$errorLevel = "$errorLevel ERROR";
 				break;
 			default:
+			case E_USER_NOTICE:
+				$errorLevel = " INFO:";
 				break;
 		}
 		return "[{$fileName}:{$line} " . date('Y/M/d H:i:s',time()) . " $errorLevel] $message";
@@ -138,18 +142,19 @@ class Logger
 		?>
 		<meta charset="UTF-8">
 		<style>
-		pre {
+		pre.log {
 			box-sizing: border-box;
 			white-space: pre-wrap;
 			border: inset 1px #eee;
 		}
 		</style>
 		<?php
-		print_r("<h3>Log</h3><pre>\n");
+		print_r("<h3>Log</h3><pre class='log'>\n");
 		foreach ($this->log as &$string) {
 			print_r($string . "\n");
 		}
 		echo "</pre>";
+		self::$printed = 1;
 	}
 
 	public function printTG()
@@ -246,14 +251,14 @@ class Logger
 			$txt .= ": was started without bot";
 		}
 
-		$this->add($txt,null,$dump);
+		$this->add("INFO: $txt",null,$dump);
 
 		$this->log = array_map(function($i) {
 			return strip_tags($i);
 		}, $this->log );
 		// echo __METHOD__ . " {$this->file} " . realpath($this->file);
 
-		if(!empty($_GET['dev']))
+		if(!empty($_GET['dev']) && !self::$printed)
 		{
 			$this->print();
 		}

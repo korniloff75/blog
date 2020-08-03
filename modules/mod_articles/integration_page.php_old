@@ -1,7 +1,6 @@
 <?php
 if (!class_exists('System')) exit; // Запрет прямого доступа
 
-
 require('cfg.dat');
 
 if($mod_style == 0){
@@ -10,7 +9,7 @@ $page->headhtml.= '<link href="/modules/mod_articles/style.min.css" rel="stylesh
 
 if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {$protocol = 'https://';}else{$protocol = 'http://';}
 
-if((isset($URI[2]) && ($URI[2] == '0' || $URI[2] == '1')) || (isset($URI[3]) && trim($URI[3]))){	
+if($URI[2] == '0' || $URI[2] == '1' || trim($URI[3])){	
 header(PROTOCOL.' 404 Not Found'); require('./pages/404.html'); ob_end_flush(); exit();	
 }
 
@@ -71,14 +70,13 @@ $arr_file = file('modules/mod_articles/data/list.dat');
 $arr_file = array_reverse($arr_file);
 $nom = count($arr_file);
 $kol_page = ceil($nom / $amtpr_page);
-
-if(isset($URI[2]) && $URI[2] > $kol_page){
+if($URI[2] > $kol_page){
 header(PROTOCOL.' 404 Not Found'); require('./pages/404.html'); ob_end_flush(); exit();
 }
 if(!is_numeric($nom_page) || $nom_page <= 0 || $nom_page > $kol_page){ $nom_page = 1; }
 if($nom_page > 0){$i = ($nom_page - 1) * $amtpr_page;}
 $var = $i + $amtpr_page;
-$return = '';
+$return .= '';
 if($nom > 0){		
 while($i < $var){
 if($i < $nom){
@@ -189,7 +187,7 @@ $page->title = $page->name = $rubric;
 $page->description = file_get_contents('modules/mod_articles/seo/description_'.$URI[2].'.dat');
 $page->keywords = file_get_contents('modules/mod_articles/seo/keywords_'.$URI[2].'.dat');
 	
-$return = ''.file_get_contents('modules/mod_articles/data/content_'.$URI[2].'.dat').'';
+$return .= ''.file_get_contents('modules/mod_articles/data/content_'.$URI[2].'.dat').'';
 
 $return .= '
 <div class="rdm">

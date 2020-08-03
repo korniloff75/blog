@@ -1,5 +1,6 @@
 <?php
-$direct_article="";
+$direct_article="Stranica_statej";
+$name_rss="";
 $amtpr_page="10";
 $amtpr_blok="10";
 $amtpr_admin="10";
@@ -7,6 +8,5 @@ $link_next="Читать далее";
 $link_back="Все статьи";
 $show_btn="1";
 $show_data="1";
-$autoIndexSearch="0";
 $mod_style="0";
 ?>

@@ -12,6 +12,9 @@
 <style>
 <?= file_get_contents('modules/tpl.robotix/style.min.css');?>
 <?= file_get_contents('admin/include/windows/windows.css');?>
+* {
+	box-sizing: border-box;
+}
 </style>
 <script>
 <?= file_get_contents('admin/include/windows/windows.js');?>
@@ -160,7 +163,6 @@
 		<section id="cats">
 		<?php
 		if(Module::exists('admin_pages_category')) echo Get_PagesCategory();
-		elseif($status == 'admin') echo "NO nodule admin_pages_category";
 		?>
 		</section>
 
@@ -196,24 +198,20 @@
 			<script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3Ac0f6d89d5c475219392d254f4b1b2e8ed0a6f81ec72355edc8454bf43615a01a&amp;width=100%25&amp;height=400&amp;lang=ru_RU&amp;scroll=true"></script>
 		</div> -->
 
-		<div id="my_map" class="map">
+		<div id="my_map" class="map" style="min-height:300px;">
 			<!-- Карта -->
 			<script>
+			'use strict';
+
 			var ymapsLoadind = ymapsLoadind || new Promise( (resolve, reject) => {
-			let script = document.createElement('script');
-			script.src = 'https://api-maps.yandex.ru/2.1/?lang=ru_RU';
-			document.head.append(script);
-			// Отслеживаем загрузку библиотеки
-			script.onload = () => {
-				// Отслеживаем готовность ymaps
-				window.ymaps.ready(() => resolve(window.ymaps))
-			}
-			script.onerror = () => reject(new Error(`Ошибка загрузки скрипта ${src}`));
+				$.getScript('https://api-maps.yandex.ru/2.1/?lang=ru_RU').done(()=>{
+					window.ymaps.ready(() => resolve(window.ymaps))
+				})
 			});
 
-			ymapsLoadind.then(
-				ymaps => {
-				// console.log('ymaps.Map = ', ymaps.Map, ymaps.ready);
+			ymapsLoadind.then( ymaps => {
+				console.log('ymaps.Map = ', ymaps.Map, ymaps.ready);
+
 				var myMap = new ymaps.Map('my_map', {
 					center: [ 45.47574, 34.21895 ],
 					zoom: 8,
@@ -222,9 +220,9 @@
 					// Optional
 					// Задаем поиск по карте
 					searchControlProvider: 'yandex#search'
-				})
-				}
-			);
+				});
+
+			});
 		</script>
 
 		</div>
@@ -249,7 +247,10 @@
 </div>
 <div class="copiright">Сайт сделан на <a href="//my-engine.ru" rel="nofollow">My-Engine CMS</a></div>
 
+
 <script>
+'use strict';
+
 // *burger button
 $('#menu').on('click', function(){
 	var menu = document.getElementById('nav');
@@ -258,13 +259,18 @@ $('#menu').on('click', function(){
 		: menu.scrollHeight + 'px';
 });
 
-<?php if($status === 'admin'):?>
+<?php if($status === 'admin' && isset($module_news)):?>
 // *contentEditable
 var CE = {
 	$item: $('article .news'),
+
 	init: function() {
+		// console.log('$rezult=', "\n");
+
 		if(this.$item.length != 1) {
-			console.log(`missing $item= `, this.$item);
+			console.log(
+				`missing $item= `, this.$item,
+			);
 			return;
 		}
 		this.$item[0].contentEditable= true;
@@ -282,7 +288,7 @@ var CE = {
 	},
 	request: function(e){
 		console.log(
-			`$module_news= <?=$module_news?>\n`,
+			// `$module_news= <?#=$module_news?>\n`,
 			this.$item.html(), location
 		);
 
@@ -294,8 +300,23 @@ var CE = {
 				module_news: "<?=$module_news?>",
 				content: this.$item.html(),
 			}
-		).then(response=>{
-			console.log('response= ',response);
+		).then((response, status, xhr)=>{
+			console.log(
+				'status=', "<?=$status?>\n",
+			);
+
+			$('#logWrapper').html(response);
+
+			var msg, color;
+			if(status === 'success'){
+				msg= 'Изменения успешно сохранены в файле.';
+				color= 'green';
+			} else {
+				msg= 'Изменения не были сохранены. Не перегружайте страницу, чтобы не потерять их. Попробуйте изменить контент через админ-панель.';
+				color= 'red';
+			}
+		$(`<p style="color:${color};">${msg}</p>`)
+			.insertAfter(this.$item);
 		});
 	}
 }
@@ -304,7 +325,20 @@ CE.init();
 <?php endif;?>
 </script>
 
-<?php if(function_exists('CustomizeInit')) CustomizeInit(); ?>
+<?php
+/* if($status === 'admin')
+{
+	if(isset($log))
+	{
+		echo "<div id='logWrapper'>";
+		$log->print();
+		echo "</div>";
+	}
+} */
 
-<?php $Page->get_endhtml();?>
+if(function_exists('CustomizeInit')) CustomizeInit();
+
+$Page->get_endhtml();
+?>
+
 </body></html>

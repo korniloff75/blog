@@ -1,15 +1,9 @@
 <?php
-// ini_set('display_errors', 1);
-// trigger_error('test');
-require_once './kff_custom/Logger.php' ;
-
-$log = new Logger('kff.log', __DIR__);
+require_once './kff_custom/index_my_addon.php';
 
 require_once './system/global.dat' ;
 
 ob_start($Config->gzip?'ob_gzhandler':null);
-
-
 
 //Обработка ЧПУ
 if($Config->uriRule == 1){ // Разрешаем произвольные GET параметры
@@ -53,7 +47,7 @@ if(strlen($URI[$last_key_URI]) == 0){
 //Обработка страниц
 if(Page::exists($URI[1])){
 	$Page = new Page($URI[1], $Config);
-	$page = $Page;// Склонировали для совместимости со старыми расширениями
+	$page = &$Page;// Склонировали для совместимости со старыми расширениями
 
 	if( $Page->show == '1' ||
 		$Page->show == '2' && $User->preferences > 0 ||
