@@ -18,7 +18,7 @@
 </style>
 <script>
 <?= file_get_contents('admin/include/windows/windows.js');?>
-<?= file_get_contents('modules/customize/jloader/jloader.js');?>
+<?#= file_get_contents('./kff_custom/js/jloader/jloader.js');?>
 </script>
 
 <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
@@ -77,37 +77,37 @@
 				<section>
 					<div class="flex">
 						<div class="i1">
-							<h1 class="editable" id="s1r1"><?=$Customize->iss('s1r1')?$Customize->get('s1r1'):'Современные технологии для работы и отдыха';?></h1>
+							<h3 id="s1r1">Первый слайд</h3>
 
-							<p class="editable" id="s1r2"><?=$Customize->iss('s1r2')?$Customize->get('s1r2'):'Мы обеспечим вам продуктивную работу в комфортных условиях';?></p>
-							<p class="btns editable" id="s1r3"><?=$Customize->iss('s1r3')?$Customize->get('s1r3'):'<a href="/" target="_blank">Узнать подробнее</a>';?></p>
+							<p id="s1r2">Изображение</p>
+							<p class="btns editable" id="s1r3">Bottom text</p>
 						</div>
 						<div class="i2">
-							<p class="editable" id="s1r4"><?=$Customize->iss('s1r4')?$Customize->get('s1r4'):'<img src="/modules/tpl.robotix/images/slider1.jpg" alt="">';?></p>
+							<p id="s1r4"></p>
 						</div>
 					</div>
 				</section>
 				<section>
 					<div class="flex">
 						<div class="i1">
-							<h1 class="editable" id="s2r1"><?=$Customize->iss('s2r1')?$Customize->get('s2r1'):'Продажа и сопровождение оборудования в офисы';?></h1>
-							<p class="editable" id="s2r2"><?=$Customize->iss('s2r2')?$Customize->get('s2r2'):'Авторизованный сервисный центр, работа напрямую с производителями';?></p>
-							<p class="btns editable" id="s2r3"><?=$Customize->iss('s2r3')?$Customize->get('s2r3'):'<a href="/" target="_blank">Узнать подробнее</a>';?></p>
+							<h3 id="s2r1">Второй слайд</h3>
+							<p id="s2r2">Изображение</p>
+							<p class="btns editable" id="s2r3">Bottom text</p>
 						</div>
 						<div class="i2">
-							<p class="editable" id="s2r4"><?=$Customize->iss('s2r4')?$Customize->get('s2r4'):'<img src="/modules/tpl.robotix/images/slider2.jpg" alt="">';?></p>
+							<p id="s2r4"></p>
 						</div>
 					</div>
 				</section>
 				<section>
 					<div class="flex">
 						<div class="i1">
-							<h1 class="editable" id="s3r1"><?=$Customize->iss('s3r1')?$Customize->get('s3r1'):'Сплоченная команда - секрет успеха нашей компании';?></h1>
-							<p class="editable" id="s3r2"><?=$Customize->iss('s3r2')?$Customize->get('s3r2'):'У нас работают только опытные сотрудники прошедшие строжайший отбор';?></p>
-							<p class="btns editable" id="s3r3"><?=$Customize->iss('s3r3')?$Customize->get('s3r3'):'<a href="/" target="_blank">Узнать подробнее</a>';?></p>
+							<h3 id="s3r1">Третий слайд</h3>
+							<p id="s3r2">Изображение</p>
+							<p class="btns editable" id="s3r3">Bottom text</p>
 						</div>
 						<div class="i2">
-							<p class="editable"  id="s3r4"><?=$Customize->iss('s3r4')?$Customize->get('s3r4'):'<img src="/modules/tpl.robotix/images/slider3.jpg" alt="">';?></p>
+							<p  id="s3r4"></p>
 						</div>
 					</div>
 				</section>
@@ -117,28 +117,28 @@
 
 
 		<div class="grid">
-			<section  class="editable" id="c1"><?=$Customize->iss('c1')?$Customize->get('c1'):'
+			<section  id="c1"><?='
 				<h2>Офисы</h2>
 				<p><img src="/modules/tpl.robotix/images/card1.jpg" alt=""></p>
 				<p>Оснастим офисы самым современным оборудованием</p>
 				<p><a href="/">Узнать подробней &#8594;</a></p>
 			';?>
 			</section>
-			<section class="editable" id="c2"><?=$Customize->iss('c2')?$Customize->get('c2'):'
+			<section id="c2"><?='
 				<h2>Кабинеты</h2>
 				<p><img src="/modules/tpl.robotix/images/card2.jpg" alt=""></p>
 				<p>Организуем рабочее пространство кабинетов</p>
 				<p><a href="/">Узнать подробней &#8594;</a></p>
 			';?>
 			</section>
-			<section class="editable" id="c3"><?=$Customize->iss('c3')?$Customize->get('c3'):'
+			<section id="c3"><?='
 				<h2>Отдых</h2>
 				<p><img src="/modules/tpl.robotix/images/card3.jpg" alt=""></p>
 				<p>Оборудуем комнаты отдыха для сотрудников компании</p>
 				<p><a href="/">Узнать подробней &#8594;</a></p>
 			';?>
 			</section>
-			<section class="editable" id="c4"><?=$Customize->iss('c4')?$Customize->get('c4'):'
+			<section id="c4"><?='
 				<h2>Помощники</h2>
 				<p><img src="/modules/tpl.robotix/images/card4.jpg" alt=""></p>
 				<p>Оснастим роботами помощниками для посетителей</p>
@@ -169,7 +169,6 @@
 
 		<main>
 			<article>
-			<!-- <article class="editable"> -->
 				<?php if(!$Page->isIndexPage()):?><h1 class="name"><?php $Page->get_name();?></h1><?php endif;?>
 				<?php $Page->get_content();?>
 			</article>
@@ -227,7 +226,7 @@
 
 		</div>
 
-		<div class="addres editable" id="addres"><?=$Customize->iss('addres')?$Customize->get('addres'):'
+		<div class="addres editable" id="addres"><?='
 			<h3>Регионы деятельности</h3>
 			<p>Республика Крым.</p>
 			<h3>написать через TELEGRAM</h3>
@@ -258,83 +257,10 @@ $('#menu').on('click', function(){
 		? '0px'
 		: menu.scrollHeight + 'px';
 });
-
-<?php if($status === 'admin' && isset($module_news)):?>
-// *contentEditable
-var CE = {
-	$item: $('article .news'),
-
-	init: function() {
-		// console.log('$rezult=', "\n");
-
-		if(this.$item.length != 1) {
-			console.log(
-				`missing $item= `, this.$item,
-			);
-			return;
-		}
-		this.$item[0].contentEditable= true;
-
-		this.save();
-
-		/* $item.on('dblclick', (e)=>{
-			e.currentTarget.contentEditable= true;
-		}) */
-	},
-	save: function(){
-		$('<img src="/modules/customize/save.svg" style="cursor:pointer;" alt="SAVE" title="SAVE">')
-		.insertAfter(this.$item)
-		.on('click', this.request.bind(this));
-	},
-	request: function(e){
-		console.log(
-			// `$module_news= <?#=$module_news?>\n`,
-			this.$item.html(), location
-		);
-
-		$.post(
-			'/kff_custom/SaveNewsHandler.php?dev=1',
-			{
-				act: 'addedit',
-				basePath: location.pathname,
-				module_news: "<?=$module_news?>",
-				content: this.$item.html(),
-			}
-		).then((response, status, xhr)=>{
-			console.log(
-				'status=', "<?=$status?>\n",
-			);
-
-			$('#logWrapper').html(response);
-
-			var msg, color;
-			if(status === 'success'){
-				msg= 'Изменения успешно сохранены в файле.';
-				color= 'green';
-			} else {
-				msg= 'Изменения не были сохранены. Не перегружайте страницу, чтобы не потерять их. Попробуйте изменить контент через админ-панель.';
-				color= 'red';
-			}
-		$(`<p style="color:${color};">${msg}</p>`)
-			.insertAfter(this.$item);
-		});
-	}
-}
-
-CE.init();
-<?php endif;?>
 </script>
 
 <?php
-/* if($status === 'admin')
-{
-	if(isset($log))
-	{
-		echo "<div id='logWrapper'>";
-		$log->print();
-		echo "</div>";
-	}
-} */
+require_once './kff_custom/contentEditable/init.php';
 
 if(function_exists('CustomizeInit')) CustomizeInit();
 

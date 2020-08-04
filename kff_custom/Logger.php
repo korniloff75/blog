@@ -159,9 +159,6 @@ class Logger
 
 	public function printTG()
 	{
-		/* array_map(function($i) {
-			return strip_tags($i);
-		}, $this->log ); */
 		ob_start();
 			$this->print();
 		return strip_tags(ob_get_clean());

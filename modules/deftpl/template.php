@@ -26,12 +26,12 @@
 			</div>
 			<h1><a href="/"><?php $page->get_header();?></a></h1>
 			<div class="slogan"><?php $page->get_slogan();?></div>
-			
+
 			<div class="hbr_menu">
 				<a href="javascript:void(0);" id="menu" class="button">Меню</a>
 			</div>
-			
-			
+
+
 
 			<nav id="nav">
 				<?php $page->get_menu('span');?>
@@ -43,10 +43,10 @@
 				</form>
 			</div>
 
-			
-			
-			
-			
+
+
+
+
 		</header>
 	</div>
 <?php if($Page->isIndexPage()):?>
@@ -78,6 +78,8 @@
 <div class="bgfooter">
 	<div class="container">
 		<footer>
+		<nav><?php $page->get_menu('span');?></nav>
+
 			<a href="/" class="logo"><?php $page->get_header();?></a>
 			<div class="nav">
 				<?php $page->get_menu('span');
@@ -89,7 +91,7 @@
 				?>
 			</div>
 
-		
+
 		</footer>
 	</div>
 </div>

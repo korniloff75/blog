@@ -16,6 +16,8 @@ js/db/*.*
 *.key
 */tg/*/*.trigger
 */tg/*/token*
+# Удалил модуль от Denis
+modules/admin_pages_category
 
 # local env files
 .env.local
