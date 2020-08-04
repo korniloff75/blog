@@ -16,6 +16,7 @@ js/db/*.*
 *.key
 */tg/*/*.trigger
 */tg/*/token*
+modules/admin_pages_category
 
 # local env files
 .env.local
