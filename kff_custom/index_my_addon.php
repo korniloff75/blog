@@ -27,6 +27,21 @@ class Index_my_addon
 		return self::$log;
 	}
 
+	// *Переводим все слеши в Unix
+	public static function fixSlashes(string $path)
+	:string
+	{
+		$path = str_replace("\\", '/', $path);
+		return preg_replace("#(?!https?|^)//+#", '/', $path);
+	}
+
+	// *Получаем путь относительно $_SERVER['DOCUMENT_ROOT']
+	public static function getPathFromRoot(string $absPath)
+	:string
+	{
+		return str_replace(self::fixSlashes($_SERVER['DOCUMENT_ROOT']) . '/', '', self::fixSlashes($absPath));
+	}
+
 	public function __destruct()
 	{
 		// var_dump($GLOBALS['log']);
@@ -35,6 +50,14 @@ class Index_my_addon
 			// if(empty($_GET['dev']))
 			if(self::$log && !self::$log::$printed)
 			{
+			?>
+				<style>
+				pre.log{
+					background: #111;
+					color: #3f3;
+				}
+				</style>
+			<?php
 				echo "<div id='logWrapper'>";
 				// self::$log->__destruct();
 				self::$log->print();
