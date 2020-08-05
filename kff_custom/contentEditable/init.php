@@ -45,13 +45,12 @@ var CE = {
 			e.currentTarget.contentEditable= true;
 		}) */
 	},
-	
+
 	save: function(){
 		$('<img src="/kff_custom/assets/save.svg" style="cursor:pointer;" alt="SAVE" title="SAVE">')
 		.insertAfter(this.$item)
 		.on('click', this.request.bind(this));
 	},
-
 	request: function(e){
 		console.log(
 			// `$module_news= <?#=$module_news?>\n`,
