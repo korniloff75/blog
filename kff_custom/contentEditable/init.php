@@ -1,7 +1,8 @@
 <?php
-$log->add('Module news_categories',null, [Module::exists('news_categories')]);
-$log->add('Module mod_articles',null, [Module::exists('mod_articles')]);
+// $log->add('Module news_categories',null, [Module::exists('news_categories')]);
+// $log->add('Module mod_articles',null, [Module::exists('mod_articles')]);
 $log->add('$Page->module',null, [$Page->module]);
+
 // *contentEditable
 if($status === 'admin' && isset($module_news)):?>
 

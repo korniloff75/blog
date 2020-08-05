@@ -1,0 +1,11 @@
+<?php
+// $log= &$GLOBALS['log'];
+// $kff= &$GLOBALS['kff'];
+foreach(['log', 'kff'] as $glob)
+{
+	$$glob = $GLOBALS[$glob]??null;
+}
+
+$log->add("realpath('.')= " . realpath('.'),null);
+
+require_once './kff_custom/feedback/feedback.php';

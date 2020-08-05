@@ -30,7 +30,7 @@
 	<div class="container">
 		<header>
 			<div class="logo">
-				<a href="/"><img src="/<?=$kff::getPathFromRoot(__DIR__)?>/images/logo.png" alt="<?php $Page->get_header();?>"></a>
+				<a href="/"><img src="/<?=$kff::getPathFromRoot(__DIR__)?>/images/ЛОГО_min.jpg" alt="<?php $Page->get_header();?>"></a>
 			</div>
 
 			<div class="hbr_menu">

@@ -4,6 +4,9 @@
  ** require_once './kff_custom/index_my_addon.php';
  */
 
+ini_set('short_open_tag', 'On');
+
+
 class Index_my_addon
 {
 	static $log = false;
@@ -40,6 +43,13 @@ class Index_my_addon
 	:string
 	{
 		return str_replace(self::fixSlashes($_SERVER['DOCUMENT_ROOT']) . '/', '', self::fixSlashes($absPath));
+	}
+
+	// *Реальный IP
+	public static function realIP ()
+
+	{
+		return $_SERVER['HTTP_CLIENT_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? null;
 	}
 
 	public function __destruct()
