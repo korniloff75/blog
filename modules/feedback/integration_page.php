@@ -5,39 +5,11 @@ if (!class_exists('System')) exit; // Запрет прямого доступа
  * *Для адаптации требуется сохранить токен доступа к ТГ-боту в файл ./token
  */
 
+ require_once DR.'/kff_custom/index_my_addon.php';
+
 ob_start()
 ?>
-<!-- <link rel="stylesheet" type="text/css" href="/<?=$kff::getPathFromRoot(__DIR__) ?>/fb_form.css" /> -->
-
-<style>
-	.form-container div {
-	display: flex;
-	flex-wrap: wrap;
-	flex-basis: 100%;
-	align-items: center;
-	align-content: center;
-	margin: 15px 0;
-}
-
-.form-container div > * {
-	flex: 4 1;
-	padding: 2px 5px
-}
-
-.form-container div > *:first-child {
-	flex: 1 1 15%;
-}
-
-.form-container div > input[type=submit] {
-	flex-grow: 7;
-}
-
-.form-container label{
-	text-transform:uppercase;
-	font-size:10px;
-	font-family:Tahoma,Arial,Sans-serif;
-}
-</style>
+<link rel="stylesheet" type="text/css" href="/<?=$kff::getPathFromRoot(__DIR__) ?>/fb_form.css" />
 
 <div id="form-outbox">
 
@@ -87,8 +59,8 @@ ob_start()
 				<input type="reset" name="reset" value="Очистить" />
 			</div>
 
-			<img id="loading" src="assets/img/ajax-load.gif" width="16" height="16" alt="loading" />
-
+			<p style="text-align:center;"><img id="loading" src="<?=$kff::getPathFromRoot(__DIR__) ?>/img/ajax-load.gif" width="16" height="16" alt="loading" style="margin: auto;"/>
+</p>
 		</form>
 
 	</div>
@@ -106,11 +78,17 @@ ob_start()
 
 <script>
 (function() {
-	var form = document.forms['feedback-form'];
+	'use strict';
+	var form = document.forms['feedback-form'],
+		$loader = $('#loading');
+
+	$loader.hide();
 
 	form.onsubmit = function(e) {
 		e.preventDefault();
 		e.stopPropagation();
+
+		$loader.show();
 
 		var $form = $(this),
 			$resp_node = $('#response'),
@@ -140,6 +118,9 @@ ob_start()
 		})
 		.fail(function(response) {
 			$resp_node.append('<div class="error">Сообщение не было отправлено. Попробуйте ещё раз.</div>');
+		})
+		.complete(response=>{
+			$loader.hide();
 		});
 	}
 	// console.log(formData);

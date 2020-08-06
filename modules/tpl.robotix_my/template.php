@@ -189,7 +189,7 @@
 	<?php
 	// $log->add('$Page = ',null,[$Page]);
 
-	if($Page->module === 'mail'):
+	if($Page->module === 'feedback'):
 	?>
 
 	<div class="contact">

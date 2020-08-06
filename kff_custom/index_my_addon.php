@@ -23,6 +23,9 @@ class Index_my_addon
 			self::$log = new Logger('kff.log', __DIR__.'/..');
 			self::$log->add('REQUEST_URI=',null, [$_SERVER['REQUEST_URI']]);
 		}
+
+		if(!defined('DR'))
+			define('DR', $_SERVER['DOCUMENT_ROOT']);
 	}
 
 	public function startLog()

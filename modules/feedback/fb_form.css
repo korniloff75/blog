@@ -16,12 +16,45 @@
 	flex: 1 1 15%;
 }
 
-.form-container div > input[type=submit] {
+.form-container input,
+.form-container select,
+.form-container textarea {
+	max-width: 100%;
+	/* color:#444 !important;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size:12px; */
+	resize: vertical;
+}
+
+.form-container div > input[type="submit"] {
 	flex-grow: 7;
+	border: 1px solid #aaa;
+}
+
+.form-container div > input[type="submit"]:hover{
+	border: 1px solid #333;
 }
 
 .form-container label{
 	text-transform:uppercase;
 	font-size:10px;
 	font-family:Tahoma,Arial,Sans-serif;
+}
+
+#response {
+	white-space: pre-line;
+	color: #fff;
+	font-size: 10px;
+	font-weight: bold;
+	margin-top: 10px;
+	padding: 10px;
+	text-transform: uppercase;
+}
+
+.success {
+	background-color: green;
+}
+
+.error {
+	background-color: #ab0000;
 }

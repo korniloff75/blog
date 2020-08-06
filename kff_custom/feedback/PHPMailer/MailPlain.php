@@ -2,9 +2,6 @@
 # https://github.com/PHPMailer/PHPMailer
 # https://medium.com/@shpaginkirill/вменяемая-инструкция-к-phpmailer-отправка-писем-и-файлов-на-почту-b462f8ff9b5c
 
-/**
- *
- */
 
 if (version_compare(PHP_VERSION, '7.0', '<') ) exit("Извини, брат, с пыхом ниже 7 - не судьба!\n");
 
@@ -23,42 +20,49 @@ class MailPlain extends PHPMailer
 	const
 		T_SUCCESS_SEND = "Ваше сообщение успешно отправлено!<br>Ожидайте ответа на указанный email",
 		T_FAIL_SEND = "<div class=\"error\">Ваше сообщение не было доставлено.<br>Просим прощения за неудобство. При следующей отправке скопируйте текст сообщения в буфер обмена или в текстовый документ.</div>",
-		DATE_FORMAT = "Y-m-d H:i:s",
-
-		TG_CHAT_ID = -1001245760492; // Cannel
+		DATE_FORMAT = "Y-m-d H:i:s";
 
 	public
 		# Custom params
+		$cfg = [
+			'emails' => null,
+			'smtp' => [
+				'host' => null,
+				'username' => null,
+				'password' => null,
+			],
+			'tg' => [
+				"token" => null,
+				"chat_id" => null,
+			]
+		],
 
-		# SMTP auth
-		$Username  = "korniloff_proekt@mail.ru",
-		$Password = "1975kp@1975",
-		$Host = "ssl://smtp.mail.ru",
-		/* $Username  = "fb@js-master.ru",
-		$Password = "1975kp@1975",
-		$Host = "web01-cp.marosnet.net", */
-		$to_emails = [/* str || aray with emails */],
+		//* str || aray with emails
+		$to_emails = null,
 
 		# Common
 
-		/* $Port = 465,
+		$Port = 465,
 		$SMTPAuth = true,
-		$SMTPSecure = "ssl", */
+		$SMTPSecure = "ssl",
 		$CharSet    = 'UTF-8',
 
-		$attach = null;
+		$attach = null,
 
-	private
 		$SMTP = [
 			"on" => true,
 			"isHTML" => true,
 		];
 
+	private $log;
+
 
 	public function __construct($subject, $message, $from_mail, $from_name = null)
 
 	{
-		global $kff;
+		global $kff, $log;
+
+		$this->log = &$log;
 
 		$this->setLanguage('ru', __DIR__ . '/language/');
 		parent::__construct(true);
@@ -87,7 +91,7 @@ class MailPlain extends PHPMailer
 		. "\nIP - " . $kff::realIP()
 		. ($_REQUEST['tg'] ? "\nTelegram - {$_REQUEST['tg']}" : "");
 
-		if($this->SMTP['isHTML']) {
+		/* if($this->SMTP['isHTML']) {
 			$this->validated['message'] = nl2br($this->validated['message']);
 		}
 
@@ -108,7 +112,7 @@ class MailPlain extends PHPMailer
 		else
 		{
 			$this->From = $this->Username;
-		}
+		} */
 
 	} // __construct
 
@@ -134,7 +138,7 @@ class MailPlain extends PHPMailer
 	}
 
 
-	# MailPlain::save($mailPlain->validated);
+	# MailPlain::save($this->validated);
 	# in handler.php
 	/**
 	 * Save input data in DB
@@ -196,7 +200,7 @@ class MailPlain extends PHPMailer
 	 * Отправка GET-запросом
 	 * $sendToTelegram = fopen("https://api.telegram.org/bot{$token}/sendMessage?chat_id={$tg_chat_id}&parse_mode=html&text={$tg_txt}","r");
 	 */
-	public static function toTG(
+	public function toTG(
 		$text = null,
 		$chat_id = null
 	)
@@ -204,12 +208,12 @@ class MailPlain extends PHPMailer
 		global $log;
 		require_once __DIR__."/../tg.class.php";
 
-		$log->add(realpath(__DIR__.'/../token'));
+		$log->add('token path= ' . realpath(__DIR__.'/../token'));
 
 		$tg = new TG(
-			file_get_contents(__DIR__.'/../token')
+			$this->cfg['tg']['token']
 		);
-		$chat_id = $chat_id ?? self::TG_CHAT_ID;
+		$chat_id = $chat_id ?? $this->cfg['tg']['chat_id'];
 
 		return $tg->apiRequest([
 			'chat_id' => $chat_id,
@@ -275,13 +279,67 @@ class MailPlain extends PHPMailer
 	}
 
 
+	/**
+	 * Готовим данные к отправке
+	 */
+	protected function _prepToSend()
+	{
+		$this->Body = $this->validated['message'];
+		$this->AltBody = strip_tags($this->validated['messageNL']);
+
+		// *Проверка данных для SMTP
+		$is_SMTP = (
+			($this->Host = $this->cfg['smtp']['host'])
+			&& ($this->Username = $this->cfg['smtp']['username'])
+			&& ($this->Password = $this->cfg['smtp']['password'])
+		);
+
+		if ( $this->SMTP['on'] = $is_SMTP )
+		{
+			if($this->SMTP['isHTML']) {
+				$this->validated['message'] = nl2br($this->validated['message']);
+			}
+
+			$this->IsSMTP();
+			$this->Mailer = 'smtp';
+			$this->SMTPDebug = $GLOBALS['status'] === 'admin' ? 2 : 0;
+			$this->setFrom($this->Username);
+			// $this->setFrom($this->validated['email'], $this->validated['name']);
+		}
+		else
+		{
+			$this->From = $this->Username;
+		}
+
+		// *Проверка данных для Telegram
+		$is_TG = (
+			($this->cfg['tg']['token'] = $this->cfg['tg']['token'] ?? file_get_contents(__DIR__.'/../token'))
+			&& ($this->cfg['tg']['chat_id']= $this->cfg['tg']['chat_id'])
+		);
+
+		$this->cfg['tg']['on'] = $is_TG;
+
+		$this->log->add('$is_SMTP= ',null,[$is_SMTP]);
+		$this->log->add('$is_TG= ',null,[$is_TG]);
+	}
+
+
+	/**
+	 * Запускается после создания экземпляра
+	 */
 	public function TrySend()
 
 	{
-		$to = $this->to_emails;
-		if(is_string($to)) $to = [$to];
+		$this->_prepToSend();
 
-		if(!is_array($to) && !count($to))
+		$to = $this->to_emails ?? $this->cfg['emails'];
+		if(is_string($to))
+		{
+			$to = array_map(function(&$i){
+				return trim($i);
+			}, explode(',',$to));
+		}
+		elseif(!is_array($to) || empty($to))
 		{
 			if(defined('OWNER'))
 				$to = \OWNER['email'];
@@ -300,17 +358,18 @@ class MailPlain extends PHPMailer
 			$this->uploads();
 
 		# Send to Telegram
-		$textToTG = "<b>{$this->validated['subject']}</b>\n {$this->validated['messageNL']}";
-		$response = self::toTG($textToTG);
+		if( $this->cfg['tg']['on'] )
+		{
+			$textToTG = "<b>{$this->validated['subject']}</b>\n {$this->validated['messageNL']}";
 
+			$response = $this->toTG($textToTG);
 
-
-		file_put_contents(__DIR__ . '/response.json', json_encode($response, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK), LOCK_EX);
-
-		/* var_dump(
-			$response
-			// , $this->validated
-		); */
+			file_put_contents(__DIR__ . '/response.json', json_encode($response, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK), LOCK_EX);
+			/* var_dump(
+				$response
+				// , $this->validated
+			); */
+		}
 
 		if(isset($_REQUEST['NoSendEmail'])) return;
 
@@ -347,7 +406,7 @@ $message = $_REQUEST['name'] . " пишет: \n\n{$_REQUEST['message']}";
 
 $mailPlain = new MailPlain ($subject, $message, $_REQUEST['email'], $_REQUEST['name']);
 
-if($send_succ = $mailPlain->TrySend())
+if($send_succ = $this->TrySend())
 {
 	# Success
 	echo "Ваше сообщение успешно отправлено!<br>Ожидайте ответа на указанный email";
