@@ -1,0 +1,27 @@
+.form-container div {
+	display: flex;
+	flex-wrap: wrap;
+	flex-basis: 100%;
+	align-items: center;
+	align-content: center;
+	margin: 15px 0;
+}
+
+.form-container div > * {
+	flex: 4 1;
+	padding: 2px 5px
+}
+
+.form-container div > *:first-child {
+	flex: 1 1 15%;
+}
+
+.form-container div > input[type=submit] {
+	flex-grow: 7;
+}
+
+.form-container label{
+	text-transform:uppercase;
+	font-size:10px;
+	font-family:Tahoma,Arial,Sans-serif;
+}

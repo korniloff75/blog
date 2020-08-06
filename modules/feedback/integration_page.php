@@ -1,3 +1,12 @@
+<?php
+if (!class_exists('System')) exit; // Запрет прямого доступа
+
+/**
+ * *Для адаптации требуется сохранить токен доступа к ТГ-боту в файл ./token
+ */
+
+ob_start()
+?>
 <!-- <link rel="stylesheet" type="text/css" href="/<?=$kff::getPathFromRoot(__DIR__) ?>/fb_form.css" /> -->
 
 <style>
@@ -136,5 +145,5 @@
 	// console.log(formData);
 })()
 </script>
-
-
+<?php
+return ob_get_clean();
