@@ -5,10 +5,30 @@ if (!class_exists('System')) exit; // Запрет прямого доступа
  * *Для адаптации требуется сохранить токен доступа к ТГ-боту в файл ./token
  */
 
- require_once DR.'/kff_custom/index_my_addon.php';
+// ?
+if(file_exists($index_my_addon = DR.'/kff_custom/index_my_addon.php'))
+	require_once $index_my_addon;
+else
+{
+	error_reporting(0);
 
-ob_start()
+	// note Глушим Логгер в продакшне
+	class fixLog
+	{
+		public function add($txt)
+		{
+			trigger_error('Заглушка - ' . $txt);
+		}
+	}
+	$log = new fixLog();
+
+}
+
+// $log->add('$Page',null,[$Page]);
+
+ob_start();
 ?>
+
 <link rel="stylesheet" type="text/css" href="/<?=$kff::getPathFromRoot(__DIR__) ?>/fb_form.css" />
 
 <div id="form-outbox">
@@ -106,7 +126,8 @@ ob_start()
 
 
 		$.ajax({
-		  url: '/<?=$kff::getPathFromRoot(__DIR__) ?>/PHPMailer/handler.php',
+		  // url: '/modules/feedback/PHPMailer/handler.php',
+		  url: '/modules/<?=$Page->module?>/PHPMailer/handler.php',
 		  data: formData,
 		  processData: false,
 		  contentType: false,

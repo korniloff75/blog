@@ -42,6 +42,7 @@ class MailPlain extends PHPMailer
 
 		# Common
 
+		$Mailer = 'smtp',
 		$Port = 465,
 		$SMTPAuth = true,
 		$SMTPSecure = "ssl",
@@ -301,7 +302,7 @@ class MailPlain extends PHPMailer
 			}
 
 			$this->IsSMTP();
-			$this->Mailer = 'smtp';
+			// $this->Mailer = 'smtp';
 			$this->SMTPDebug = $GLOBALS['status'] === 'admin' ? 2 : 0;
 			$this->setFrom($this->Username);
 			// $this->setFrom($this->validated['email'], $this->validated['name']);

@@ -5,8 +5,26 @@ require_once __DIR__ . '/MailPlain.php';
 	$_REQUEST
 ); */
 
+$test = 1;
+
 // ?
-require_once $_SERVER['DOCUMENT_ROOT'].'/kff_custom/index_my_addon.php';
+$index_my_addon_path = $_SERVER['DOCUMENT_ROOT'].'/kff_custom/index_my_addon.php';
+if(file_exists($index_my_addon_path) && !$test)
+	require_once $index_my_addon_path;
+else
+{
+	// note Глушим Логгер в продакшне
+	// todo Доработать
+	class fixLog
+	{
+		public function add($txt)
+		{
+			trigger_error('Заглушка сработала! - ' . $txt);
+		}
+	}
+	$log = new fixLog();
+
+}
 
 
 $subject = "{$_REQUEST['subject']} - feedback from " . $_SERVER['HTTP_HOST'];
@@ -21,25 +39,6 @@ $cfg = json_decode(
 $mailPlain = new MailPlain ($subject, $message, $_REQUEST['email'], $_REQUEST['name']);
 
 $mailPlain->cfg = &$cfg;
-
-/* // *Проверка данных для SMTP
-$is_SMTP = (
-	($mailPlain->Host = $cfg['smtp']['host'])
-	&& ($mailPlain->Username = $cfg['smtp']['username'])
-	&& ($mailPlain->Password = $cfg['smtp']['password'])
-);
-
-$mailPlain->SMTP['on'] = $is_SMTP;
-
-// *Проверка данных для Telegram
-$is_TG = (
-	($mailPlain::$TG['token'] = file_get_contents(__DIR__.'/../token'))
-	&& ($mailPlain::$TG['chat_id']= $cfg['tg']['chat_id'])
-);
-
-$mailPlain::$TG['on'] = $is_TG;
-
-$log->add('$is_SMTP= ',null,[$is_SMTP]); */
 
 MailPlain::save($mailPlain->validated);
 
