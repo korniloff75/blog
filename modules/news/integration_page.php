@@ -3,9 +3,12 @@ if (!class_exists('System')) exit; // Запрет прямого доступа
 
 // var_dump(function_exists('NewsCategoryName'));
 
-function NewsCategoryName()
+if(!function_exists('NewsCategoryName'))
 {
-	// return $GLOBALS['NewsCategoryName'](func_get_args());
+	function NewsCategoryName()
+	{
+		// return $GLOBALS['NewsCategoryName'](func_get_args());
+	}
 }
 
 

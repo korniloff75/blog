@@ -25,28 +25,47 @@ if($params['include_uikit'])
 		<script src="/'.$dirFromRoot.'/js/uikit-icons.min.js"></script>';
 	}
 
-	$log->add('',null,[$Page]);
+	$Page->headhtml.= '<!-- /UIkit-->';
 
-	if($params['use_styles'])
+	// $log->add('',null,[$Page]);
+
+	if(@$params['use_styles_input'])
 	{
 		$Page->endhtml.= '<script>
-		$(()=>{$(\'input\')
-		.each((ind,i)=>{
-			i.classList.add(\'uk-input\');
-		});
+		$(()=>{
+			$(\'input:not([type=checkbox], [type=file])\').addClass(\'uk-input\');
 
-		$(\'input[type=checkbox]\')
-		.each((ind,i)=>{
-			i.classList.add(\'uk-checkbox\');
-		});})
+			// $(\'input[type=button]\').addClass(\'uk-input\');
+
+			$(\'select\').addClass(\'uk-select\');
+
+			$(\'textarea\').addClass(\'uk-textarea\');
+
+			$(\'input[type=checkbox]\')
+			.addClass(\'uk-checkbox\');
+
+			$(\'input[type=radio]\').addClass(\'uk-radio\');
+
+			$(\'input[type=range]\').addClass(\'uk-range\');
+
+			$(\'input[type=file]\')
+			.wrap(\'<div uk-form-custom />\')
+			.after(\'<button class="uk-link" style="color:#fff">Загрузить</button>\')
+			// .text(this.value)
+			// .text(this.value||"Загрузить")
+		})
 		</script>';
 	}
 
-	$Page->headhtml.= '<!-- /UIkit-->';
+	if(@$params['use_styles_ul'])
+	{
+		$Page->endhtml.= '<script>
+		$(()=>{
+			$(\'ul\').addClass(\'uk-list uk-list-striped uk-list-large\');
+		})
+		</script>';
+	}
 
 }
-
-
-// var_dump($Page->headhtml);
 
 return null;

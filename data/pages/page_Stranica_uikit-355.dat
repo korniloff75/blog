@@ -1,0 +1,27 @@
+<p>Голая страница.</p>
+
+<p>Тестируем работу глобального модуля <strong>uikit-3.5.5</strong></p>
+
+<p><input></p>
+
+<p><input type="text"></p>
+
+<p><input type="checkbox"></p>
+
+<p><input type="file" value="upload"></p>
+
+<p><input type="button" value="input button"></p>
+
+<p><button>Simple button</button></p>
+
+<p><textarea>Это область с текстом.</textarea></p>
+
+<h3>List:</h3>
+
+<ul>
+	<li>Item</li>
+	<li>Item</li>
+	<li>Item</li>
+	<li>Item</li>
+	<li>Item</li>
+</ul>
