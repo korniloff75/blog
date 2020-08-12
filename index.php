@@ -1,8 +1,6 @@
 <?php
 require_once './kff_custom/index_my_addon.php';
 
-require_once './system/global.dat' ;
-
 ob_start($Config->gzip?'ob_gzhandler':null);
 
 //Обработка ЧПУ

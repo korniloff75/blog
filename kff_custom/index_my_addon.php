@@ -1,7 +1,9 @@
 <?php
 /**
- *note после обновления -- подключить к /index.php 1-й строкой
+ *note подключить к /index.php 1-й строкой
  ** require_once './kff_custom/index_my_addon.php';
+ *note и удалить строку (не обязательно)
+ ** require_once './system/global.dat' ;
  */
 
 ini_set('short_open_tag', 'On');
@@ -23,9 +25,6 @@ class Index_my_addon
 			self::$log = new Logger('kff.log', __DIR__.'/..');
 			self::$log->add('REQUEST_URI=',null, [$_SERVER['REQUEST_URI']]);
 		}
-
-		if(!defined('DR'))
-			define('DR', $_SERVER['DOCUMENT_ROOT']);
 	}
 
 	public function startLog()
@@ -83,4 +82,72 @@ class Index_my_addon
 }
 
 $kff = new Index_my_addon();
+
 $log = $kff->startLog();
+
+
+require_once $_SERVER['DOCUMENT_ROOT'].'/system/global.dat' ;
+
+if(!defined('DR'))
+	define('DR', $_SERVER['DOCUMENT_ROOT']);
+
+
+class EngineStorage_kff extends EngineStorage
+{
+	public
+		$prefix = 'cat_';
+	private $cats;
+	/**
+	 * *Определение параметров
+	 * @param storageDir - путь к родительской папке хранилища
+	 */
+	public function __construct($storage, $storageDir=null)
+	{
+		parent::__construct($storage);
+		if(!is_null($storageDir))
+			$this->storageDir = $storageDir;
+	}
+
+	public function getPathName()
+	:string
+	{
+		return $this->storageDir.'/'.$this->storage;
+	}
+
+	public function getCatsArr()
+	:array
+	{
+		if(is_null($this->cats))
+		{
+			glob($this->getPathName() . "/{$this->prefix}*", GLOB_ONLYDIR );
+		}
+		return $this->cats;
+	}
+
+	// JSON_UNESCAPED_UNICODE
+
+	//* Получение значения ключа
+	public function get($key)
+	{
+		return $this->iss($key)?
+			json_decode(
+				file_get_contents($this->getPathName(). "/{$key}.dat")
+			) :false;
+	}
+
+	//* Создание ключа
+	public function set($key, $value, $q = 'w+')
+	{
+		if(!$this->exists())
+		{
+			mkdir($this->getPathName());
+		}
+
+		if(!is_string($value))
+		{
+			$value= json_encode($value, JSON_UNESCAPED_UNICODE);
+		}
+
+		return filefputs($this->getPathName(). "/{$key}.dat", $value, $q);
+	}
+}

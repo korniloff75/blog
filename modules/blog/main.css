@@ -1,0 +1,419 @@
+img{
+display:block;
+max-width:100%;
+height:auto;
+margin:0;
+padding:0;
+overflow:hidden;
+}
+.post-prev{
+display:block !important;
+width:100% !important;
+padding:0 !important;
+margin:0 !important;
+margin-bottom:40px !important;
+overflow:hidden !important;
+}
+.post-prev h2{
+color:#666;
+padding:10px 20px;
+margin:0;
+background-color:#fafafa;
+}
+.img-prev {
+display:block;
+padding:0;
+margin:0;
+margin-bottom:10px;
+}
+.img-prev img{
+display:block;
+max-width:100%;
+height:auto;
+padding:0;
+margin:0;
+}
+.txt-prev {
+display:block;
+padding:0;
+margin:0;
+font-size:14px;
+}
+.icon-prev {
+display:block;
+max-width:100%;
+padding:0;
+margin:0;
+overflow:hidden;
+}
+.post-prev .data,
+.post-page .data{
+display:block;
+float:left;
+padding:0;
+margin:0;
+color:#666;
+}
+.btn-prev,.btn-back {
+display:block;
+float:right;
+padding:0;
+margin:0;
+overflow:hidden;
+}
+.btn-prev a,.btn-back a {
+display:inline-block;
+-moz-border-radius:2px;
+-webkit-border-radius:2px;
+-khtml-border-radius:2px;
+border-radius:2px;
+border: 1px solid #333;
+background-color: #333;
+text-transform: uppercase; 
+text-decoration: none; color: #fff;
+font: bold 14px Arial, sans-serif;
+padding: 10px 16px;
+}
+.btn-prev a:hover,.btn-back a:hover {
+border: 1px solid #444;
+background-color: #444;
+text-decoration: none; color: #fff;
+}
+.post-page{
+display:block;
+padding:0;
+margin:0;margin-bottom:40px;
+overflow:hidden;
+}
+.post-page img{
+display:block;
+max-width:100% !important;
+height:auto !important;
+padding:0;
+margin:0 auto;
+margin-bottom:10px;
+}
+.no{
+display:inline-block;
+padding:0;
+margin:10px 0;
+color:rgb(195,195,195);
+cursor:pointer;
+}
+.no-icon{
+display:block;
+float:left;
+width:16px;
+height:19px;
+padding:0;
+margin:0 3px 0 5px;
+background:url(/modules/blog/icon-thumb2.png) 0 2px no-repeat;
+}
+.yes{
+display:inline-block;
+padding:0;
+margin:10px 0;
+color:rgb(195,195,195);
+cursor:pointer;
+}
+.yes-icon{
+display:block;
+float:left;
+width:16px;
+height:19px;
+padding:0;
+margin:0 3px 0 5px;
+background:url(/modules/blog/icon-thumb1.png) 0 2px no-repeat;
+}
+.views{
+display:inline-block;
+padding:0;
+margin:10px 0;
+color:rgb(195,195,195);
+}
+.views-icon{
+display:block;
+float:left;
+padding:0;
+margin:0 3px 0 5px;
+width:16px;
+height:19px;
+border:0;
+background:url(/modules/blog/icon-eye.png) 0 2px no-repeat;
+}
+.com{
+display:inline-block;
+padding:0;
+margin:10px 0;
+color:rgb(195,195,195);
+}
+.com-icon{
+display:block;
+float:left;
+padding:0;
+margin:0 3px 0 5px;
+width:16px;
+height:19px;
+border:0;
+background:url(/modules/blog/icon-quote.png) 0 2px no-repeat;
+}
+.no-num,.yes-num,.views-num,.com-num{
+display:block;
+float:left;
+padding:0;
+padding-bottom:3px;
+margin:0;
+height:16px;
+}
+#block-comments{
+display:block;
+padding:0;
+max-width:700px;
+margin:0 auto;
+overflow:hidden;
+box-shadow:none !important;
+font-family:Arial,sans-serif !important;
+}
+#block-comments h3{
+display:block;padding:0;margin:0;margin-bottom:10px;overflow:hidden;
+font-size:18px;text-transform: uppercase; 
+}
+#block-comments form{
+display:block;
+padding:0;
+margin:0;
+border:1px solid #eee;
+overflow:hidden;
+background:none;
+border-radius:0;
+box-shadow:none !important;
+margin-bottom:20px !important;
+}
+.comment-form{
+display:block;
+padding:15px 15px 20px 15px;
+margin:0;
+background:#f8f8f8 !important;
+border:0 !important;
+overflow:hidden;
+border:0;
+border-radius:0;
+font-size:14px;
+color:#000;
+box-shadow:none !important;
+}
+.comment-form input[type="text"],.comment-form textarea{
+border:1px solid #aaa !important;
+}
+.login-input,.txt{
+display:block;
+padding:0;
+margin:0;
+margin-bottom:15px;
+overflow:hidden;
+}
+.captcha{
+display:block;float:left;margin:0;margin-right:15px;overflow:hidden;
+padding:0;	
+}
+.captcha img{
+display:block;
+width:150px;
+padding:2px;
+border:1px solid #aaa;
+-moz-border-radius:2px;
+-webkit-border-radius:2px;
+-khtml-border-radius:2px;
+border-radius:2px;
+}
+.sign{
+display:block;
+float:left;
+width:200px !important;
+padding:0 !important;
+margin:0 !important;
+margin-right:15px !important;
+overflow:hidden;
+}
+.sign input[type="text"]{
+width:100%;
+box-sizing: border-box;
+}
+.btn1{
+display:block;
+float:left;
+padding:0;
+margin:0;
+overflow:hidden;
+}
+.btn2{
+display:block;
+float:left;
+padding:0;
+margin:0;
+margin-top:18px !important;
+overflow:hidden;
+}
+.btn1 input[type="submit"],.btn2 input[type="submit"] {
+cursor:pointer;
+position:relative;
+display:block;
+-moz-border-radius:2px;
+-webkit-border-radius:2px;
+-khtml-border-radius:2px;
+border-radius:2px;
+border: 1px solid #333;
+background-color: #333;
+text-transform: uppercase; 
+text-decoration: none; color: #fff;
+font: bold 14px Arial, sans-serif;
+padding: 10px 16px;
+}
+.btn1 input[type="submit"]:hover,.btn2 input[type="submit"]:hover{
+border: 1px solid #444;
+background-color: #444;
+text-decoration: none; color: #fff;
+}
+.textarea_bar_blog{
+padding:10px 10px;
+padding-bottom:4px;
+background-color: #eee;
+}
+.comment .head{
+max-width:100%;
+overflow:hidden;
+}
+.comment .head .avatar{
+float:left;
+width:41px;
+height:41px;
+padding:1px;
+border:1px solid #ccc;
+border-radius:50%;
+overflow:hidden;
+}
+.comment .head .info{
+float:left;
+margin-left:10px;
+}
+.comment{
+position: relative;
+border:1px solid #eee;
+margin:0;
+margin-bottom:10px;
+padding:0;
+overflow:hidden;
+line-height:1.4;
+font-family:Arial,sans-serif;
+}
+.comment .head{
+background:#f8f8f8;
+border-bottom:1px solid #eee;
+margin:0; 
+padding:10px;
+overflow:hidden;
+}
+.comment .head a.name{
+color:#3B719F;
+font-weight:bold;
+font-size:16px;
+font-family:Arial,sans-serif;
+margin-right:10px;
+text-decoration: underline;
+}
+.comment .head a:hover.name{
+text-decoration: none;
+}
+.comment .gost{
+color: #E53935;margin-right:10px;font-size:14px;
+}
+.comment .head a.knob{
+display:inline-block;
+border-radius:2px;
+color:#000;
+padding:0;
+margin:0 10px;
+position:relative;
+text-decoration: underline;
+font-size:14px;
+}
+.comment .head a:hover.knob{
+text-decoration: none;
+}
+.comment .head span.time{
+font-size:14px;color:#000;
+}
+.comment-txt{
+padding:10px;
+font-size:14px;
+color:#000;}
+.comment .head input{
+position: absolute;display:block !important;
+top: 15px;
+right: 15px;
+z-index: 10;
+}
+#pagination ul.pagination{display:inline-block;padding:0;margin:0;border-radius:0 !important;background:none;}
+#pagination ul.pagination > li{display:inline;}
+#pagination ul.pagination > li > a,#pagination ul.pagination > li > span{
+position:relative;
+float:left;
+padding:6px 12px;
+margin:0px 0px 0px 1px;
+line-height:1.428571429;
+text-decoration:none;
+color:#666 !important;
+border:1px solid #ccc !important;
+background:#ebebeb;
+-moz-border-radius:2px;
+-webkit-border-radius:2px;
+-khtml-border-radius:2px;
+border-radius:2px;
+}
+#pagination ul.pagination > li.punkt{
+position:relative;
+float:left;
+padding:7px 12px;
+margin:0 0 2px 1px;
+line-height:1.428571429;
+text-decoration:none;
+color:#666 !important;
+}
+#pagination ul.pagination > li > a:hover,
+#pagination ul.pagination > li > span:hover{
+border:1px solid #333 !important;
+background:#555 !important;
+color:#fff !important;
+-moz-border-radius:2px;
+-webkit-border-radius:2px;
+-khtml-border-radius:2px;
+border-radius:2px;
+}
+#pagination ul.pagination > .active > a,
+#pagination ul.pagination > .active > span,
+#pagination ul.pagination > .active > a:hover,
+#pagination ul.pagination > .active > span:hover{
+z-index:2;
+color:#fff !important;
+font-weight:bold;
+cursor:default;
+border:1px solid #333 !important;
+background:#333;
+-moz-border-radius:2px;
+-webkit-border-radius:2px;
+-khtml-border-radius:2px;
+border-radius:2px;
+}
+#pagination ul.pagination > .disabled > span,
+#pagination ul.pagination > .disabled > span:hover,
+#pagination ul.pagination > .disabled > a,
+#pagination ul.pagination > .disabled > a:hover{
+color:#666 !important;
+cursor:not-allowed;
+border:1px solid #ccc !important;
+background:#ebebeb !important;
+-moz-border-radius:2px !important;
+-webkit-border-radius:2px !important;
+-khtml-border-radius:2px !important;
+border-radius:2px !important;
+}

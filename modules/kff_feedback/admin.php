@@ -1,7 +1,7 @@
 <style>
 	.tblform td:first-child {
 	width: 50%;
-	overflow: visible;
+	overflow-x: auto;
 	white-space: pre-line;
 	padding: 16px 30px 16px 0;
 }
@@ -34,10 +34,6 @@ if($act=='index'){
 		<td>Email адрес получателя писем:</td>
 		<td><input type="text" name="new_cfg_emal_admin" value="'.$emails.'" size="50"><br><span class="comment">Можно указать несколько адресов через запятую.</span></td>
 	</tr>
-	<!-- <tr>
-		<td>Отправлять содержимое любых форм:<br><span class="comment">Капча не проверяется, может быть спам</span></td>
-		<td class="middle"><input type="checkbox" name="fromallform" value="y" id="checkbox"'.$checked.'></td>
-	</tr> -->
 	<tr>
 		<td>Username:<br><span class="comment">Этот адрес будет использован как Username при SMTP авторизации, а также указан в строке отправителя письма.</span></td>
 		<td class="middle"><input type="text" name="smtp_username" value="'.@$cfg['smtp']['username'].'"></td>

@@ -19,7 +19,7 @@ else
 	{
 		public function add($txt)
 		{
-			trigger_error('Заглушка сработала! - ' . $txt);
+			trigger_error('Заглушка - ' . $txt);
 		}
 	}
 	$log = new fixLog();
