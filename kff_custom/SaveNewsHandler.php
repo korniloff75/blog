@@ -1,8 +1,6 @@
 <?php
 require_once __DIR__.'/Logger.php' ;
 
-$log = new Logger('kff.log', __DIR__.'/..');
-
 require_once "../system/global.dat";
 
 if(
@@ -14,12 +12,6 @@ if(
 	// todo 403
 }
 
-// $log->add('get_defined_constants() =',null,[(get_defined_constants(1))['user']]);
-
-$log->add('$module_news=',null,[$module_news]);
-// $log->add(__DIR__,null,[$RunModules->system]);
-// news_categories
-
 
 class SaveNewsHandler
 {
@@ -28,11 +20,14 @@ class SaveNewsHandler
 
 	public function __construct()
 	{
-		$this->log= $GLOBALS['log'];
+		$this->log = $GLOBALS['log'] ?? new Logger('kff.log', __DIR__.'/..');
+
+		$this->log->add('$module_news=',null,[$module_news]);
+
 		// $this->pathName= trim(\SELF, '/');
 		$pathArr= explode('/', trim($_REQUEST['basePath'], '/'));
 
-		$this->pathName= "../data/storage/{$_REQUEST['module_news']}/news_{$pathArr[1]}.dat";
+		$this->pathName= $_SERVER['DOCUMENT_ROOT']."/data/storage/{$_REQUEST['module_news']}/news_{$pathArr[1]}.dat";
 
 		$this->log->add('$pathArr =',null,[$pathArr]);
 
@@ -52,17 +47,22 @@ class SaveNewsHandler
 		return json_decode($base, 1);
 	}
 
-	private function addEdit()
+	private function setBase($base)
 	{
-		$base= $this->getBase();
-		$base['content'] = $_REQUEST['content'];
-
 		$baseStr = json_encode(
 			$base,
 			JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES
 		);
 
 		return file_put_contents($this->pathName, $baseStr);
+	}
+
+	private function addEdit()
+	{
+		$base= $this->getBase();
+		$base['content'] = $_REQUEST['content'];
+
+		return $this->setBase($base);
 	}
 }
 

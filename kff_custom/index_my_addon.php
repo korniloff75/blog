@@ -11,7 +11,10 @@ ini_set('short_open_tag', 'On');
 
 class Index_my_addon
 {
-	static $log = false;
+	public static
+		$log = false,
+		$dir;
+
 
 	public function __construct()
 	{
@@ -23,6 +26,9 @@ class Index_my_addon
 		{
 			require_once __DIR__.'/Logger.php' ;
 			self::$log = new Logger('kff.log', __DIR__.'/..');
+
+			self::$dir = self::getPathFromRoot(__DIR__);
+
 			self::$log->add('REQUEST_URI=',null, [$_SERVER['REQUEST_URI']]);
 		}
 	}
@@ -91,6 +97,8 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/system/global.dat' ;
 if(!defined('DR'))
 	define('DR', $_SERVER['DOCUMENT_ROOT']);
 
+// $log->add('$URL=',null,[$URL]);
+
 
 class EngineStorage_kff extends EngineStorage
 {
@@ -103,6 +111,7 @@ class EngineStorage_kff extends EngineStorage
 	 */
 	public function __construct($storage, $storageDir=null)
 	{
+		require_once __DIR__.'/DbJSON.php' ;
 		parent::__construct($storage);
 		if(!is_null($storageDir))
 			$this->storageDir = $storageDir;
@@ -127,12 +136,16 @@ class EngineStorage_kff extends EngineStorage
 	// JSON_UNESCAPED_UNICODE
 
 	//* Получение значения ключа
-	public function get($key)
+	public function get($key=null)
 	{
-		return $this->iss($key)?
+		$path = $this->getPathName() . ($key? "/$key":'') . ".dat";
+		// var_dump($path);
+		return
 			json_decode(
-				file_get_contents($this->getPathName(). "/{$key}.dat")
-			) :false;
+				file_get_contents(
+					$path
+				), 1
+			);
 	}
 
 	//* Создание ключа
@@ -145,7 +158,7 @@ class EngineStorage_kff extends EngineStorage
 
 		if(!is_string($value))
 		{
-			$value= json_encode($value, JSON_UNESCAPED_UNICODE);
+			$value= DbJSON::toJSON($value);
 		}
 
 		return filefputs($this->getPathName(). "/{$key}.dat", $value, $q);

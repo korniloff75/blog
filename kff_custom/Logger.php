@@ -44,8 +44,9 @@ class Logger
 		$this->rewriteLog = (bool) $rewriteLog;
 	}
 
+
 	/**
-	 * @message - string to the log
+	 * @param message - string to the log
 	 * optional @level - error constant || code
 	 * optional mixed @dump - will be output in the log by the function var_dump
 	 */

@@ -10,8 +10,16 @@
 <?php
 if (!class_exists('System')) exit; // Запрет прямого доступа
 
-$mailToAdminStorage = new EngineStorage('module.mail.to.admin');
-$cfg = json_decode($mailToAdminStorage->get('cfg'),1);
+require_once DR.'/kff_custom/index_my_addon.php';
+
+$mailToAdminStorage = new EngineStorage_kff('cfg.db', __DIR__);
+// $mailToAdminStorage = new EngineStorage('module.mail.to.admin');
+
+// $cfg = $mailToAdminStorage->get();
+$cfg = $mailToAdminStorage->get('cfg.db');
+// $cfg = json_decode($mailToAdminStorage->get('cfg'),1);
+
+// var_dump($cfg->getPathName());
 
 // *Target email(s)
 $emails = &$cfg['emails'];
@@ -89,9 +97,10 @@ if($act=='add')
 		file_put_contents(__DIR__.'/token', $_POST['tg_token']);
 	}
 
-	$mailToAdminStorage->set('cfg',
-		json_encode($cfg, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)
-	);
+	$mailToAdminStorage->set('cfg', $cfg );
+	// $mailToAdminStorage->set('cfg',
+	// 	json_encode($cfg, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)
+	// );
 	echo'<div class="msg">Настройки успешно сохранены</div>
 	<p><a href="module.php?module='.$MODULE.'"><<Назад</a></p>';
 ?>

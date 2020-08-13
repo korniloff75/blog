@@ -1,0 +1,211 @@
+.wrapper_y_pay {
+	font-family: Arial, sans-serif;
+	border-radius: 2px; 
+	border: 1px dotted #ccc!important; 
+	padding: 7px; 
+	width: 100%;
+	/*
+	background:linear-gradient(#ddd, transparent 1px), linear-gradient(90deg,#ddd, transparent 1px);
+	background-size: 10px 10px;
+	background-position: center center;	
+	*/
+	background: url(bg.png) repeat top left;
+}
+
+.wrapper_y_pay p {
+    font-size: 17px;
+}
+
+.wrapper_y_pay span {
+	display: block; 
+	padding: 10px 0 15px 0;
+}
+
+.wrapper_y_pay label {
+	padding-right: 20px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.wrapper_y_pay label:hover {
+	color: #666;
+}
+
+.wrapper_y_pay input[type=submit] {
+	width: 150px;
+}
+
+.wrapper_y_pay textarea {
+	
+}
+
+/* радиокнопка */
+.radio_y_pay {
+	width: 26px;
+	height: 26px;
+	box-sizing: content-box!important;
+	position: relative;
+	top: 7px;
+}
+
+/* чекбокс */
+.checkbox_y_pay input[type=checkbox] {
+	display: none;
+}
+
+.checkbox_y_pay input[type=checkbox] + label {
+	display: block;
+	position: relative;
+	margin: 12px 0 12px 30px;
+	cursor: pointer;
+	font-size: 13px;
+	line-height: 23px;
+}
+.checkbox_y_pay input[type=checkbox] + label:hover {
+	color:#666;
+}
+
+.checkbox_y_pay input[type=checkbox] + label:before {
+	position: absolute;
+	content: "";
+	width: 22px;
+	height: 22px;
+	line-height: 22px;
+	left: -30px;
+	border: 1px solid #808080;
+	border-radius: 2px;
+}
+
+.checkbox_y_pay input[type=checkbox]:checked + label:before {
+	content: "\2714";
+	font-size: 14px;
+	text-align: center;
+	font-weight: bold;
+	border: 1px solid #666;
+    border-radius: 2px;
+}
+
+.checkbox_y_pay input[disabled] {
+	opacity: .8!important;
+	cursor: not-allowed!important;
+}
+
+.email_y_pay { 
+	width: 340px!important; 
+}
+
+.pay_file_link p {
+	font-size: 12px!important;
+	margin: 0;
+	padding: 4px;
+	background: #B5DDD4;
+	border: 1px solid #B5DDD4;
+    border-radius: 2px;
+}
+
+.pay_file_info {
+    display: inline!important;
+	font-weight:bold;
+}
+
+.pay_fig {
+	width: 0; height: 0; 
+	border-width: 50px 30px 20px;
+	border-style: solid;
+	border-color: #F4B915 #F4B915 transparent;
+	margin-right: 16px;
+	margin-bottom: 16px;
+	float: left;
+}
+
+.pay_fig_price {
+	width: 150px; 
+	height: 60px; 
+	margin-right: 26px;
+	background: #B5DDD4;
+	position: relative;
+	border-radius: 10px;
+	float: left;
+}
+
+.pay_fig_price:before {
+	content: "";
+	width: 0; height: 0;
+	position: absolute; 
+	left: 100%; 
+	top: calc(50% - 12px);
+	border-top: 12px solid transparent;
+	border-left: 24px solid #B5DDD4;
+	border-bottom: 12px solid transparent;
+}
+
+.pay_fig_price p {
+	text-align: center!important; 
+	font-size: 26px!important; 
+	margin: 0!important;
+	padding: 0!important;
+	position: relative;
+	top: 8px;
+}
+
+.pay_fig_price p span {
+	font-size: 12px; 
+    display: inline-block;
+	line-height: 30px;
+}
+
+.pay_file_name {
+	font-size: 20px;
+	line-height:16px;
+	font-weight: bold;
+}
+
+.pay_inputs {
+	border: 1px dashed #F4B915; 
+	width: 430px;
+	padding: 10px!important;
+	margin: 10px!important;
+	box-sizing: content-box!important;
+}
+
+.pay_name {
+	
+}
+
+.pay_email {
+	font-weight: bold;
+	display: block!important;
+	margin: 0!important;
+	padding: 0!important;
+}
+
+.pay_name p {
+	line-height: 21px!important;
+}	
+
+.for_card {
+	font-size: 12px;
+	display: inline!important;
+	font-weight: normal;
+	line-height: 50px;
+}
+
+@media screen and (max-width: 480px) {
+
+	.checkbox_y_pay input[type=checkbox] + label { font-size: 10px; }
+	.wrapper_y_pay span { font-size: 13px; }
+	.wrapper_y_pay label { padding-right:7px; }
+	.wrapper_y_pay p { font-size: 15px; }
+	.email_y_pay { width: 100%!important; }
+	.pay_file_link p { font-size: 12px!important; }
+	.for_card { font-size: 10px!important; }
+	.pay_file_link p { font-size: 10px!important; }
+	.pay_fig_price { float:none; width:100%; }
+	.pay_fig_price:before {	left:0px; }
+	.wrapper_y_pay label {display:inline-block; }
+	.pay_inputs { width: 200px; }
+	.pay_file_name { font-size: 15px!important; } 
+	.pay_fig { border-width: 70px 30px 20px; }
+	.wrapper_y_pay input[type=submit] { width:100%!important; }
+	
+}

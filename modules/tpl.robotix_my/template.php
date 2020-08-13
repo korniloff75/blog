@@ -10,16 +10,17 @@
 <meta name="keywords" content="<?php $Page->get_keywords();?>">
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&family=Roboto+Condensed&display=swap" rel="stylesheet">
 <style>
-<?= file_get_contents('modules/tpl.robotix/style.min.css');?>
+<?= file_get_contents($kff::getPathFromRoot(__DIR__).'/style.min.css');?>
 <?= file_get_contents('admin/include/windows/windows.css');?>
 * {
 	box-sizing: border-box;
 }
 </style>
 <script>
-<?= file_get_contents('admin/include/windows/windows.js');?>
-<?#= file_get_contents('./kff_custom/js/jloader/jloader.js');?>
+<?php #echo file_get_contents(DR.'/admin/include/windows/windows.js');?>
 </script>
+
+<script src="/admin/include/windows/windows.js"></script>
 
 <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 
@@ -68,9 +69,9 @@
 
 	<?php if($Page->isIndexPage()):?>
 		<!--Slick-->
-		<link href="/modules/tpl.robotix/slick/slick.css" rel="stylesheet">
-		<link href="/modules/tpl.robotix/slick/slick-theme.css" rel="stylesheet">
-		<script src="/modules/tpl.robotix/slick/slick.min.js"></script>
+		<link href="/<?=$kff::getPathFromRoot(__DIR__)?>/slick/slick.css" rel="stylesheet">
+		<link href="/<?=$kff::getPathFromRoot(__DIR__)?>/slick/slick-theme.css" rel="stylesheet">
+		<script src="/<?=$kff::getPathFromRoot(__DIR__)?>/slick/slick.min.js"></script>
 
 		<div class="bgslider">
 			<div class="slider">
@@ -119,28 +120,28 @@
 		<div class="grid">
 			<section  id="c1"><?='
 				<h2>Офисы</h2>
-				<p><img src="/modules/tpl.robotix/images/card1.jpg" alt=""></p>
+				<p><img src="/<?=$kff::getPathFromRoot(__DIR__)?>/images/card1.jpg" alt=""></p>
 				<p>Оснастим офисы самым современным оборудованием</p>
 				<p><a href="/">Узнать подробней &#8594;</a></p>
 			';?>
 			</section>
 			<section id="c2"><?='
 				<h2>Кабинеты</h2>
-				<p><img src="/modules/tpl.robotix/images/card2.jpg" alt=""></p>
+				<p><img src="/<?=$kff::getPathFromRoot(__DIR__)?>/images/card2.jpg" alt=""></p>
 				<p>Организуем рабочее пространство кабинетов</p>
 				<p><a href="/">Узнать подробней &#8594;</a></p>
 			';?>
 			</section>
 			<section id="c3"><?='
 				<h2>Отдых</h2>
-				<p><img src="/modules/tpl.robotix/images/card3.jpg" alt=""></p>
+				<p><img src="/<?=$kff::getPathFromRoot(__DIR__)?>/images/card3.jpg" alt=""></p>
 				<p>Оборудуем комнаты отдыха для сотрудников компании</p>
 				<p><a href="/">Узнать подробней &#8594;</a></p>
 			';?>
 			</section>
 			<section id="c4"><?='
 				<h2>Помощники</h2>
-				<p><img src="/modules/tpl.robotix/images/card4.jpg" alt=""></p>
+				<p><img src="/<?=$kff::getPathFromRoot(__DIR__)?>/images/card4.jpg" alt=""></p>
 				<p>Оснастим роботами помощниками для посетителей</p>
 				<p><a href="/">Узнать подробней &#8594;</a></p>
 			';?>
@@ -226,11 +227,11 @@
 
 		</div>
 
-		<div class="addres editable" id="addres"><?='
+		<div class="addres" id="addres"><?='
 			<h3>Регионы деятельности</h3>
 			<p>Республика Крым.</p>
 			<h3>написать через TELEGRAM</h3>
-			<p>Даже если ваша учётная запись заблокирована за СПАМ, вы сможете написать мне через этого бота - <a data-cke-saved-href="https://t.me/js_master_bot" target="_blank" href="https://t.me/js_master_bot">@js_master_bot</a></p>
+			<p>Даже если ваша учётная запись заблокирована за СПАМ, вы сможете написать мне через этого бота - <a target="_blank" href="https://t.me/js_master_bot">@js_master_bot</a></p>
 		';?>
 		</div>
 	</div>

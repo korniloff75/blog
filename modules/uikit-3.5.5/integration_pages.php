@@ -1,28 +1,27 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT']."/kff_custom/index_my_addon.php";
-$dirFromRoot = $kff::getPathFromRoot(__DIR__);
+$modDir = $kff::getPathFromRoot(__DIR__);
 
-$log->add(__FILE__." started!!!");
+$log->add(basename(__FILE__)." started");
 
 $params= json_decode(
 	file_get_contents(__DIR__."/sts.json"), 1
 ) ?? [
 	'include_uikit'=>0,
-	'include_picts'=>0,
 ];
 
 if($params['include_uikit'])
 {
 	$Page->headhtml.= '
 	<!-- UIkit-->
-	<link rel="stylesheet" href="/'.$dirFromRoot.'/css/uikit.min.css" />
-	<script src="/'.$dirFromRoot.'/js/uikit.min.js"></script>';
+	<link rel="stylesheet" href="/'.$modDir.'/css/uikit.min.css" />
+	<script src="/'.$modDir.'/js/uikit.min.js"></script>';
 
-	if($params['include_picts'])
+	if(@$params['include_picts'])
 	{
 		$Page->headhtml.= '
 		<!-- UIkit picts-->
-		<script src="/'.$dirFromRoot.'/js/uikit-icons.min.js"></script>';
+		<script src="/'.$modDir.'/js/uikit-icons.min.js"></script>';
 	}
 
 	$Page->headhtml.= '<!-- /UIkit-->';
@@ -31,30 +30,35 @@ if($params['include_uikit'])
 
 	if(@$params['use_styles_input'])
 	{
-		$Page->endhtml.= '<script>
+		ob_start();
+	?>
+		<script>
 		$(()=>{
-			$(\'input:not([type=checkbox], [type=file])\').addClass(\'uk-input\');
+			$('input:not([type=checkbox], [type=file])').addClass('uk-input');
 
-			// $(\'input[type=button]\').addClass(\'uk-input\');
+			// $('input[type=button]').addClass('uk-input');
 
-			$(\'select\').addClass(\'uk-select\');
+			$('select').addClass('uk-select');
 
-			$(\'textarea\').addClass(\'uk-textarea\');
+			$('textarea').addClass('uk-textarea');
 
-			$(\'input[type=checkbox]\')
-			.addClass(\'uk-checkbox\');
+			$('input[type=checkbox]')
+			.addClass('uk-checkbox');
 
-			$(\'input[type=radio]\').addClass(\'uk-radio\');
+			$('input[type=radio]').addClass('uk-radio');
 
-			$(\'input[type=range]\').addClass(\'uk-range\');
+			$('input[type=range]').addClass('uk-range');
 
-			$(\'input[type=file]\')
-			.wrap(\'<div uk-form-custom />\')
-			.after(\'<button class="uk-link" style="color:#fff">Загрузить</button>\')
+			$('input[type=file]')
+			.wrap('<div uk-form-custom />')
+			.after('<button class="uk-link" style="color:#fff">Загрузить</button>')
 			// .text(this.value)
 			// .text(this.value||"Загрузить")
 		})
-		</script>';
+		</script>
+
+	<?php
+		$Page->endhtml.= ob_get_clean();
 	}
 
 	if(@$params['use_styles_ul'])

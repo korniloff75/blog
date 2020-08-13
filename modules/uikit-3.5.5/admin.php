@@ -10,11 +10,16 @@ $params= json_decode(
 if(!empty(@$name_req = $_REQUEST['name']??null))
 {
 	$params[$name_req] = $_REQUEST['sts'];
+	if(!empty(@$disable = $_REQUEST['disable']??null))
+	{
+		$params= [];
+	}
 	file_put_contents( __DIR__."/sts.json",
 		json_encode($params, JSON_UNESCAPED_UNICODE)
 	);
 	die ('is ajax_request!');
 }
+
 
 require_once "../kff_custom/index_my_addon.php";
 $dirFromRoot = $kff::getPathFromRoot(__DIR__);
@@ -39,7 +44,7 @@ $params_js= json_encode($params, JSON_UNESCAPED_UNICODE);
 	<h2><?=$MODULE?></h2>
 
 	<div class="box">
-		<p>Для работы модуля требуются:</p>
+		<h5>Для работы модуля требуются:</h5>
 		<ul>
 			<li>jQuery</li>
 			<li>директория kff_custom</li>
@@ -47,16 +52,19 @@ $params_js= json_encode($params, JSON_UNESCAPED_UNICODE);
 	</div>
 
 
-	<div class="uk-form">
-
-		<ul class="uk-list uk-list-striped uk-list-large">
-			<li><label>Подключить UIKIT <input name="include_uikit" type="checkbox"></label></li>
-			<li><label>Подключить изображения <input name="include_picts" type="checkbox"></label></li>
-			<li><label>Применить стили ко всем элементам <i>input</i> <input name="use_styles_input" type="checkbox"></label></li>
-			<li><label>Применить стили ко всем элементам <i>ul</i> <input name="use_styles_ul" type="checkbox"></label></li>
+	<ul class="uk-list uk-list-striped uk-list-large">
+		<li><label>Подключить UIKIT <input id="include_uikit" name="include_uikit" type="checkbox"></label></li>
+		<li><label>Подключить изображения <input name="include_picts" type="checkbox"></label></li>
+		<ul class="uk-list uk-list-striped">
+			<h5>Применить стили ко всем:</h5>
+			<li><label>Тегам <i>input</i> <input name="use_styles_input" type="checkbox"></label></li>
+			<li><label>Тегам <i>ul</i> <input name="use_styles_ul" type="checkbox"></label></li>
+			<p class="comment">
+				Подключённые теги будут динамически обрабатываться модулем.
+			</p>
 		</ul>
 
-	</div>
+		</ul>
 
 </div>
 
@@ -64,25 +72,28 @@ $params_js= json_encode($params, JSON_UNESCAPED_UNICODE);
 <script>
 'use strict';
 $(()=>{
-	var $form= $('.uk-form');
-	$form.find('input[type=checkbox]')
+	var $list= $('.uk-list');
+	$list.find('input[type=checkbox]')
 	.each((ind,i)=>{
 		i.classList.add('uk-checkbox');
 		i.checked= <?=$params_js?>[i.name] == 1;
 		console.log(i, i.checked);
 	});
 
-	// *Save sts
-	$form.on('change','input[type=checkbox]', (e)=>{
-		var p_name= e.target.name;
-		console.log(e, {
-			name: p_name,
-			sts: e.target.checked,
-		});
-		if(p_name) $.post('',{
-			name: p_name,
-			sts: e.target.checked?1:0,
-		});
+	// *Save sts request
+	$list.on('change','input[type=checkbox]', (e)=>{
+		var p_name= e.target.name,
+			send_data= {
+				name: p_name,
+				sts: e.target.checked?1:0,
+			};
+
+		if(!$('#include_uikit').prop('checked')) {
+			send_data.disable = 1;
+			$list.find('input[type=checkbox]').prop({checked:0});
+		}
+		console.log(e, send_data);
+		if(p_name) $.post('', send_data);
 	});
 })
 </script>
