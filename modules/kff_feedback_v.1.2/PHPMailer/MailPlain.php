@@ -11,7 +11,6 @@ use PHPMailer\PHPMailer\Exception;
 require_once __DIR__ . '/src/Exception.php';
 require_once __DIR__ . '/src/PHPMailer.php';
 require_once __DIR__ . '/src/SMTP.php';
-require_once "{$_SERVER['DOCUMENT_ROOT']}/kff_custom/index_my_addon.php";
 
 
 class MailPlain extends PHPMailer
@@ -42,20 +41,16 @@ class MailPlain extends PHPMailer
 
 		# Common
 
-		$Mailer = 'smtp',
-		$Port = 465,
-		$SMTPAuth = true,
-		$SMTPSecure = "ssl",
 		$CharSet    = 'UTF-8',
 
 		$attach = null,
 
 		$SMTP = [
-			"on" => true,
+			"on" => false,
 			"isHTML" => true,
 		];
 
-	private $log;
+	public $log;
 
 
 	public function __construct($subject, $message, $from_mail, $from_name = null)
@@ -67,9 +62,6 @@ class MailPlain extends PHPMailer
 
 		$this->setLanguage('ru', __DIR__ . '/language/');
 		parent::__construct(true);
-
-		# 4 test
-		if(!empty($GLOBALS['test'])) $this->to_emails = 'support@js-master.ru';
 
 		$this->validated = $this->valid([
 			'name' => $from_name,
@@ -91,29 +83,6 @@ class MailPlain extends PHPMailer
 		. "\nEmail - {$this->validated['email']}"
 		. "\nIP - " . $kff::realIP()
 		. ($_REQUEST['tg'] ? "\nTelegram - {$_REQUEST['tg']}" : "");
-
-		/* if($this->SMTP['isHTML']) {
-			$this->validated['message'] = nl2br($this->validated['message']);
-		}
-
-		$this->Body = $this->validated['message'];
-		$this->AltBody = strip_tags($this->validated['messageNL']);
-
-		if ($this->SMTP['on'])
-		{
-			$this->IsSMTP();
-			$this->Port = 465;
-			$this->SMTPAuth = true;
-			$this->SMTPSecure = "ssl";
-			$this->Mailer = 'smtp';
-			$this->SMTPDebug = $GLOBALS['status'] === 'admin' ? 2 : 0;
-			$this->setFrom($this->Username);
-			// $this->setFrom($this->validated['email'], $this->validated['name']);
-		}
-		else
-		{
-			$this->From = $this->Username;
-		} */
 
 	} // __construct
 
@@ -290,10 +259,13 @@ class MailPlain extends PHPMailer
 
 		// *Проверка данных для SMTP
 		$is_SMTP = (
-			($this->Host = $this->cfg['smtp']['host'])
-			&& ($this->Username = $this->cfg['smtp']['username'])
-			&& ($this->Password = $this->cfg['smtp']['password'])
+			!empty($this->Host = $this->cfg['smtp']['host'])
+			&& !empty($this->Password = $this->cfg['smtp']['password'])
 		);
+
+		if(!empty($this->Username = $this->cfg['smtp']['username']))
+			$this->setFrom($this->Username);
+		else $this->log->add('$this->Username= ',null,[$this->Username,$this->cfg['smtp']['username'],$this->cfg['smtp']]);
 
 		if ( $this->SMTP['on'] = $is_SMTP )
 		{
@@ -301,15 +273,22 @@ class MailPlain extends PHPMailer
 				$this->validated['message'] = nl2br($this->validated['message']);
 			}
 
+			$this->log->add('$is_SMTP ',null,[$is_SMTP, $this->SMTP['on']]);
+
+			$this->Mailer = 'smtp';
+			$this->Port = 465;
+			$this->SMTPAuth = true;
+			$this->SMTPSecure = "ssl";
+
 			$this->IsSMTP();
 			// $this->Mailer = 'smtp';
 			$this->SMTPDebug = $GLOBALS['status'] === 'admin' ? 2 : 0;
-			$this->setFrom($this->Username);
+
 			// $this->setFrom($this->validated['email'], $this->validated['name']);
 		}
 		else
 		{
-			$this->From = $this->Username;
+
 		}
 
 		// *Проверка данных для Telegram
@@ -347,7 +326,7 @@ class MailPlain extends PHPMailer
 			else die('Нет адреса получателя ' . __FILE__ . __LINE__);
 		}
 
-		foreach($to as $email) {
+		foreach($to as &$email) {
 			$this->AddAddress($email);
 		}
 
@@ -374,6 +353,17 @@ class MailPlain extends PHPMailer
 
 		if(isset($_REQUEST['NoSendEmail'])) return;
 
+		// *Обходим ограничения хостеров
+		// todo Добиться работы без SMTP
+		if(!$this->SMTP['on'] && 0)
+		// if(!$this->SMTP['on'])
+		{
+			// $send = function_exists('mb_send_mail') ? 'mb_send_mail' : 'mail';
+			// return $send(substr(implode(',',$to),0,-1), $this->validated['subject'], $this->validated['message'], ['From'=>$this->Username]);
+
+			return $this->addmail(substr(implode(',',$to),0,-1), $this->validated['subject'], $this->validated['message'], $this->Username);
+		}
+
 
 		try {
 			$this->Send();
@@ -386,35 +376,28 @@ class MailPlain extends PHPMailer
 					$this->Send();
 					return true;
 				} catch (phpmailerException $e) {
-					// var_dump($e);
-					echo 'Mailer Error: ' . $this->ErrorInfo;
 					return false;
 					// return $e->xdebug_message;
 				}
 		} catch (Exception $e) {
 			// var_dump($e);
+			echo 'Mailer Error: ' . $this->ErrorInfo;
 			return false;
 		}
 	}
+
+	private function addmail($to, $theme, $messeg, $from = ''){
+		//$to - Адрес получателя
+		//$theme - Тема письма
+		//$messeg - Текст письма
+		//$from - Адрес отправителя
+		$subject = '=?utf-8?B?'.trim(base64_encode($theme)).'?=';
+		$headers = '';
+		if($from != ''){$headers .= "From: $from\r\n";}
+		$headers .= "MIME-Version: 1.0\r\n";
+		$headers .= "Content-Transfer-Encoding: 8bit\r\n";
+		$headers .= "Content-Type: text/plain; charset=\"utf-8\"\r\n";
+		$headers .= "X-Mailer: PHP v.".phpversion();
+		return mail($to,$subject,$messeg,$headers);
+	}
 } // MailPlain
-
-
-
-/** EXAMPLE
-
-$subject = $_REQUEST['subject'] . ' - Обратная связь с ' . HOST;
-$message = $_REQUEST['name'] . " пишет: \n\n{$_REQUEST['message']}";
-
-$mailPlain = new MailPlain ($subject, $message, $_REQUEST['email'], $_REQUEST['name']);
-
-if($send_succ = $this->TrySend())
-{
-	# Success
-	echo "Ваше сообщение успешно отправлено!<br>Ожидайте ответа на указанный email";
-}
-else
-{
-	# Fail
-	echo "Ваше сообщение не было доставлено.";
-}
-*/

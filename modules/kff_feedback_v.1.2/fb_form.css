@@ -43,7 +43,7 @@
 
 #response {
 	white-space: pre-line;
-	color: #fff;
+	color: #aaa;
 	font-size: 10px;
 	font-weight: bold;
 	margin-top: 10px;
@@ -53,8 +53,10 @@
 
 .success {
 	background-color: green;
+	color: #fff;
 }
 
 .error {
 	background-color: #ab0000;
+	color: #fff;
 }

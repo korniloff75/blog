@@ -1,4 +1,8 @@
 <?php
+if(!file_exists($_SERVER['DOCUMENT_ROOT']."/kff_custom"))
+	die("Для работы модуля требуется наличие директории <b>kff_custom</b> в корне движка.");
+
+
 require_once $_SERVER['DOCUMENT_ROOT']."/kff_custom/index_my_addon.php";
 $modDir = $kff::getPathFromRoot(__DIR__);
 

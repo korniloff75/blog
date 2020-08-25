@@ -12,11 +12,8 @@ ini_set('short_open_tag', 'On');
 class Index_my_addon
 {
 	public static
-		// $log = false,
-		// *Путь к kff_custom
+		$log = false,
 		$dir;
-
-	private static $log = false;
 
 
 	public function __construct()
@@ -24,34 +21,23 @@ class Index_my_addon
 		// ini_set('display_errors', 1);
 		// trigger_error('test');
 
-		// !Отсекаем проверки комментов
+		// *Отсекаем проверки комментов
 		if(
-			$is_comment_ajax = stripos($_SERVER['REQUEST_URI'], 'ajax/newcommentcheck')
-			|| stripos($_SERVER['REQUEST_URI'], 'ajax/loadcomments')
+			strpos(__DIR__, 'kff_custom')
+			&& (!$is_comment_ajax = stripos($_SERVER['REQUEST_URI'], 'ajax/newcommentcheck')
+			|| stripos($_SERVER['REQUEST_URI'], 'ajax/loadcomments'))
 		)
-			return;
-
-
-		// *Logger exist
-		if(file_exists(__DIR__.'/Logger.php'))
 		{
 			require_once __DIR__.'/Logger.php' ;
 			self::$log = new Logger('kff.log', __DIR__.'/..');
+
+			self::$dir = self::getPathFromRoot(__DIR__);
+
+			self::$log->add('REQUEST_URI=',null, [$_SERVER['REQUEST_URI']]);
 		}
-		else
-		{
-			self::$log = new fixLog();
-			self::$log->add('LOGGER FIXED from '.__METHOD__);
-		}
-
-		self::$dir = self::getPathFromRoot(__DIR__);
-
-		self::$log->add('REQUEST_URI=',null, [$_SERVER['REQUEST_URI']]);
-
 	}
 
-
-	public static function get_log()
+	public function startLog()
 	{
 		return self::$log;
 	}
@@ -78,18 +64,10 @@ class Index_my_addon
 		return $_SERVER['HTTP_CLIENT_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? null;
 	}
 
-
-	public static function is_adm ()
-
-	{
-		return $GLOBALS['status'] === 'admin';
-	}
-
-
 	public function __destruct()
 	{
 		// var_dump($GLOBALS['log']);
-		if(self::is_adm())
+		if($GLOBALS['status'] === 'admin')
 		{
 			// if(empty($_GET['dev']))
 			if(self::$log && !self::$log::$printed)
@@ -113,27 +91,9 @@ class Index_my_addon
 	}
 }
 
-
-// *Заглушка для Логгера
-class fixLog
-{
-	public function add($txt, $e_type=null, $dump=[])
-	{
-		$o='';
-		if(count($dump)) foreach($dump as $i)
-		{
-			ob_start();
-			var_dump($i);
-			$o.= ob_get_clean();
-		}
-		trigger_error(('Заглушка - ' . $txt . $o), $e_type ?? E_USER_NOTICE);
-	}
-}
-
-
 $kff = new Index_my_addon();
 
-$log = $kff::get_log();
+$log = $kff->startLog();
 
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/system/global.dat' ;
@@ -144,11 +104,9 @@ if(!defined('DR'))
 // $log->add('$URL=',null,[$URL]);
 
 
-// todo Разработать сохранение материалов по категориям
 class EngineStorage_kff extends EngineStorage
 {
 	public
-		$log,
 		$prefix = 'cat_';
 	private $cats;
 	/**
@@ -157,19 +115,10 @@ class EngineStorage_kff extends EngineStorage
 	 */
 	public function __construct($storage, $storageDir=null)
 	{
-		$this->log= Index_my_addon::get_log();
-
-		if(file_exists(__DIR__.'/DbJSON.php'))
-		{
-			require_once __DIR__.'/DbJSON.php' ;
-			parent::__construct($storage);
-			if(!is_null($storageDir))
-				$this->storageDir = $storageDir;
-		}
-		else
-		{
-			$this->log->add('DbJSON is not exist!', E_USER_WARNING);
-		}
+		require_once __DIR__.'/DbJSON.php' ;
+		parent::__construct($storage);
+		if(!is_null($storageDir))
+			$this->storageDir = $storageDir;
 	}
 
 	public function getPathName()
@@ -208,7 +157,7 @@ class EngineStorage_kff extends EngineStorage
 	{
 		if(!$this->exists())
 		{
-			mkdir($this->getPathName(), 0775, true);
+			mkdir($this->getPathName());
 		}
 
 		if(!is_string($value))

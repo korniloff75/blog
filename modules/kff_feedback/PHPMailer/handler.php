@@ -5,13 +5,13 @@ require_once __DIR__ . '/MailPlain.php';
 	$_REQUEST
 ); */
 
-$test = 1;
+// $test = 1;
 
 // ?
 $index_my_addon_path = $_SERVER['DOCUMENT_ROOT'].'/kff_custom/index_my_addon.php';
 if(file_exists($index_my_addon_path) && !$test)
 	require_once $index_my_addon_path;
-else
+elseif(!class_exists('fixLog'))
 {
 	// note Глушим Логгер в продакшне
 	// todo Доработать

@@ -1,25 +1,33 @@
 <?php
-require_once __DIR__ . '/MailPlain.php';
-
 /* var_dump(
 	$_REQUEST
 ); */
 
-$test = 1;
-
 // ?
-$index_my_addon_path = $_SERVER['DOCUMENT_ROOT'].'/kff_custom/index_my_addon.php';
-if(file_exists($index_my_addon_path) && !$test)
-	require_once $index_my_addon_path;
-else
+define(
+	'INDEX_MY_ADDON_PATH',
+	(file_exists("{$_SERVER['DOCUMENT_ROOT']}/kff_custom") ? "{$_SERVER['DOCUMENT_ROOT']}/kff_custom" : __DIR__.'/..') . "/index_my_addon.php"
+);
+
+
+if(file_exists(INDEX_MY_ADDON_PATH))
+	require_once INDEX_MY_ADDON_PATH;
+
+if(!$log)
 {
 	// note Глушим Логгер в продакшне
-	// todo Доработать
 	class fixLog
 	{
-		public function add($txt)
+		public function add($txt, $e_type=null, $dump=[])
 		{
-			trigger_error('Заглушка - ' . $txt);
+			$o='';
+			if(count($dump)) foreach($dump as $i)
+			{
+				ob_start();
+				var_dump($i);
+				$o.= ob_get_clean();
+			}
+			trigger_error(('Заглушка - ' . $txt . $o), $e_type ?? E_USER_NOTICE);
 		}
 	}
 	$log = new fixLog();
@@ -27,18 +35,20 @@ else
 }
 
 
+require_once __DIR__ . '/MailPlain.php';
+
+
 $subject = "{$_REQUEST['subject']} - feedback from " . $_SERVER['HTTP_HOST'];
 $message = "{$_REQUEST['name']} пишет: \n{$_REQUEST['message']}";
-
-// *Достаём настройки из админки
-$cfg = json_decode(
-	file_get_contents(DR.'/data/storage/module.mail.to.admin/cfg.dat'),1
-);
 
 // *init MailPlain
 $mailPlain = new MailPlain ($subject, $message, $_REQUEST['email'], $_REQUEST['name']);
 
-$mailPlain->cfg = &$cfg;
+// *Достаём настройки из админки
+$mailPlain->cfg = json_decode(
+	file_get_contents(DR.'/data/storage/module.mail.to.admin/cfg.dat'),1
+);
+// $mailPlain->log->add('CFG',null,[$mailPlain->cfg]);
 
 MailPlain::save($mailPlain->validated);
 
@@ -62,7 +72,7 @@ if(@$_REQUEST['captcha'] != $kff::realIP())
 	// echo $_SESSION['captcha'] . '<br>';
 	echo "Невидимая каптча не пройдена. Попробуйте ещё раз.";
 }
-elseif($send_succ = $mailPlain->TrySend())
+elseif($mailPlain->TrySend())
 {
 	# Success
 	echo "<div class=\"success\">Ваше сообщение успешно отправлено!<br>Ожидайте ответа на указанный email или Telegram. </div>";
