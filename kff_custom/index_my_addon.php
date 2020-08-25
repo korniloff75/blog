@@ -13,6 +13,7 @@ class Index_my_addon
 {
 	public static
 		$log = false,
+		// *Путь к kff_custom
 		$dir;
 
 
@@ -22,16 +23,31 @@ class Index_my_addon
 		// trigger_error('test');
 
 		// *Отсекаем проверки комментов
-		if(!$is_comment_ajax = stripos($_SERVER['REQUEST_URI'], 'ajax/newcommentcheck') || stripos($_SERVER['REQUEST_URI'], 'ajax/loadcomments') )
+		if(
+			$is_comment_ajax = stripos($_SERVER['REQUEST_URI'], 'ajax/newcommentcheck')
+			|| stripos($_SERVER['REQUEST_URI'], 'ajax/loadcomments')
+		)
+			return;
+
+
+		// *Logger exist
+		if(file_exists(__DIR__.'/Logger.php'))
 		{
 			require_once __DIR__.'/Logger.php' ;
 			self::$log = new Logger('kff.log', __DIR__.'/..');
-
-			self::$dir = self::getPathFromRoot(__DIR__);
-
-			self::$log->add('REQUEST_URI=',null, [$_SERVER['REQUEST_URI']]);
 		}
+		else
+		{
+			self::$log = new fixLog();
+			self::$log->add('LOGGER FIXED from '.__METHOD__);
+		}
+
+		self::$dir = self::getPathFromRoot(__DIR__);
+
+		self::$log->add('REQUEST_URI=',null, [$_SERVER['REQUEST_URI']]);
+
 	}
+
 
 	public function startLog()
 	{
@@ -86,6 +102,24 @@ class Index_my_addon
 		}
 	}
 }
+
+
+// note Заглушка для Логгера
+class fixLog
+{
+	public function add($txt, $e_type=null, $dump=[])
+	{
+		$o='';
+		if(count($dump)) foreach($dump as $i)
+		{
+			ob_start();
+			var_dump($i);
+			$o.= ob_get_clean();
+		}
+		trigger_error(('Заглушка - ' . $txt . $o), $e_type ?? E_USER_NOTICE);
+	}
+}
+
 
 $kff = new Index_my_addon();
 

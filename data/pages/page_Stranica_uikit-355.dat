@@ -32,3 +32,5 @@
 <script>
 alert('js OK!!!')
 </script>
+
+<p><img alt="cool" height="23" src="http://blog.js-master/modules/ckeditor_plus/ckeditor/plugins/smiley/images/shades_smile.png" title="cool" width="23" /></p>

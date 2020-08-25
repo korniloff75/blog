@@ -9,5 +9,5 @@ CKEDITOR.editorConfig = function( config ) {
 	config.language = 'ru';
 	config.allowedContent = true;
 	config.protectedSource.push(/<(script)[^>]*>.*<\/\1>/ig);
-	config.protectedSource.push(/<\?[sS]*?\?>/g);// разрешить php-код
+	config.protectedSource.push(/<\?[\s\S]*?\?>/g);// разрешить php-код
 };

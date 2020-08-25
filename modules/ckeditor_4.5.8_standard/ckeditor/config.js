@@ -8,8 +8,12 @@ CKEDITOR.editorConfig = function( config ) {
 	// For complete reference see:
 	// http://docs.ckeditor.com/#!/api/CKEDITOR.config
 
-	// The toolbar groups arrangement, optimized for two toolbar rows.
+	// *Allow use tags & scripts
 	config.allowedContent = true;
+	config.protectedSource.push(/<(script)[^>]*>.*<\/\1>/ig);
+	config.protectedSource.push(/<\?[\s\S]*?\?>/g);// разрешить php-код
+
+	// The toolbar groups arrangement, optimized for two toolbar rows.
 	config.toolbarGroups = [
 		{ name: 'clipboard',   groups: [ 'clipboard', 'undo' ] },
 		{ name: 'editing',     groups: [ 'find', 'selection', 'spellchecker' ] },
@@ -36,8 +40,5 @@ CKEDITOR.editorConfig = function( config ) {
 
 	// Simplify the dialog windows.
 	config.removeDialogTabs = 'image:advanced;link:advanced';
+
 };
-
-CKEDITOR.config.protectedSource.push(/<(script)[^>]*>.*<\/\1>/ig);
-
-CKEDITOR.config.protectedSource.push(/<\?[sS]*?\?>/g);// разрешить php-код
