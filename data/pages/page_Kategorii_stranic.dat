@@ -1,0 +1,3 @@
+<?php
+		if(Module::exists('admin_pages_category')) echo Get_PagesCategory();
+		?>

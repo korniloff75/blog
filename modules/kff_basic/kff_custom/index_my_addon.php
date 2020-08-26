@@ -6,7 +6,7 @@
  ** require_once './system/global.dat' ;
  */
 
-ini_set('short_open_tag', 'On');
+// ini_set('short_open_tag', 'On');
 
 
 class Index_my_addon
@@ -24,7 +24,7 @@ class Index_my_addon
 		// ini_set('display_errors', 1);
 		// trigger_error('test');
 
-		// !Отсекаем проверки комментов
+		// *Отсекаем проверки комментов
 		if(
 			$is_comment_ajax = stripos($_SERVER['REQUEST_URI'], 'ajax/newcommentcheck')
 			|| stripos($_SERVER['REQUEST_URI'], 'ajax/loadcomments')
@@ -32,17 +32,9 @@ class Index_my_addon
 			return;
 
 
-		// *Logger exist
-		if(file_exists(__DIR__.'/Logger.php'))
-		{
-			require_once __DIR__.'/Logger.php' ;
-			self::$log = new Logger('kff.log', __DIR__.'/..');
-		}
-		else
-		{
-			self::$log = new fixLog();
-			self::$log->add('LOGGER FIXED from '.__METHOD__);
-		}
+		// *Logger
+		require_once __DIR__.'/Logger.php' ;
+		self::$log = new Logger('kff.log', __DIR__.'/..');
 
 		self::$dir = self::getPathFromRoot(__DIR__);
 
@@ -115,7 +107,7 @@ class Index_my_addon
 
 
 // *Заглушка для Логгера
-class fixLog
+/* class fixLog
 {
 	public function add($txt, $e_type=null, $dump=[])
 	{
@@ -128,7 +120,7 @@ class fixLog
 		}
 		trigger_error(('Заглушка - ' . $txt . $o), $e_type ?? E_USER_NOTICE);
 	}
-}
+} */
 
 
 $kff = new Index_my_addon();

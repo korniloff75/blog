@@ -42,27 +42,28 @@ class cpDir
 			unlink($dir);
 		}
 		return (mkdir($dir, 0755, true)) ? $dir : false;
-	} //function mkdir_safe
+	} // mkdir_safe
 
 
 	function copy_safe ($f1, $f2, $upd) {
 		$time1 = filemtime($f1);
-		if (file_exists($f2)) {
-				$time2 = filemtime($f2);
-				if ($time2 >= $time1 && $upd) return false;
+		if (file_exists($f2))
+		{
+			$time2 = filemtime($f2);
+			if ($time2 >= $time1 && $upd) return false;
 		}
+
 		$ok = copy($f1, $f2);
+
 		if ($ok) touch($f2, $time1);
 		return $ok;
-	} //function copy_safe
+	} // copy_safe
 
 
 	function fs_log($str) {
 		$time = date("Y-m-d H:i:s");
 
 		self::$log[]= "$str ($time)\n";
-
-		// file_put_contents("{$this->target}/fs_log.txt","$str ($time)\n", FILE_APPEND|LOCK_EX);
 	}
 
 
@@ -77,6 +78,7 @@ class cpDir
 		{
 			$log->add(__METHOD__, null, [self::$log]);
 		}
+		// FILE_APPEND|LOCK_EX
 		file_put_contents("{$this->target}/".basename(__FILE__).'.log',self::$log);
 	}
 }
@@ -92,5 +94,5 @@ class linkDir extends cpDir
 			return false;
 		}
 		return link($f1, $f2);
-	} //function copy_safe
+	} // copy_safe
 }

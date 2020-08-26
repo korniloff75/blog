@@ -61,7 +61,7 @@
 <div class="container">
 	<div class="content">
 		<div id="sidebar_menu" class="sidebar sidebar_left">
-			<?php $page->get_column('left','<aside><h2>#name#</h2><div class="aside_content">#content#</div></aside>');?>
+			<?php # $page->get_column('left','<aside><h2>#name#</h2><div class="aside_content">#content#</div></aside>');?>
 		</div>
 		<main>
 			<article>

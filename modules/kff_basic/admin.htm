@@ -1,0 +1,43 @@
+<script src="/<?=Basic::$dir?>/kff_custom/js/kff.js"></script>
+<link rel="stylesheet" href="/<?=Basic::$dir?>/../kff_uikit-3.5.5/css/uikit.min.css" />
+<script src="/<?=Basic::$dir?>/../kff_uikit-3.5.5/js/uikit.min.js"></script>
+
+<style>
+	input[type="text"], input[type="password"], select {
+	width: 100%;
+	max-width: 500px;
+}
+</style>
+
+<div id="kff_sts" class="uk-section .uk-section-primary uk-padding">
+	<p class="comment">При снятом флажке будет восстановлена оригинальная версия движка</p>
+	<label>Версия KFF <input name="kff" type="checkbox" <?= Basic::$cfg['kff']?'checked':''?>></label>
+	<p class="comment">Поставленный флажок внедряет дополнительный функционал</p>
+	<p><label>Init Modules <input name="init_mods" type="checkbox" ></label></p>
+	<p class="comment">Инициализация всех модулей. Системная.</p>
+</div>
+
+<script>
+'use strict';
+kff.checkLib('jQuery')
+.then($=>{
+	// *Украшения
+	$('#kff_sts input[type=checkbox]').addClass('uk-checkbox');
+
+	// *Сохр настроек
+	$('#kff_sts').on('change', 'input', $e=>{
+		var $t= $($e.target);
+		console.log($t.prop('checked'));
+		if(!$t.length) return;
+
+		$.post('',{
+			name: $t.prop('name'),
+			val: $t.prop('checked'),
+		}).then((response, status)=>{
+			// console.log();
+			$('<div/>').insertAfter($e.currentTarget)
+			.html($(response).find('pre'));
+		});
+	})
+});
+</script>
