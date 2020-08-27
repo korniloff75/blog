@@ -1,5 +1,5 @@
 <?php
-require_once './kff_custom/index_my_addon.php';
+require('./system/global.dat');
 ob_start($Config->gzip?'ob_gzhandler':null);
 
 

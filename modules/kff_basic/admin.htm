@@ -1,6 +1,6 @@
 <script src="/<?=Basic::$dir?>/kff_custom/js/kff.js"></script>
-<link rel="stylesheet" href="/<?=Basic::$dir?>/../kff_uikit-3.5.5/css/uikit.min.css" />
-<script src="/<?=Basic::$dir?>/../kff_uikit-3.5.5/js/uikit.min.js"></script>
+<link rel="stylesheet" href="/<?=Basic::$dir?>/modules/kff_uikit-3.5.5/css/uikit.min.css" />
+<script src="/<?=Basic::$dir?>/modules/kff_uikit-3.5.5/js/uikit.min.js"></script>
 
 <style>
 input[type="text"], input[type="password"], select {
@@ -37,7 +37,7 @@ kff.checkLib('jQuery')
 	// *Сохр глоб. настроек
 	$('#kff_sts').on('change', 'input', $e=>{
 		var $t= $($e.target);
-		console.log($t.prop('checked'));
+		// console.log($t.prop('checked'));
 		if(!$t.length) return;
 
 		var val= $t.val() === 'on' ? $t.prop('checked') : $t.val();

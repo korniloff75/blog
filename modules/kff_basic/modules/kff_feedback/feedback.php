@@ -1,13 +1,34 @@
-<?php
+<!-- <link rel="stylesheet" type="text/css" href="/<?=$kff::getPathFromRoot(__DIR__) ?>/fb_form.css" /> -->
 
-// $log->add('$Page',null,[$Page]);
+<style>
+	.form-container div {
+	display: flex;
+	flex-wrap: wrap;
+	flex-basis: 100%;
+	align-items: center;
+	align-content: center;
+	margin: 15px 0;
+}
 
-ob_start();
-?>
+.form-container div > * {
+	flex: 4 1;
+	padding: 2px 5px
+}
 
-<script src="<?=$kff::$dir?>/js/kff.js"></script>
+.form-container div > *:first-child {
+	flex: 1 1 15%;
+}
 
-<link rel="stylesheet" type="text/css" href="/<?=$kff::getPathFromRoot(__DIR__) ?>/fb_form.css" />
+.form-container div > input[type=submit] {
+	flex-grow: 7;
+}
+
+.form-container label{
+	text-transform:uppercase;
+	font-size:10px;
+	font-family:Tahoma,Arial,Sans-serif;
+}
+</style>
 
 <div id="form-outbox">
 
@@ -57,7 +78,8 @@ ob_start();
 				<input type="reset" name="reset" value="Очистить" />
 			</div>
 
-			<p style="text-align:center;"><img id="loading" src="<?=$kff::getPathFromRoot(__DIR__) ?>/img/ajax-load.gif" width="16" height="16" alt="loading" style="margin: auto;"/></p>
+			<img id="loading" src="assets/img/ajax-load.gif" width="16" height="16" alt="loading" />
+
 		</form>
 
 	</div>
@@ -68,22 +90,18 @@ ob_start();
 
 </div>
 
+<p>Благодаря внедрению <a href="https://core.telegram.org/api" rel="nofollow" target="_blank">Telegram API</a> с декабря 2019г. в исходный код сайта, ваши письма стали доходить ко мне значительно быстрее.</p>
+<p>Если у вас установлен Telegram, можете <a href="https://t.me/js_master_bot">написать мне</a> через него.</p>
+
+
 
 <script>
-'use strict';
-// window.addEventListener('load', function() {
-kff.checkLib('jQuery')
-.then(function($) {
-	var form = document.forms['feedback-form'],
-		$loader = $('#loading');
-
-	$loader.hide();
+(function() {
+	var form = document.forms['feedback-form'];
 
 	form.onsubmit = function(e) {
 		e.preventDefault();
 		e.stopPropagation();
-
-		$loader.show();
 
 		var $form = $(this),
 			$resp_node = $('#response'),
@@ -101,8 +119,7 @@ kff.checkLib('jQuery')
 
 
 		$.ajax({
-		  // url: '/modules/feedback/PHPMailer/handler.php',
-		  url: '/modules/<?=$Page->module?>/PHPMailer/handler.php',
+		  url: '/<?=$kff::getPathFromRoot(__DIR__) ?>/PHPMailer/handler.php',
 		  data: formData,
 		  processData: false,
 		  contentType: false,
@@ -114,13 +131,10 @@ kff.checkLib('jQuery')
 		})
 		.fail(function(response) {
 			$resp_node.append('<div class="error">Сообщение не было отправлено. Попробуйте ещё раз.</div>');
-		})
-		.always(response=>{
-			$loader.hide();
 		});
 	}
 	// console.log(formData);
-})
+})()
 </script>
-<?php
-return ob_get_clean();
+
+

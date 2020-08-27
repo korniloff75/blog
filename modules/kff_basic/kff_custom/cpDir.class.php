@@ -1,11 +1,14 @@
 <?php
 class cpDir
 {
-	protected static $log = [];
+	protected static
+		$log = [];
+	public static
+		$excludes; //* Исключения для копирования regEx
 
 	private $target;
 
-	public function __construct($d1, $d2, $upd = true, $force = true)
+	public function __construct($d1, $d2, $upd = true, $force = false)
 	{
 		$this->target = $this->target ?? $d2;
 
@@ -90,7 +93,12 @@ class cpDir
 class linkDir extends cpDir
 {
 	function copy_safe ($f1, $f2, $upd) {
-		if (file_exists($f2)) {
+		if (
+			file_exists($f2)
+			|| self::$excludes
+			&& preg_match(self::$excludes, basename($f1))
+		)
+		{
 			return false;
 		}
 		return link($f1, $f2);

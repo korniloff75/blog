@@ -1,7 +1,8 @@
 <?php
 if(__DIR__ === realpath('.')) die;
 
-require_once __DIR__.'/kff_custom/index_my_addon.php';
+if(empty($kff))
+	include_once __DIR__.'/kff_custom/index_my_addon.php';
 
 // *Только админам
 if(!$kff::is_adm()) die;
@@ -28,14 +29,13 @@ class Basic
 		self::$cfg= array_merge(
 			[
 				'kff'=> 0,
-				'mds_prefix'=> 'kff'
+				'mds_prefix'=> 'kff' // *Префикс для сканируемых модулей
 			], json_decode(
 				@file_get_contents(__DIR__.'/cfg.json'), 1
 			)
 			);
 
-		// *Префикс для сканируемых модулей
-		self::$mds_prefix = self::$cfg['mds_prefix'] ?? 'kff';
+
 
 		// *Save cfg
 		self::saveBasicCfg();
@@ -115,28 +115,36 @@ class Basic
 		if(!file_exists(__DIR__.'/kff_custom/cpDir.class.php'))
 			link(__DIR__.'/cpDir.class.php', __DIR__.'/kff_custom/cpDir.class.php');
 
-		require_once __DIR__.'/kff_custom/cpDir.class.php';
+		// *Бэкапим оригинальный global.dat
+		$global_path = DR . '/system/global.dat';
 
-		// *Создаём в корне каталог /kff_custom со ссылками
-		$dir = new linkDir(__DIR__.'/kff_custom', DR.'/kff_custom');
-
-		// *Бэкапим оригинальный индекс
 		if(
-			!file_exists(DR.'/index.php.bak')
-			&& copy(DR.'/index.php', DR.'/index.php.bak')
+			!file_exists($global_path.'.bak')
+			&& copy($global_path, $global_path.'.bak')
 		)
 		{
-			$ind= file_get_contents(DR.'/index.php');
+			$ind= file_get_contents($global_path);
 
 			// *Подключаем /kff_custom/index_my_addon.php
-			$ind = preg_replace("~^.+\/system\/global\.dat.+$~um", 'require_once \'./kff_custom/index_my_addon.php\';', $ind, 1);
+			$ind = preg_replace("~(\?>)\s*$~", 'require_once $_SERVER[\'DOCUMENT_ROOT\'] . \'/kff_custom/index_my_addon.php\';'.PHP_EOL."$1", $ind, 1);
+			// $ind = preg_replace("~^.+\/system\/global\.dat.+$~um", 'require_once \'./kff_custom/index_my_addon.php\';', $ind, 1);
 
-			if(file_put_contents(DR.'/index.php', $ind))
+			if(file_put_contents($global_path, $ind))
 			{
-				echo "<pre><h3 style='color:#fff;'>Изменения в индексный файл успешно внесены.</h3>".htmlspecialchars($ind)."</pre>";
+				echo "<pre><h3 style='color:#fff;'>Изменения в файл global.dat успешно внесены.</h3>".htmlspecialchars($ind)."</pre>";
 			}
 
 		}
+
+		require_once __DIR__.'/kff_custom/cpDir.class.php';
+
+		linkDir::$excludes= '~token(\..+)?|cfg\..+~';
+		// *Создаём в корне каталог /kff_custom со ссылками
+		$dir = new linkDir(__DIR__.'/kff_custom', DR.'/kff_custom');
+
+		// *Создаём ссылки на модули в /modules
+		$lnk_mds = new linkDir(__DIR__.'/modules', DR.'/modules');
+		System::initModules();
 
 
 		echo "<pre><h3 style='color:#fff;'>Каталог /kff_custom успешно создан или обновлён.</h3>";
@@ -151,14 +159,13 @@ class Basic
 	{
 		require_once __DIR__.'/kff_custom/cpDir.class.php';
 
-		// *Создаём в корне каталог /kff_custom со ссылками
-		$dir = new linkDir(__DIR__.'/kff_custom', DR.'/kff_custom');
+		$global_path = DR . '/system/global.dat';
 
-		// *Бэкапим оригинальный индекс
+		// *Восстанавливаем оригинальный global.dat
 		if(
-			file_exists(DR.'/index.php.bak')
-			&& copy(DR.'/index.php.bak', DR.'/index.php')
-			&& unlink(DR.'/index.php.bak')
+			file_exists($global_path.'.bak')
+			&& copy($global_path.'.bak', $global_path)
+			&& unlink($global_path.'.bak')
 		)
 		{
 			echo "<pre><h3 style='color:#5f5;'>Оригинальный индексный файл успешно восстановлен.</h3></pre>";
@@ -173,7 +180,7 @@ class Basic
 	// *Перебираем свои модули
 	static function scanModules()
 	{
-		$mds = glob(realpath(__DIR__.'/..')."/".self::$mds_prefix."_*");
+		$mds = glob(realpath(__DIR__.'/..')."/".self::$cfg['mds_prefix']."_*");
 		/* $mds= array_filter(
 			$mds,
 			function(&$i){
@@ -182,7 +189,7 @@ class Basic
 		); */
 		// self::$log->add('kff modules',null,[$mds]);
 
-		echo '<h3>Модули kff</h3>';
+		echo '<h3>Модули '.self::$cfg['mds_prefix'].'</h3>';
 		echo '<ul id=mds_sts uk-accordion>';
 
 		foreach($mds as &$m)
