@@ -3,11 +3,19 @@
 <script src="/<?=Basic::$dir?>/../kff_uikit-3.5.5/js/uikit.min.js"></script>
 
 <style>
-	input[type="text"], input[type="password"], select {
+input[type="text"], input[type="password"], select {
 	width: 100%;
 	max-width: 500px;
 }
+.uk-accordion-title {
+	cursor: pointer;
+}
+body>#logWrapper {
+	margin-left: 225px;
+}
 </style>
+
+<h3>Глобальные настройки</h3>
 
 <div id="kff_sts" class="uk-section .uk-section-primary uk-padding">
 	<p class="comment">При снятом флажке будет восстановлена оригинальная версия движка</p>
@@ -15,6 +23,8 @@
 	<p class="comment">Поставленный флажок внедряет дополнительный функционал</p>
 	<p><label>Init Modules <input name="init_mods" type="checkbox" ></label></p>
 	<p class="comment">Инициализация всех модулей. Системная.</p>
+	<p><label>Префикс для модулей <input name="mds_prefix" type="text" value="<?= Basic::$cfg['mds_prefix']?>"></label></p>
+	<p class="comment">Например, папки искомых модулей должны называться как <b>kff_modulename</b>.</p>
 </div>
 
 <script>
@@ -24,20 +34,40 @@ kff.checkLib('jQuery')
 	// *Украшения
 	$('#kff_sts input[type=checkbox]').addClass('uk-checkbox');
 
-	// *Сохр настроек
+	// *Сохр глоб. настроек
 	$('#kff_sts').on('change', 'input', $e=>{
 		var $t= $($e.target);
 		console.log($t.prop('checked'));
 		if(!$t.length) return;
 
+		var val= $t.val() === 'on' ? $t.prop('checked') : $t.val();
+
 		$.post('',{
+			type: 'global',
 			name: $t.prop('name'),
-			val: $t.prop('checked'),
+			val: val,
 		}).then((response, status)=>{
 			// console.log();
 			$('<div/>').insertAfter($e.currentTarget)
 			.html($(response).find('pre'));
 		});
-	})
+	});
+
+	// *Сохр настроек модулей
+	// console.log($('#mds_sts'));
+	$('#mds_sts').on('change', 'input,textarea', $e=>{
+		var $t= $($e.target);
+		if(!$t.length) return;
+
+		$.post('',{
+			ini_path: $t.closest('li.uk-open').find('h4').data('ini-path'),
+			name: $t.prev().text().trim(),
+			val: $t.val(),
+		}).then((response, status)=>{
+			// console.log();
+			$('<div/>').insertAfter($e.currentTarget)
+			.html($(response).find('pre.log'));
+		});
+	});
 });
 </script>

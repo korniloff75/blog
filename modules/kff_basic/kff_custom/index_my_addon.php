@@ -78,6 +78,38 @@ class Index_my_addon
 	}
 
 
+	/**
+	 * *Преобразование массива в формат INI
+	 */
+	public static function arr2ini(array $a, array $parent = [])
+	:string
+	{
+		$out = '';
+		foreach ($a as $k => &$v)
+		{
+			if (is_array($v))
+			{
+				//*subsection case
+				//merge all the sections into one array...
+				$sec = array_merge((array) $parent, (array) $k);
+				//add section information to the output
+				$out .= '[' . join('.', $sec) . ']' . PHP_EOL;
+				//recursively traverse deeper
+				$out .= self::arr2ini($v, $sec);
+			}
+			else
+			{
+				if(is_string($v))
+					$v= '"' . htmlspecialchars_decode($v) . '"';
+
+				//*plain key->value case
+				$out .= "$k=$v" . PHP_EOL;
+			}
+		}
+		return $out;
+	}
+
+
 	public function __destruct()
 	{
 		// var_dump($GLOBALS['log']);
