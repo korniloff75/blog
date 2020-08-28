@@ -1,14 +1,14 @@
 <?php
-$modDir = $kff::getPathFromRoot(__DIR__);
 
-$Page->headhtml.= '
+// *Basic::cfg['kff']==0
+if(empty($kff))
+{
+	include_once __DIR__.'/kff_custom/index_my_addon.php';
 
-<!-- Load UIKit -->
-<link rel="stylesheet" href="/'.$modDir.'/css/uikit.min.css" />
-<script src="/'.$modDir.'/js/uikit.min.js"></script>
+	$kff::headHtml();
 
-';
-
+}
+// Index_my_addon
 
 return null;
 ?>

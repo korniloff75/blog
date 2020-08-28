@@ -1,7 +1,3 @@
-<script src="/<?=Basic::$dir?>/kff_custom/js/kff.js"></script>
-<link rel="stylesheet" href="/<?=Basic::$dir?>/modules/kff_uikit-3.5.5/css/uikit.min.css" />
-<script src="/<?=Basic::$dir?>/modules/kff_uikit-3.5.5/js/uikit.min.js"></script>
-
 <style>
 input[type="text"], input[type="password"], select {
 	width: 100%;
@@ -29,8 +25,9 @@ body>#logWrapper {
 
 <script>
 'use strict';
-kff.checkLib('jQuery')
-.then($=>{
+// kff.checkLib('jQuery')
+// .then($=>{
+$(()=>{
 	// *Украшения
 	$('#kff_sts input[type=checkbox]').addClass('uk-checkbox');
 

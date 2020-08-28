@@ -30,13 +30,14 @@ if($status === 'admin' && isset($module_news)):?>
 CKEDITOR.inlineAll();
 
 var CE = {
+	curDir: '/<?=$kff::getPathFromRoot(__DIR__)?>',
 	$item: $('article .news'),
 
 	init: function() {
 		// console.log('$rezult=', "\n");
 
 		if(this.$item.length != 1) {
-			console.log(
+			console.info(
 				`missing $item= `, this.$item,
 			);
 			return;
@@ -62,7 +63,7 @@ var CE = {
 		);
 
 		$.post(
-			'/kff_custom/SaveNewsHandler.php?dev=1',
+			this.curDir + '/SaveNewsHandler.php?dev=1',
 			{
 				act: 'addedit',
 				basePath: location.pathname,

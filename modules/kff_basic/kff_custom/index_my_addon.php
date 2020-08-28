@@ -43,6 +43,44 @@ class Index_my_addon
 	}
 
 
+	/**
+	 * *Запускать из integration_pages.php
+	 */
+	public static function headHtml()
+	{
+		global $Page;
+		$modulesPath = '/' . self::getPathFromRoot(DR.'/modules');
+		$UIKitPath = $modulesPath . '/kff_uikit-3.5.5';
+		$kffJsPath = '/' . self::$dir . '/js';
+
+		$addons= '
+
+		<!-- Start from '.__METHOD__.' -->
+		<!-- Load UIKit from '.$UIKitPath.' -->
+		<link rel="stylesheet" href="'.$UIKitPath.'/css/uikit.min.css" />
+		<script src="'.$UIKitPath.'/js/uikit.min.js"></script>
+		<!-- / UIKit -->
+		<script src="'.$kffJsPath.'/kff.js"></script>
+		<script src="'.$kffJsPath.'/jquery-3.3.1.min.js"></script>
+		<!-- / Start from '.__METHOD__.' -->
+
+		';
+
+		// *Подключаем скрипты в страницы
+		if(is_object($Page))
+		{
+			$Page->headhtml.= $addons;
+		}
+
+		// *Подключаем скрипты в админпанель
+		if(!self::is_adm()) return;
+
+		System::addAdminHeadHtml($addons);
+
+		return $addons;
+	}
+
+
 	public static function get_log()
 	{
 		return self::$log;
@@ -56,7 +94,7 @@ class Index_my_addon
 		return preg_replace("#(?!https?|^)//+#", '/', $path);
 	}
 
-	// *Получаем путь относительно $_SERVER['DOCUMENT_ROOT']
+	// *Получаем путь относительно DR
 	public static function getPathFromRoot(string $absPath)
 	:string
 	{
@@ -138,29 +176,15 @@ class Index_my_addon
 }
 
 
-// *Заглушка для Логгера
-/* class fixLog
-{
-	public function add($txt, $e_type=null, $dump=[])
-	{
-		$o='';
-		if(count($dump)) foreach($dump as $i)
-		{
-			ob_start();
-			var_dump($i);
-			$o.= ob_get_clean();
-		}
-		trigger_error(('Заглушка - ' . $txt . $o), $e_type ?? E_USER_NOTICE);
-	}
-} */
-
-
 $kff = new Index_my_addon();
 
 $log = $kff::get_log();
 
+$kff::headHtml();
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/system/global.dat' ;
+
+
+// require_once $_SERVER['DOCUMENT_ROOT'].'/system/global.dat' ;
 
 if(!defined('DR'))
 	define('DR', $_SERVER['DOCUMENT_ROOT']);

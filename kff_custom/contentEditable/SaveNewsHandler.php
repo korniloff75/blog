@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__.'/Logger.php' ;
 
-require_once "../system/global.dat";
+require_once $_SERVER['DOCUMENT_ROOT']."/system/global.dat";
+require_once DR.'/'.$kff::$dir.'/Logger.php' ;
 
 if(
 	$status !== 'admin'

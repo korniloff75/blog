@@ -8,8 +8,9 @@ var kff = {
 	 */
 	checkLib: function (name, src) {
 		return new Promise((resolve, reject) => {
-			if(typeof window[name] !== 'undefined')
-				resolve(window[name]);
+			if(typeof window[name] !== 'undefined') {
+				return resolve(window[name]);
+			}
 
 			var $_= document.createElement('script');
 			$_.src= src || 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js';

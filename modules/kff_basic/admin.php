@@ -1,8 +1,16 @@
 <?php
 if(__DIR__ === realpath('.')) die;
 
+// $curDir =
+
+// *Basic::cfg['kff']==0
 if(empty($kff))
+{
 	include_once __DIR__.'/kff_custom/index_my_addon.php';
+
+	echo $kff::headHtml();
+
+}
 
 // *Только админам
 if(!$kff::is_adm()) die;
@@ -28,7 +36,7 @@ class Basic
 		]; */
 		self::$cfg= array_merge(
 			[
-				'kff'=> 0,
+				'kff'=> 1,
 				'mds_prefix'=> 'kff' // *Префикс для сканируемых модулей
 			], json_decode(
 				@file_get_contents(__DIR__.'/cfg.json'), 1

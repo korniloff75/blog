@@ -18,11 +18,10 @@
 </style>
 <script>
 <?php #echo file_get_contents(DR.'/admin/include/windows/windows.js');?>
+// kff.checkLib('jQuery');
 </script>
 
 <script src="/admin/include/windows/windows.js"></script>
-
-<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 
 
 </head>
