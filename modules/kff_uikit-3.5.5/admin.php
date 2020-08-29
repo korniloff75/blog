@@ -21,16 +21,16 @@ if(!empty(@$name_req = $_REQUEST['name']??null))
 }
 
 
-require_once "../kff_custom/index_my_addon.php";
+// require_once "../kff_custom/index_my_addon.php";
 $dirFromRoot = $kff::getPathFromRoot(__DIR__);
 
 $params_js= json_encode($params, JSON_UNESCAPED_UNICODE);
 
 ?>
 
-<link rel="stylesheet" href="/<?=$dirFromRoot?>/css/uikit.min.css" />
+<!-- <link rel="stylesheet" href="/<?=$dirFromRoot?>/css/uikit.min.css" />
 <script src="/<?=$dirFromRoot?>/js/uikit.min.js"></script>
-<script src="/<?=$dirFromRoot?>/js/uikit-icons.min.js"></script>
+<script src="/<?=$dirFromRoot?>/js/uikit-icons.min.js"></script> -->
 
 <div class="header"><h1>Настройки</h1></div>
 
@@ -64,7 +64,7 @@ $params_js= json_encode($params, JSON_UNESCAPED_UNICODE);
 			</p>
 		</ul>
 
-		</ul>
+	</ul>
 
 </div>
 

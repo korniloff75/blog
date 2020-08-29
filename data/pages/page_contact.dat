@@ -1,3 +1,3 @@
-<p><img src="/kff_custom/assets/ЛОГО.jpg" style="width:100%" /></p>
+<p><img src="/<?=$GLOBALS['kff']::$dir?>/assets/ЛОГО.jpg" style="width:100%" /></p>
 
 <p>Для более быстрой связи желательно указывать свой Телеграм.</p>

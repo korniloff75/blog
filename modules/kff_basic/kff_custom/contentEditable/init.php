@@ -4,7 +4,7 @@
 $log->add('$Page->module',null, [$Page->module]);
 
 // *contentEditable
-if($status === 'admin' && isset($module_news)):?>
+if($kff::is_adm() && isset($module_news)):?>
 
 <style>
 *[contenteditable="true"]{

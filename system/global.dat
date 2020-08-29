@@ -157,5 +157,4 @@ foreach($RunModules->system as $value){
 
 
 // Закрывающий тег обязателен до версии php 5.3
-require_once $_SERVER['DOCUMENT_ROOT'] . '/kff_custom/index_my_addon.php';
 ?>

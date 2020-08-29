@@ -1,5 +1,7 @@
 <?php
-require_once DR.'/kff_custom/index_my_addon.php';
+// require_once DR.'/kff_custom/index_my_addon.php';
+
+if(empty($kff)) global $kff;
 require_once 'cfg.php';
 $modDir = $kff::getPathFromRoot(__DIR__);
 ?>

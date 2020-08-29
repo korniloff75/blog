@@ -13,8 +13,7 @@ color:red;
 }
 </style>');
 }
-System::addAdminHeadHtml('<link rel="StyleSheet" href="../modules/layout/layout.min.css">
-<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>');
+System::addAdminHeadHtml('<link rel="StyleSheet" href="../modules/layout/layout.min.css">');
 
 if($status == 'admin' && (basename(SELF) == 'index.php' || basename(SELF) == 'setting.php')){
 if(file_exists('./uninstall.php')){
@@ -22,10 +21,10 @@ unlink('./uninstall.php');
 }
 }
 if($status !== 'admin' && basename(SELF) == 'index.php'){
-		
+
 if(is_dir('../modules/statistic')){
-	
-	
+
+
 $blok_data = file('../modules/statistic/statistics.dat');
 
 $nom = count($blok_data);
@@ -33,9 +32,9 @@ $str = file_get_contents('../modules/statistic/max_visits.dat');
 
 $difference = $nom - $str;
 
-if($nom > $str){	
+if($nom > $str){
 $result = array_slice($blok_data, $difference);
-file_put_contents('../modules/statistic/statistics.dat', implode($result), LOCK_EX);	
+file_put_contents('../modules/statistic/statistics.dat', implode($result), LOCK_EX);
 }
 }
 }

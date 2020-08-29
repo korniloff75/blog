@@ -10,8 +10,6 @@
 <?php
 if (!class_exists('System')) exit; // Запрет прямого доступа
 
-require_once DR.'/kff_custom/index_my_addon.php';
-
 $mailToAdminStorage = new EngineStorage_kff('cfg.db', __DIR__);
 // $mailToAdminStorage = new EngineStorage('module.mail.to.admin');
 
@@ -32,19 +30,21 @@ $checked = $fromallform?' checked':'';
 if($emails == false){ $emails = '';}
 
 if($act=='index'){
-	echo'<div class="header"><h1>Настройки обратной связи</h1></div>
+	?>
+
+	<div class="header"><h1>Настройки обратной связи</h1></div>
 	<div class="menu_page"><a href="index.php">&#8592; Вернуться назад</a></div>
 	<div class="content">
-	<form name="forma" action="module.php?module='.$MODULE.'" method="post">
+	<form name="forma" action="module.php?module=<?=$MODULE?>" method="post">
 	<INPUT TYPE="hidden" NAME="act" VALUE="add">
 	<table class="tblform">
 	<tr>
 		<td>Email адрес получателя писем:</td>
-		<td><input type="text" name="new_cfg_emal_admin" value="'.$emails.'" size="50"><br><span class="comment">Можно указать несколько адресов через запятую.</span></td>
+		<td><input type="text" name="new_cfg_emal_admin" value="<?=$emails?>" size="50"><br><span class="comment">Можно указать несколько адресов через запятую.</span></td>
 	</tr>
 	<tr>
 		<td>Username:<br><span class="comment">Этот адрес будет использован как Username при SMTP авторизации, а также указан в строке отправителя письма.</span></td>
-		<td class="middle"><input type="text" name="smtp_username" value="'.@$cfg['smtp']['username'].'"></td>
+		<td class="middle"><input type="text" name="smtp_username" value="<?=@$cfg['smtp']['username']?>"></td>
 	</tr>
 	<tr>
 		<td><h3>SMTP</h3>
@@ -52,11 +52,11 @@ if($act=='index'){
 	</tr>
 	<tr>
 		<td>Host:</td>
-		<td class="middle"><input type="text" name="smtp_host" value="'.@$cfg['smtp']['host'].'"></td>
+		<td class="middle"><input type="text" name="smtp_host" value="<?=@$cfg['smtp']['host']?>"></td>
 	</tr>
 	<tr>
 		<td>Password:</td>
-		<td class="middle"><input type="text" name="smtp_password" value="'.@$cfg['smtp']['password'].'"></td>
+		<td class="middle"><input type="text" name="smtp_password" value="<?=@$cfg['smtp']['password']?>"></td>
 	</tr>
 	<tr>
 		<td><h3>Telegram</h3>
@@ -64,11 +64,11 @@ if($act=='index'){
 	</tr>
 	<tr>
 		<td>Token:<br><span class="comment">Индивидуальный токен бота.<br>Как создать нового бота через <i>@botfather</i> и получить его токен есть куча  <a href="https://yandex.ru/search/?clid=2186621&text=%D0%BA%D0%B0%D0%BA%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%82%D1%8C%20%D0%B1%D0%BE%D1%82%20%D1%87%D0%B5%D1%80%D0%B5%D0%B7%20botfather&lr=146&redircnt=1596791584.1" target="_blank" rel="nofollow">информации в инете</a>. </span></td>
-		<td class="middle"><input type="text" name="tg_token" value="'.@$tg_token.'"></td>
+		<td class="middle"><input type="text" name="tg_token" value="<?=@$tg_token?>"></td>
 	</tr>
 	<tr>
 		<td>ID пользователя, группы или канала:<br><span class="comment"> <a href="https://yandex.ru/search/?text=%D1%83%D0%B7%D0%BD%D0%B0%D1%82%D1%8C%20id%20%D0%BA%D0%B0%D0%BD%D0%B0%D0%BB%D0%B0%20telegram&lr=146&clid=2186621&src=suggest_B" target="_blank" rel="nofollow">ID канала</a>. </span></td>
-		<td class="middle"><input type="text" name="tg_chat_id" value="'.@$cfg['tg']['chat_id'].'"></td>
+		<td class="middle"><input type="text" name="tg_chat_id" value="<?=@$cfg['tg']['chat_id']?>"></td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -76,7 +76,9 @@ if($act=='index'){
 	</tr>
 	</table>
 	</form>
-	</div>';
+	</div>
+
+	<?php
 }
 
 

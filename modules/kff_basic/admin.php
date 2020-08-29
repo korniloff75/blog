@@ -3,14 +3,14 @@ if(__DIR__ === realpath('.')) die;
 
 // $curDir =
 
-// *Basic::cfg['kff']==0
-if(empty($kff))
+// *Basic::cfg['copyModules']==0
+/* if(empty($kff))
 {
 	include_once __DIR__.'/kff_custom/index_my_addon.php';
 
-	echo $kff::headHtml();
 
-}
+} */
+echo $kff::headHtml();
 
 // *Только админам
 if(!$kff::is_adm()) die;
@@ -31,12 +31,12 @@ class Basic
 		/* self::$cfg= json_decode(
 			@file_get_contents(__DIR__.'/cfg.json'), 1
 		) ?? [
-			'kff'=> 0,
+			'copyModules'=> 0,
 			'mds_prefix'=> 'kff'
 		]; */
 		self::$cfg= array_merge(
 			[
-				'kff'=> 1,
+				'copyModules'=> 1,
 				'mds_prefix'=> 'kff' // *Префикс для сканируемых модулей
 			], json_decode(
 				@file_get_contents(__DIR__.'/cfg.json'), 1
@@ -59,7 +59,7 @@ class Basic
 	{
 		global $kff;
 		if(
-			empty($ini_path = $_REQUEST['ini_path'])
+			empty(@$ini_path = &$_REQUEST['ini_path'])
 			|| !strpos($ini_path, '.ini')
 		)
 			return;
@@ -104,19 +104,31 @@ class Basic
 				__DIR__.'/cfg.json', json_encode(self::$cfg)
 			);
 
-			if(self::$cfg['kff'])
+			if(self::$cfg['copyModules'])
 			{
-				self::createKFF();
+				self::CopyModules();
+				// self::createKFF();
 			}
 			else
 			{
-				self::destructKFF();
+				// self::destructKFF();
 			}
 
 			die;
 		}
 	}
 
+
+	// *Создаём ссылки на модули в /modules
+	static function CopyModules()
+	{
+		require_once __DIR__.'/kff_custom/cpDir.class.php';
+		linkDir::$excludes= '~token(\..+)?|cfg\..+~';
+
+		$lnk_mds = new linkDir(__DIR__.'/modules', DR.'/modules');
+
+		System::initModules();
+	}
 
 	static function createKFF()
 	{
@@ -197,12 +209,21 @@ class Basic
 		); */
 		// self::$log->add('kff modules',null,[$mds]);
 
+		return $mds;
+	}
+
+
+	static function RenderPU()
+	{
+		$mds = self::scanModules();
 		echo '<h3>Модули '.self::$cfg['mds_prefix'].'</h3>';
-		echo '<ul id=mds_sts uk-accordion>';
+		echo '<p class=comment>Все изменённые настройки сохраняются автоматически -- после потери фокуса редактируемым полем.</p>
+		<ul id=mds_sts uk-accordion>';
 
 		foreach($mds as &$m)
 		{
 			$ini_path = "$m/info.ini";
+			$adm_path = "$m/admin.php";
 			$ini = parse_ini_file($ini_path);
 
 			$is_feedback = mb_stripos($ini['name'],'связь через TG') && count(explode('.', $ini['version'])) > 2;
@@ -213,36 +234,51 @@ class Basic
 				mb_stripos($ini['name'],'связь через TG') && count(explode('.', $ini['version'])) > 2
 			]); */
 
-			// print_r($ini);
-			// self::$log->add(basename($m),null,[$ini]);
-
 
 			echo "<li ".($is_feedback?'class=uk-open':'').">
 			<h4 class=uk-accordion-title data-ini-path='$ini_path'>{$ini['name']} v.{$ini['version']}</h4>";
 			echo '<ul class="uk-accordion-content uk-margin-bottom">';
 			foreach($ini as $key=>&$val)
 			{
-				$val = htmlspecialchars($val);
+				// $val = htmlspecialchars($val);
 
-				$tag = $key !== 'description' ? "<input class=uk-width-2-3 type=text value='$val'>" : "<textarea class=uk-width-2-3>$val</textarea>";
+				$tag = $key !== 'description' ? "<input class=uk-width-2-3 type=text value='$val'>" : "<div contentEditable=true class=uk-width-2-3>$val</div>";
 
 				echo "<li class='uk-flex uk-flex-wrap uk-padding-small'><span class=uk-width-1-3>$key </span> $tag</li>";
 			}
-			echo '</ul></li>';
+			// todo
+			// require_once $adm_path;
+			echo '</ul>';
+
+			echo '</li>';
 		}
 		echo '<!-- /uk-accordion --></ul>';
+
+		// *Подключаем морду
+		require_once __DIR__.'/admin.htm';
 	}
+
 }
 
 
 Basic::init();
 
-Basic::scanModules();
+?>
+<div class="header"><h1>Настройки <?=$MODULE?></h1></div>
 
-// *Подключаем морду
-require_once __DIR__.'/admin.htm';
+<div class="menu_page">
+	<a href="index.php">&#8592; Вернуться назад</a>
+</div>
 
+<div class="content">
+<?php
 
+Basic::RenderPU();
 
+?>
+
+</div>
+
+<?php
 // *Тесты
-$log->add('$Page',null,[$Page]);
+// $log->add('$Page',null,[$Page]);

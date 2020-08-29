@@ -1,20 +1,12 @@
 <?php
-/**
- *note подключить к /index.php 1-й строкой
- ** require_once './kff_custom/index_my_addon.php';
- *note и удалить строку (не обязательно)
- ** require_once './system/global.dat' ;
- */
-
-// ini_set('short_open_tag', 'On');
-
 
 class Index_my_addon
 {
 	public static
 		// $log = false,
 		// *Путь к kff_custom
-		$dir;
+		$dir,
+		$modulesPath;
 
 	private static $log = false;
 
@@ -33,10 +25,12 @@ class Index_my_addon
 
 
 		// *Logger
-		require_once __DIR__.'/Logger.php' ;
+		require_once __DIR__.'/kff_custom/Logger.php' ;
 		self::$log = new Logger('kff.log', __DIR__.'/..');
 
-		self::$dir = self::getPathFromRoot(__DIR__);
+		self::$dir = self::getPathFromRoot(__DIR__) . '/kff_custom';
+		// self::$modulesPath = '/' . self::getPathFromRoot($_SERVER['DOCUMENT_ROOT'].'/modules');
+		self::$modulesPath = '/modules';
 
 		self::$log->add('REQUEST_URI=',null, [$_SERVER['REQUEST_URI']]);
 
@@ -44,13 +38,12 @@ class Index_my_addon
 
 
 	/**
-	 * *Запускать из integration_pages.php
+	 * ?Запускать из integration_pages.php
 	 */
 	public static function headHtml()
 	{
 		global $Page;
-		$modulesPath = '/' . self::getPathFromRoot(DR.'/modules');
-		$UIKitPath = $modulesPath . '/kff_uikit-3.5.5';
+		$UIKitPath = self::$modulesPath . '/kff_uikit-3.5.5';
 		$kffJsPath = '/' . self::$dir . '/js';
 
 		$addons= '
@@ -183,87 +176,14 @@ $log = $kff::get_log();
 $kff::headHtml();
 
 
-
-// require_once $_SERVER['DOCUMENT_ROOT'].'/system/global.dat' ;
-
-if(!defined('DR'))
-	define('DR', $_SERVER['DOCUMENT_ROOT']);
+// if(!defined('DR'))
+	// define('DR', $_SERVER['DOCUMENT_ROOT']);
 
 // $log->add('$URL=',null,[$URL]);
 
 
 // todo Разработать сохранение материалов по категориям
-class EngineStorage_kff extends EngineStorage
+if(class_exists('EngineStorage'))
 {
-	public
-		$log,
-		$prefix = 'cat_';
-	private $cats;
-	/**
-	 * *Определение параметров
-	 * @param storageDir - путь к родительской папке хранилища
-	 */
-	public function __construct($storage, $storageDir=null)
-	{
-		$this->log= Index_my_addon::get_log();
-
-		if(file_exists(__DIR__.'/DbJSON.php'))
-		{
-			require_once __DIR__.'/DbJSON.php' ;
-			parent::__construct($storage);
-			if(!is_null($storageDir))
-				$this->storageDir = $storageDir;
-		}
-		else
-		{
-			$this->log->add('DbJSON is not exist!', E_USER_WARNING);
-		}
-	}
-
-	public function getPathName()
-	:string
-	{
-		return $this->storageDir.'/'.$this->storage;
-	}
-
-	public function getCatsArr()
-	:array
-	{
-		if(is_null($this->cats))
-		{
-			glob($this->getPathName() . "/{$this->prefix}*", GLOB_ONLYDIR );
-		}
-		return $this->cats;
-	}
-
-	// JSON_UNESCAPED_UNICODE
-
-	//* Получение значения ключа
-	public function get($key=null)
-	{
-		$path = $this->getPathName() . ($key? "/$key":'') . ".dat";
-		// var_dump($path);
-		return
-			json_decode(
-				file_get_contents(
-					$path
-				), 1
-			);
-	}
-
-	//* Создание ключа
-	public function set($key, $value, $q = 'w+')
-	{
-		if(!$this->exists())
-		{
-			mkdir($this->getPathName(), 0775, true);
-		}
-
-		if(!is_string($value))
-		{
-			$value= DbJSON::toJSON($value);
-		}
-
-		return filefputs($this->getPathName(). "/{$key}.dat", $value, $q);
-	}
+	require_once __DIR__.'/kff_custom/EngineStorage_kff.class.php';
 }
