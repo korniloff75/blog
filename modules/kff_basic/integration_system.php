@@ -26,7 +26,7 @@ class Index_my_addon
 
 		// *Logger
 		require_once __DIR__.'/kff_custom/Logger.php' ;
-		self::$log = new Logger('kff.log', __DIR__.'/..');
+		self::$log = new Logger('kff.log', DR);
 
 		self::$dir = self::getPathFromRoot(__DIR__) . '/kff_custom';
 		// self::$modulesPath = '/' . self::getPathFromRoot($_SERVER['DOCUMENT_ROOT'].'/modules');

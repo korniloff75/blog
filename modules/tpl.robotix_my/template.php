@@ -189,7 +189,7 @@
 	<?php
 	// $log->add('$Page = ',null,[$Page]);
 
-	if($Page->module === 'feedback'):
+	if(in_array($Page->module, ['feedback','kff_feedback'])):
 	?>
 
 	<div class="contact">
@@ -199,17 +199,13 @@
 
 		<div id="my_map" class="map" style="min-height:300px;">
 			<!-- Карта -->
+			<!-- <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU"></script> -->
 			<script>
 			'use strict';
 
-			var ymapsLoadind = ymapsLoadind || new Promise( (resolve, reject) => {
-				$.getScript('https://api-maps.yandex.ru/2.1/?lang=ru_RU').done(()=>{
-					window.ymaps.ready(() => resolve(window.ymaps))
-				})
-			});
-
-			ymapsLoadind.then( ymaps => {
-				console.log('ymaps.Map = ', ymaps.Map, ymaps.ready);
+			kff.checkLib('ymaps', 'https://api-maps.yandex.ru/2.1/?lang=ru_RU')
+			.then(ymaps=>{ ymaps.ready(()=>{
+				console.log('ymaps.Map = ', ymaps.Map, ymaps.ready, ymaps);
 
 				var myMap = new ymaps.Map('my_map', {
 					center: [ 45.47574, 34.21895 ],
@@ -220,9 +216,9 @@
 					// Задаем поиск по карте
 					searchControlProvider: 'yandex#search'
 				});
+			})});
 
-			});
-		</script>
+			</script>
 
 		</div>
 
@@ -260,7 +256,7 @@ $('#menu').on('click', function(){
 </script>
 
 <?php
-require_once './kff_custom/contentEditable/init.php';
+require_once $kff::$dir . '/contentEditable/init.php';
 
 if(function_exists('CustomizeInit')) CustomizeInit();
 

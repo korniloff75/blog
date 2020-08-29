@@ -5,7 +5,7 @@
 ob_start();
 ?>
 
-<script src="<?=$kff::$dir?>/js/kff.js"></script>
+<!-- <script src="<?=$kff::$dir?>/js/kff.js"></script> -->
 
 <link rel="stylesheet" type="text/css" href="/<?=$kff::getPathFromRoot(__DIR__) ?>/fb_form.css" />
 
@@ -122,5 +122,42 @@ kff.checkLib('jQuery')
 	// console.log(formData);
 })
 </script>
+
+<!--  -->
+
+<!-- <div class="contact">
+
+	<div id="my_map" class="map" style="min-height:300px;">
+
+		<script>
+		'use strict';
+
+		kff.checkLib('ymaps', 'https://api-maps.yandex.ru/2.1/?lang=ru_RU')
+		.then(ymaps=>{ ymaps.ready(()=>{
+			console.log('ymaps.Map = ', ymaps.Map, ymaps.ready, ymaps);
+
+			var myMap = new ymaps.Map('my_map', {
+				center: [ 45.47574, 34.21895 ],
+				zoom: 8,
+				controls: [],
+			}, {
+				// Optional
+				// Задаем поиск по карте
+				searchControlProvider: 'yandex#search'
+			});
+		})});
+
+		</script>
+
+	</div>
+
+	<div class="addres" id="addres"><?='
+		<h3>Регионы деятельности</h3>
+		<p>Республика Крым.</p>
+		<h3>написать через TELEGRAM</h3>
+		<p>Даже если ваша учётная запись заблокирована за СПАМ, вы сможете написать мне через этого бота - <a target="_blank" href="https://t.me/js_master_bot">@js_master_bot</a></p>
+	';?>
+	</div>
+</div> -->
 <?php
 return ob_get_clean();
