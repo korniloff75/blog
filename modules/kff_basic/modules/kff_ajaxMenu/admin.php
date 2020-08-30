@@ -22,7 +22,7 @@ $log->add('$cfg',null,[$cfg]);
 if($act=='index'){
 	?>
 
-	<div class="header"><h1>Настройки обратной связи</h1></div>
+	<div class="header"><h1>Настройки <?=$MODULE?></h1></div>
 	<div class="menu_page"><a href="index.php">&#8592; Вернуться назад</a></div>
 
 	<div class="content">

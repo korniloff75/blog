@@ -31,7 +31,7 @@ kff.checkLib('jQuery')
 		$e.preventDefault();
 		$e.stopPropagation();
 
-		console.log(t);
+		// console.log(t);
 		$loader.show();
 		setActive(t.href);
 

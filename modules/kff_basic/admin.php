@@ -38,8 +38,7 @@ class Basic
 		self::$cfg= &$kff::$cfg;
 		self::$cfg= array_merge(
 			[
-				'copyModules'=> 1,
-				'mds_prefix'=> 'kff' // *Префикс для сканируемых модулей
+				'mds_prefix'=> 'kff_' // *Префикс для сканируемых модулей
 			], self::$cfg
 		);
 
@@ -71,7 +70,7 @@ class Basic
 
 		$ini = parse_ini_file($ini_path);
 		// self::$log->add('parsed INI=',null,[$ini]);
-		$ini[$s_name] = $s_val;
+		$ini[$s_name] = addslashes($s_val);
 
 		file_put_contents($ini_path, $kff::arr2ini($ini));
 		?>
@@ -119,34 +118,58 @@ class Basic
 			{
 				self::$cfg[$s_name] = $s_val;
 			}
-			/* file_put_contents(
-				__DIR__.'/cfg.json', json_encode(self::$cfg)
-			); */
+
 			self::$cfgDB->replace(self::$cfg);
 
-
-			if(self::$cfg['copyModules'])
-			{
-				self::CopyModules();
-				// self::createKFF();
-			}
-			else
-			{
-				// self::destructKFF();
-			}
+			self::CopyModules();
 
 			die;
 		}
 	}
 
 
-	// *Создаём ссылки на модули в /modules
+	/**
+	 * *Наличие в /modules и подключение модуля
+	 */
+	static function checkModule(string $name)
+	{
+		$path = DR."/modules/$name";
+		if(
+			file_exists($path)
+			&& !empty(self::$cfg['mds']["installed_$name"])
+		)
+			return 'checked';
+		else return 'data-unchecked';
+	}
+
+
+	/**
+	 * *Создаём ссылки на модули в /modules
+	 */
 	static function CopyModules()
 	{
 		require_once __DIR__.'/kff_custom/cpDir.class.php';
 		linkDir::$excludes= '~token(\..+)?|cfg\..+~';
 
-		$lnk_mds = new linkDir(__DIR__.'/modules', DR.'/modules');
+		// *Копируем все модули
+		if(!empty(self::$cfg['mds']['installAll']))
+		{
+			$lnk_mds = new linkDir(__DIR__.'/modules', DR.'/modules');
+			return;
+		}
+
+		// *Копируем модули из self::$cfg['mds']['installed']
+		foreach (new DirectoryIterator(__DIR__.'/modules') as $fileInfo)
+		{
+			$name = $fileInfo->getFilename();
+			if(
+				$fileInfo->isDot()
+				|| !empty(self::$cfg['mds']["installed_$name"])
+			) continue;
+
+			new linkDir($fileInfo->getPathname(), DR."/modules/$name");
+
+		}
 
 		System::initModules();
 	}
@@ -221,7 +244,7 @@ class Basic
 	// *Перебираем свои модули
 	static function scanModules()
 	{
-		$mds = glob(realpath(__DIR__.'/..')."/".self::$cfg['mds_prefix']."_*");
+		$mds = glob(realpath(__DIR__.'/..')."/".self::$cfg['mds_prefix']."*");
 		/* $mds= array_filter(
 			$mds,
 			function(&$i){
@@ -234,26 +257,72 @@ class Basic
 	}
 
 
+	static function installModules(array &$info)
+	{
+		// self::$log->add('$info',null,[$info]);
+		echo '<hr>;
+			<h2>Установить модули:</h2>
+			<ul id="installModules" class="uk-list uk-list-striped uk-list-medium" data-group="mds">
+			<li><label>Подключить все внутренние модули <input name="installAll" type="checkbox" ' .
+			(!empty(Basic::$cfg['mds']['installAll'])?'checked':'')
+			.'></label>
+			<p class="comment">Поставленный флажок внедряет и инициализирует все внутренние модули <b>kff</b>.</p>
+			</li>';
+
+		foreach (new DirectoryIterator(__DIR__.'/modules') as $fileInfo) {
+			$name= $fileInfo->getFilename();
+			// self::$log->add('$name=',null,[$name]);
+
+			if(
+				$fileInfo->isDot()
+				|| !file_exists($fileInfo->getPathname().'/admin.php')
+			) continue;
+
+			if(empty($info[$name]) && file_exists($ini_path = $fileInfo->getPathname()."/info.ini"))
+				$info[$name] = parse_ini_file($ini_path);
+
+			echo "<li><label><h5><input name='installed_$name' type=checkbox "
+			. self::checkModule($name)
+			."> $name v.{$info[$name]['version']}</h5>"
+			. "<div class=comment>".($info[$name]['description'] ?? '')."</div>
+			</label></li>\n";
+		}
+		echo '</ul>';
+
+	}
+
+
 	static function RenderPU()
 	{
 		$mds = self::scanModules();
-		echo '<h3>Модули '.self::$cfg['mds_prefix'].'</h3>';
+		echo '<h2>Модули '.(empty(self::$cfg['mds_prefix'])? 'из <i>/modules</i>': self::$cfg['mds_prefix']).'</h2>';
 		echo '<p class=comment>Все изменённые настройки сохраняются автоматически -- после потери фокуса редактируемым полем.</p>
 		<ul id=mds_sts uk-accordion>';
+
+		$info = [];
 
 		foreach($mds as &$m)
 		{
 			$ini_path = "$m/info.ini";
-			$adm_path = "$m/admin.php";
+			$name = basename($m);
+			// $adm_path = "$m/admin.php";
+			if(
+				!file_exists($ini_path)
+			)
+			{
+				continue;
+			}
+
 			$ini = parse_ini_file($ini_path);
+
+			$info[$name] = $ini;
 
 			$is_feedback = mb_stripos($ini['name'],'связь через TG') && count(explode('.', $ini['version'])) > 2;
 
-			/* self::$log->add(__METHOD__,null,[
-				$ini['name'],mb_stripos($ini['name'],'связь через TG'),
-				count(explode('.', $ini['version'])),
-				mb_stripos($ini['name'],'связь через TG') && count(explode('.', $ini['version'])) > 2
-			]); */
+			if($name === 'kff_ajaxMenu')
+				self::$log->add(__METHOD__.' '.$ini['name'],null,[
+					$ini, $ini['name'],$ini['version']
+				]);
 
 
 			echo "<li ".($is_feedback?'class=uk-open':'').">
@@ -274,6 +343,8 @@ class Basic
 			echo '</li>';
 		}
 		echo '<!-- /uk-accordion --></ul>';
+
+		self::installModules($info);
 
 		// *Подключаем морду
 		require_once __DIR__.'/admin.htm';

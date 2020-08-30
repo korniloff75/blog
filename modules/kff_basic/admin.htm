@@ -32,13 +32,12 @@ body>#logWrapper {
 
 
 <hr>
-<h3>Глобальные настройки</h3>
+<h2>Глобальные настройки</h2>
 
 <div id="kff_sts" class="uk-section .uk-section-primary uk-padding">
-	<p><label>Префикс для модулей <input name="mds_prefix" type="text" value="<?= Basic::$cfg['mds_prefix']?>"></label></p>
-	<p class="comment">Скрипт выбирает все модули с указанным префиксом. Например, папки искомых модулей должны называться как <b>kff_modulename</b>.</p>
-	<label>Подключить внутренние модули <input name="copyModules" type="checkbox" <?= Basic::$cfg['copyModules']?'checked':''?>></label>
-	<p class="comment">Поставленный флажок внедряет и инициализирует внутренние модули из папки ./modules. На данный момент там находятся модуль обратной связи и модуль подключения UIKit. Если какой-нибудь из подключённых модулей окажется повреждён или удалён -- флажок следует снять и снова поставить.</p>
+	<p class="box"><label>Префикс для модулей <input name="mds_prefix" type="text" value="<?= Basic::$cfg['mds_prefix']?>"></label></p>
+	<p class="comment">Скрипт выбирает все модули с указанным префиксом. Например, папки искомых модулей должны называться как <b>kff_modulename</b>. Для выбора всех модулей из системы -- удалите префикс.</p>
+
 	<p><label>Init Modules <input name="init_mods" type="checkbox" ></label></p>
 	<p class="comment">Инициализация всех модулей. Системная.</p>
 
@@ -83,11 +82,12 @@ $(()=>{
 
 		i.group= i.closest('[data-group]')? i.closest('[data-group]').getAttribute('data-group'): null;
 		i.checked= i.group? cfg[i.group]&&cfg[i.group][i.name]: cfg[i.name];
+		if(i.hasAttribute('data-unchecked')) i.checked= false;
 		console.log(i, i.checked, /* cfg */);
 	});
 
 	// *Сохр глоб. настроек
-	$('#kff_sts').on('change', 'input', $e=>{
+	$('#kff_sts, #installModules').on('change', 'input', $e=>{
 		var $t= $($e.target);
 		// console.log($t.prop('checked'));
 		if(!$t.length) return;
@@ -109,8 +109,7 @@ $(()=>{
 
 		$.post('', send_data).then((response, status)=>{
 			// console.log();
-			$('<div/>').insertAfter($e.currentTarget)
-			.html($(response).find('.log'));
+			$('.log').html($(response).find('.log'));
 		});
 	});
 
@@ -140,6 +139,10 @@ $(()=>{
 		save($t, 'val');
 	});
 
+	/**
+	 * @param {jq} $t form element
+	 * @param {string} method 'html' || 'val'
+	 */
 	function save ($t, method) {
 		$.post('',{
 			ini_path: $t.closest('li.uk-open').find('h4').data('ini-path'),

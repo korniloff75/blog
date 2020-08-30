@@ -52,7 +52,7 @@ class Index_my_addon
 	public static function headHtml()
 	{
 		global $Page;
-		$UIKitPath = self::$modulesPath . '/kff_uikit-3.5.5';
+		$UIKitPath = '/'.self::getPathFromRoot(__DIR__) . '/modules/kff_uikit-3.5.5';
 		$kffJsPath = '/' . self::$dir . '/js';
 
 		$addonsPages= '

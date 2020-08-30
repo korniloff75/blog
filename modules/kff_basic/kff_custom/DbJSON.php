@@ -22,11 +22,11 @@ class DbJSON {
 
 			$dir= realpath(dirname($this->path));
 
-			trigger_error(__METHOD__.": \$this->path1= {$this->path}");
+			// trigger_error(__METHOD__.": \$this->path1= {$this->path}");
 
 			if(!$this->path) $this->path= $_SERVER['DOCUMENT_ROOT']. '/' . $path;
 
-			trigger_error(__METHOD__.": \$this->path2= {$this->path}; \$path= $path; \$dir= $dir");
+			// trigger_error(__METHOD__.": \$this->path2= {$this->path}; \$path= $path; \$dir= $dir");
 
 			// var_dump($this->path);
 		}
