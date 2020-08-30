@@ -18,7 +18,7 @@ if(!$kff::is_adm()) die;
 
 class Basic
 {
-	static $dir, $cfg, $log, $mds_prefix;
+	static $dir, $cfgDB, $cfg, $log, $mds_prefix;
 
 	static function init()
 	{
@@ -34,14 +34,16 @@ class Basic
 			'copyModules'=> 0,
 			'mds_prefix'=> 'kff'
 		]; */
+		self::$cfgDB= &$kff::$cfgDB;
+		self::$cfg= &$kff::$cfg;
 		self::$cfg= array_merge(
 			[
 				'copyModules'=> 1,
 				'mds_prefix'=> 'kff' // *Префикс для сканируемых модулей
-			], json_decode(
-				@file_get_contents(__DIR__.'/cfg.json'), 1
-			)
-			);
+			], self::$cfg
+		);
+
+		// self::$log->add('$kff::$cfg=',null, [$kff::$cfg]);
 
 
 
@@ -86,6 +88,11 @@ class Basic
 			return;
 		$s_name = filter_var($_REQUEST['name']);
 		$s_val = filter_var($_REQUEST['val']);
+		$group = filter_var($_REQUEST['group']);
+		// *Отключение всех элементов группы
+		$disable = filter_var($_REQUEST['disable']);
+
+		// self::$log->add('disable', null,[$disable]);
 
 		// *4 checkboxes
 		if(in_array($s_val, ['true','false']))
@@ -99,10 +106,24 @@ class Basic
 		}
 		elseif(!empty($s_name))
 		{
-			self::$cfg[$s_name] = $s_val;
-			file_put_contents(
+			if(!empty($group))
+			{
+				self::$cfg[$group][$s_name] = $s_val;
+				if(!empty($disable))
+				{
+					unset(self::$cfg[$group]);
+					self::$log->add('disable', null,[$disable, self::$cfg]);
+				}
+			}
+			else
+			{
+				self::$cfg[$s_name] = $s_val;
+			}
+			/* file_put_contents(
 				__DIR__.'/cfg.json', json_encode(self::$cfg)
-			);
+			); */
+			self::$cfgDB->replace(self::$cfg);
+
 
 			if(self::$cfg['copyModules'])
 			{
@@ -256,6 +277,8 @@ class Basic
 
 		// *Подключаем морду
 		require_once __DIR__.'/admin.htm';
+
+		// self::$log->add('self::$cfg=',null,[self::$cfg]);
 	}
 
 }

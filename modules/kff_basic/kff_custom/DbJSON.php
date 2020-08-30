@@ -1,28 +1,40 @@
 <?php
 class DbJSON {
+	static
+		$convertPath = true;
+
 	private
 		$path,
 		$json; # String
 
 	public
-		# DataBase
-		$db = []; # Array
+		$db = [];# DataBase # Array
 
 
 	public function __construct(string $path)
 	{
-		//* fix 4 __destruct
-		$this->path= substr($path, 0, 1) !== DIRECTORY_SEPARATOR
-		? realpath($path)
-		: $path;
+		if(self::$convertPath)
+		{
+			//* fix 4 __destruct
+			$this->path= substr($path, 0, 1) !== DIRECTORY_SEPARATOR
+			? realpath($path)
+			: $path;
 
-		$dir= realpath(dirname($this->path));
+			$dir= realpath(dirname($this->path));
 
-		if(!$this->path) $this->path= $_SERVER['DOCUMENT_ROOT']. '/' . $path;
+			trigger_error(__METHOD__.": \$this->path1= {$this->path}");
 
-		trigger_error(__METHOD__.": \$this->path= {$this->path}; \$path= $path; \$dir= $dir");
+			if(!$this->path) $this->path= $_SERVER['DOCUMENT_ROOT']. '/' . $path;
 
-		// var_dump($this->path);
+			trigger_error(__METHOD__.": \$this->path2= {$this->path}; \$path= $path; \$dir= $dir");
+
+			// var_dump($this->path);
+		}
+		else
+		{
+			$this->path= $path;
+		}
+
 
 		$this->json = @file_get_contents($this->path);
 		// trigger_error(__METHOD__.' ./'.$path." \$this->path= " . $this->path);
@@ -47,15 +59,9 @@ class DbJSON {
 	 */
 	public function set(array $data, $append = false)
 	{
-		if($append)
-		{
-			$this->db = array_merge_recursive($this->db, $data);
-		}
-		else
-		{
+		$handler = $append ? 'array_merge_recursive' : 'array_replace_recursive';
 
-			$this->db = array_replace_recursive($this->db, $data);
-		}
+		$this->db = $handler($this->db, $data);
 
 		$this->db['change']= 1;
 
@@ -94,7 +100,7 @@ class DbJSON {
 
 	public function __destruct()
 	{
-		// todo test
+		// note test
 		// $this->db['change']= 1;
 
 		// trigger_error(__METHOD__." \$this->db['change']= " . ((bool) $this->db['change']) . "\nBase saved! \$this->path= {$this->path} current=" . realpath('.') . ' spl=' . $_SERVER['DOCUMENT_ROOT']. '/' .  $this->objPath->getPathname());

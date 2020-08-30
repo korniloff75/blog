@@ -6,7 +6,9 @@ class Index_my_addon
 		// $log = false,
 		// *Путь к kff_custom
 		$dir,
-		$modulesPath;
+		$modulesPath,
+		$cfgDB,
+		$cfg;
 
 	private static $log = false;
 
@@ -23,16 +25,23 @@ class Index_my_addon
 		)
 			return;
 
+		self::$dir = self::getPathFromRoot(__DIR__) . '/kff_custom';
 
 		// *Logger
 		require_once __DIR__.'/kff_custom/Logger.php' ;
 		self::$log = new Logger('kff.log', DR);
 
-		self::$dir = self::getPathFromRoot(__DIR__) . '/kff_custom';
+		require_once DR .'/'. self::$dir.'/DbJSON.php';
+
+		self::$cfgDB = new DbJSON(__DIR__.'/cfg.json');
+
+		self::$cfg = self::$cfgDB->get();
+
 		// self::$modulesPath = '/' . self::getPathFromRoot($_SERVER['DOCUMENT_ROOT'].'/modules');
 		self::$modulesPath = '/modules';
 
 		self::$log->add('REQUEST_URI=',null, [$_SERVER['REQUEST_URI']]);
+		self::$log->add(__CLASS__.'::$cfg=',null, [self::$cfg]);
 
 	}
 
@@ -46,7 +55,45 @@ class Index_my_addon
 		$UIKitPath = self::$modulesPath . '/kff_uikit-3.5.5';
 		$kffJsPath = '/' . self::$dir . '/js';
 
-		$addons= '
+		$addonsPages= '
+		<!-- Start from '.__METHOD__.' -->
+		<script src="'.$kffJsPath.'/kff.js"></script>
+		';
+
+		if(!empty(self::$cfg['uk']['include_uikit']))
+		{
+			$addonsPages .= '
+			<!-- UIKit from '.$UIKitPath.' -->
+			<link rel="stylesheet" href="'.$UIKitPath.'/css/uikit.min.css" />
+			<script src="'.$UIKitPath.'/js/uikit.min.js"></script>
+			';
+
+			if(!empty(self::$cfg['uk']['include_picts']))
+			{
+				$addonsPages .= '
+				<!-- UIkit picts-->
+				<script src="'.$UIKitPath.'/js/uikit-icons.min.js"></script>';
+			}
+
+			$addonsPages .= '<!-- / UIKit -->';
+		}
+
+		$addonsPages .= '
+		<script src="'.$kffJsPath.'/jquery-3.3.1.min.js"></script>
+		<!-- / Start from '.__METHOD__.' -->
+
+		';
+
+		// *Подключаем скрипты в страницы
+		if(is_object($Page))
+		{
+			$Page->headhtml.= $addonsPages;
+		}
+
+		// *Подключаем скрипты в админпанель
+		elseif(!self::is_admPanel()) return $addonsPages;
+
+		$addonsAdm= '
 
 		<!-- Start from '.__METHOD__.' -->
 		<!-- Load UIKit from '.$UIKitPath.' -->
@@ -59,18 +106,9 @@ class Index_my_addon
 
 		';
 
-		// *Подключаем скрипты в страницы
-		if(is_object($Page))
-		{
-			$Page->headhtml.= $addons;
-		}
+		System::addAdminHeadHtml($addonsAdm);
 
-		// *Подключаем скрипты в админпанель
-		if(!self::is_adm()) return;
-
-		System::addAdminHeadHtml($addons);
-
-		return $addons;
+		return $addonsAdm;
 	}
 
 
@@ -108,6 +146,13 @@ class Index_my_addon
 		return $GLOBALS['status'] === 'admin';
 	}
 
+	public static function is_admPanel ()
+
+	{
+		// return file_exists('./newpassword.php');
+		return explode('/', REQUEST_URI)[1] === 'admin';
+	}
+
 
 	/**
 	 * *Преобразование массива в формат INI
@@ -143,6 +188,7 @@ class Index_my_addon
 
 	public function __destruct()
 	{
+		self::$log->add('self::is_admPanel()',null,[self::is_admPanel(), realpath('')]);
 		// var_dump($GLOBALS['log']);
 		if(self::is_adm())
 		{
@@ -162,6 +208,15 @@ class Index_my_addon
 				self::$log->print();
 				echo "</div>";
 
+				if(self::is_admPanel())
+				{
+				?>
+					<script>
+					$('#main').append($('#logWrapper'));
+					</script>
+				<?php
+				}
+
 				self::$log::$printed = 1;
 			}
 		}
@@ -175,11 +230,18 @@ $log = $kff::get_log();
 
 $kff::headHtml();
 
+/* System::addAdminEndHtml("
+	<script>
+	$('#main').append($('#logWrapper'));
+	console.log(111);
+	</script>
+"); */
+
 
 // if(!defined('DR'))
 	// define('DR', $_SERVER['DOCUMENT_ROOT']);
 
-// $log->add('$URL=',null,[$URL]);
+// $log->add('$URI=',null,[$URI]);
 
 
 // todo Разработать сохранение материалов по категориям

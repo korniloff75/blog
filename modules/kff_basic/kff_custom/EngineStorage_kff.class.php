@@ -4,7 +4,9 @@ class EngineStorage_kff extends EngineStorage
 {
 	public
 		$log,
-		$prefix = 'cat_';
+		$prefix = 'cat_',
+		// todo подпапка
+		$storage = '';
 	private $cats;
 	/**
 	 * *Определение параметров
@@ -13,6 +15,8 @@ class EngineStorage_kff extends EngineStorage
 	public function __construct($storage, $storageDir=null)
 	{
 		$this->log= Index_my_addon::get_log();
+
+		// $this->storage = $storage;
 
 		if(file_exists(__DIR__.'/DbJSON.php'))
 		{
@@ -30,7 +34,7 @@ class EngineStorage_kff extends EngineStorage
 	public function getPathName()
 	:string
 	{
-		return $this->storageDir.'/'.$this->storage;
+		return $this->storageDir.$this->storage;
 	}
 
 	public function getCatsArr()
@@ -55,13 +59,13 @@ class EngineStorage_kff extends EngineStorage
 				file_get_contents(
 					$path
 				), 1
-			);
+			) ?? [];
 	}
 
 	//* Создание ключа
 	public function set($key, $value, $q = 'w+')
 	{
-		if(!$this->exists())
+		if(!file_exists($this->getPathName()))
 		{
 			mkdir($this->getPathName(), 0775, true);
 		}
