@@ -3,13 +3,12 @@ if(__DIR__ === realpath('.')) die;
 
 // $curDir =
 
-// *Basic::cfg['copyModules']==0
-/* if(empty($kff))
+// *Первый старт
+if(empty($kff))
 {
-	include_once __DIR__.'/kff_custom/index_my_addon.php';
-
-
-} */
+	System::initModules();
+	die ('<h2>Модуль активирован. Перезагрузите страницу.</h2>');
+}
 echo $kff::headHtml();
 
 // *Только админам
@@ -85,18 +84,23 @@ class Basic
 	{
 		if(@$_REQUEST['type'] !== 'global')
 			return;
+		// self::$log->add('s_val_0', null,[$_REQUEST['name'],$_REQUEST['val']]);
 		$s_name = filter_var($_REQUEST['name']);
-		$s_val = filter_var($_REQUEST['val']);
+		if( !is_array($_REQUEST['val']) )
+			$s_val = filter_var($_REQUEST['val']);
+		else
+			$s_val = $_REQUEST['val'];
 		$group = filter_var($_REQUEST['group']);
 		// *Отключение всех элементов группы
 		$disable = filter_var($_REQUEST['disable']);
 
-		// self::$log->add('disable', null,[$disable]);
+		self::$log->add('s_val', null,[$s_name,$s_val]);
 
 		// *4 checkboxes
-		if(in_array($s_val, ['true','false']))
+		if(!is_array($s_val) && in_array($s_val, ['true','false']))
 		{
-			$s_val = $s_val === 'true';
+			// $s_val = $s_val === 'true';
+			$s_val = filter_var($s_val, FILTER_VALIDATE_BOOLEAN);
 		}
 
 		if($s_name=='init_mods' && $s_val)
@@ -107,7 +111,15 @@ class Basic
 		{
 			if(!empty($group))
 			{
-				self::$cfg[$group][$s_name] = $s_val;
+				if(is_array($s_val))
+				{
+					self::$cfg[$group] = array_merge(self::$cfg[$group], $s_val);
+
+					// self::$log->add('array', null,[ self::$cfg]);
+				}
+				else
+					self::$cfg[$group][$s_name] = $s_val;
+
 				if(!empty($disable))
 				{
 					unset(self::$cfg[$group]);
@@ -164,14 +176,54 @@ class Basic
 			$name = $fileInfo->getFilename();
 			if(
 				$fileInfo->isDot()
-				|| !empty(self::$cfg['mds']["installed_$name"])
+				// || !empty(self::$cfg['mds']["installed_$name"])
 			) continue;
 
-			new linkDir($fileInfo->getPathname(), DR."/modules/$name");
+			if(empty(self::$cfg['mds']["installed_$name"]))
+			{
+				self::RemoveModule($name);
+				System::initModules();
+			}
+			else
+			{
+				new linkDir($fileInfo->getPathname(), DR."/modules/$name");
+			}
 
 		}
 
 		System::initModules();
+	}
+
+
+	/**
+	 * *Удаление модулей
+	 */
+	static function RemoveModule($name)
+	{
+		global $kff;
+		if(
+			!$kff::is_adm()
+			|| !file_exists($pathdir = DR."/modules/$name")
+		) return;
+
+		// system("rm $pathdir -rf");
+
+		$iter = new RecursiveDirectoryIterator($pathdir, FilesystemIterator::SKIP_DOTS|RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
+
+		foreach (new RecursiveIteratorIterator($iter, RecursiveIteratorIterator::CHILD_FIRST) as $fi)
+		{
+			if($fi->isFile())
+			{
+				unlink($fi->getRealPath());
+			}
+			else
+			{
+				rmdir($fi->getRealPath());
+			}
+			echo "$fi<br>";
+		}
+
+		rmdir($pathdir);
 	}
 
 	static function createKFF()
@@ -281,9 +333,11 @@ class Basic
 			if(empty($info[$name]) && file_exists($ini_path = $fileInfo->getPathname()."/info.ini"))
 				$info[$name] = parse_ini_file($ini_path);
 
+			$icon = file_exists($fileInfo->getPathname().'/icon.png')? '<img src="/'.Index_my_addon::getPathFromRoot($fileInfo->getPathname().'/icon.png').'" style="height:70px">': '';
+
 			echo "<li><label><h5><input name='installed_$name' type=checkbox "
 			. self::checkModule($name)
-			."> $name v.{$info[$name]['version']}</h5>"
+			."> $name v.{$info[$name]['version']} $icon</h5>"
 			. "<div class=comment>".($info[$name]['description'] ?? '')."</div>
 			</label></li>\n";
 		}

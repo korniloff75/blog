@@ -3,7 +3,7 @@ require('./system/global.dat');
 ob_start($Config->gzip?'ob_gzhandler':null);
 
 
-//Обработка ЧПУ
+// *Обработка ЧПУ
 if($Config->uriRule == 1){ // Разрешаем произвольные GET параметры
 	if (strpos(REQUEST_URI, '?') !== false) {
 		$URI = explode('/', substr(REQUEST_URI, 0, strpos(REQUEST_URI, '?')));

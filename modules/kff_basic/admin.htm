@@ -36,7 +36,7 @@ body>#logWrapper {
 
 <div id="kff_sts" class="uk-section .uk-section-primary uk-padding">
 	<p class="box"><label>Префикс для модулей <input name="mds_prefix" type="text" value="<?= Basic::$cfg['mds_prefix']?>"></label></p>
-	<p class="comment">Скрипт выбирает все модули с указанным префиксом. Например, папки искомых модулей должны называться как <b>kff_modulename</b>. Для выбора всех модулей из системы -- удалите префикс.</p>
+	<p class="comment">Скрипт выбирает все модули с указанным префиксом. Например, папки искомых модулей должны называться как <b>kff_modulename</b>. Для выбора всех модулей из системы -- удалите префикс. После любого изменения префикса -- перезагрузите страницу.</p>
 
 	<p><label>Init Modules <input name="init_mods" type="checkbox" ></label></p>
 	<p class="comment">Инициализация всех модулей. Системная.</p>
@@ -54,7 +54,7 @@ body>#logWrapper {
 
 			<ul class="uk-list uk-list-striped">
 
-				<li><label>Тегам <i>input</i> <input name="use_styles_input" type="checkbox"></label></li>
+				<li><label>Тегам <i>input/textarea/select</i> <input name="use_styles_input" type="checkbox"></label></li>
 				<li><label>Тегам <i>ul</i> <input name="use_styles_ul" type="checkbox"></label></li>
 
 			</ul>
@@ -96,22 +96,42 @@ $(()=>{
 
 		var $include_uikit = $('#include_uikit'),
 			send_data = {
-			type: 'global',
-			group: $t.prop('group'),
-			name: $t.prop('name'),
-			val: val,
-		};
+				type: 'global',
+				group: $t.prop('group'),
+				name: $t.prop('name'),
+				val: val,
+			};
 
 		if(!$include_uikit.prop('checked')) {
 			$include_uikit.closest('ul').find('input[type=checkbox]').prop({checked:0});
 			send_data.disable = 1;
 		}
 
+		// todo
+		// *installAll
+		var $installAll= $('input[name=installAll]');
+		console.log($installAll.prop('checked'));
+		if($installAll.prop('checked')) {
+			send_data.val= {installAll:1};
+			// $installAll.closest('ul').find('input[type=checkbox]').prop({checked:1});
+			$installAll.closest('ul').find('input[type=checkbox]').each((ind,i)=>{
+				if(i === $installAll[0]) return;
+
+				i.checked = 1;
+				send_data.val[i.name] = 1;
+			});
+
+		}
+
+		saveSTS(send_data);
+	});
+
+	function saveSTS (send_data) {
 		$.post('', send_data).then((response, status)=>{
 			// console.log();
 			$('.log').html($(response).find('.log'));
 		});
-	});
+	}
 
 
 	// *Сохр настроек модулей
@@ -129,21 +149,21 @@ $(()=>{
 		if(!$t.length) return;
 
 		if(content !== $t.html())
-			save($t, 'html');
+			saveINI($t, 'html');
 	});
 
 	$('#mds_sts').on('change', 'input,textarea', $e=>{
 		var $t= $($e.target);
 		if(!$t.length) return;
 
-		save($t, 'val');
+		saveINI($t, 'val');
 	});
 
 	/**
 	 * @param {jq} $t form element
 	 * @param {string} method 'html' || 'val'
 	 */
-	function save ($t, method) {
+	function saveINI ($t, method) {
 		$.post('',{
 			ini_path: $t.closest('li.uk-open').find('h4').data('ini-path'),
 			name: $t.prev().text().trim(),

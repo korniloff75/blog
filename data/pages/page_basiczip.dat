@@ -1,0 +1,4 @@
+<?php
+global $kff;
+$kff::getZipModule('kff_basic');
+?>

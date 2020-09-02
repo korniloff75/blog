@@ -63,7 +63,13 @@ class cpDir
 	} // copy_safe
 
 
-	function fs_log($str) {
+	static function RemoveDir($pathdir)
+	{
+		exec("rm $pathdir -rf *");
+	}
+
+	function fs_log($str)
+	{
 		$time = date("Y-m-d H:i:s");
 
 		self::$log[]= "$str ($time)\n";
