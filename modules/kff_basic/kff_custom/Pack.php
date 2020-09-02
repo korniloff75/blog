@@ -120,7 +120,7 @@ class Pack
 
 		foreach (new RecursiveIteratorIterator($iter) as $fileInfo) {
 			$name = $fileInfo->getPathname();
-			$zipName = str_replace($pathdir,'',$name);
+			$zipName = str_replace($pathdir.DIRECTORY_SEPARATOR,'',$name);
 			if(preg_match($excludes, $name))
 				continue;
 

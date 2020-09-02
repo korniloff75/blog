@@ -337,7 +337,7 @@ class Basic
 
 			echo "<li><label><h5><input name='installed_$name' type=checkbox "
 			. self::checkModule($name)
-			."> $name v.{$info[$name]['version']} $icon</h5>"
+			."> $icon $name v.{$info[$name]['version']}</h5>"
 			. "<div class=comment>".($info[$name]['description'] ?? '')."</div>
 			</label></li>\n";
 		}
