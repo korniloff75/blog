@@ -10,11 +10,15 @@
 <?php
 if (!class_exists('System')) exit; // Запрет прямого доступа
 
-$mailToAdminStorage = new EngineStorage_kff('cfg.db', __DIR__);
+// *Path to internal module folder
+$internalDir = $kff::$internalModulesPath.'/'.basename(__DIR__);
+
+$mailToAdminStorage = new DbJSON($internalDir.'/cfg.db.dat', __DIR__);
+// $mailToAdminStorage = new EngineStorage_kff('cfg.db', __DIR__);
 // $mailToAdminStorage = new EngineStorage('module.mail.to.admin');
 
 // $cfg = $mailToAdminStorage->get();
-$cfg = $mailToAdminStorage->get('cfg.db');
+$cfg = $mailToAdminStorage->get();
 // $cfg = json_decode($mailToAdminStorage->get('cfg'),1);
 
 // var_dump($cfg->getPathName());
@@ -24,7 +28,7 @@ $emails = &$cfg['emails'];
 
 $fromallform = &$cfg['fromallform'];
 
-$tg_token = file_get_contents(__DIR__.'/token');
+$tg_token = file_get_contents($internalDir.'/token');
 
 $checked = $fromallform?' checked':'';
 if($emails == false){ $emails = '';}
@@ -96,10 +100,10 @@ if($act=='add')
 	// *Save new token
 	if(isset($_POST['tg_token']) && $_POST['tg_token'] !== $tg_token)
 	{
-		file_put_contents(__DIR__.'/token', $_POST['tg_token']);
+		file_put_contents($internalDir.'/token', $_POST['tg_token']);
 	}
 
-	$mailToAdminStorage->set('cfg', $cfg );
+	$mailToAdminStorage->set($cfg );
 	// $mailToAdminStorage->set('cfg',
 	// 	json_encode($cfg, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)
 	// );

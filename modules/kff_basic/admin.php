@@ -135,7 +135,7 @@ class Basic
 
 			self::CopyModules();
 
-			die;
+			// die;
 		}
 	}
 
@@ -146,12 +146,10 @@ class Basic
 	static function checkModule(string $name)
 	{
 		$path = DR."/modules/$name";
-		if(
+		return (
 			file_exists($path)
 			&& !empty(self::$cfg['mds']["installed_$name"])
-		)
-			return 'checked';
-		else return 'data-unchecked';
+		);
 	}
 
 
@@ -161,7 +159,7 @@ class Basic
 	static function CopyModules()
 	{
 		require_once __DIR__.'/kff_custom/cpDir.class.php';
-		linkDir::$excludes= '~token(\..+)?|cfg\..+~';
+		// linkDir::$excludes= '~token(\..+)?|cfg\..+~';
 
 		// *Копируем все модули
 		if(!empty(self::$cfg['mds']['installAll']))
@@ -309,6 +307,29 @@ class Basic
 	}
 
 
+	// todo не ловится disable === 1
+	static function disableModules($fileInfo, array &$ini)
+	{
+		if(empty($ini))
+			return;
+
+		$ini['disable'] = filter_var($ini['disable'], FILTER_VALIDATE_BOOLEAN);
+
+		// self::$log->add(__METHOD__.$fileInfo->getFilename().' $ini[\'disable\']',null,[$ini['disable']]);
+
+		$integrations = glob($fileInfo->getPathname().'/*integration_*');
+
+		foreach($integrations as &$i)
+		{
+			if(empty($ini['disable']))
+				$name = str_replace('dis_integration_', 'integration_', $i, $rcount);
+			elseif(strpos($i,'dis_')===false)
+				$name = str_replace('integration_', 'dis_integration_', $i, $rcount);
+			if($rcount) rename($i, $name);
+		}
+
+	}
+
 	static function installModules(array &$info)
 	{
 		// self::$log->add('$info',null,[$info]);
@@ -336,7 +357,7 @@ class Basic
 			$icon = file_exists($fileInfo->getPathname().'/icon.png')? '<img src="/'.Index_my_addon::getPathFromRoot($fileInfo->getPathname().'/icon.png').'" style="height:70px">': '';
 
 			echo "<li><label><h5><input name='installed_$name' type=checkbox "
-			. self::checkModule($name)
+			. (self::checkModule($name) ? 'checked' : 'data-unchecked')
 			."> $icon $name v.{$info[$name]['version']}</h5>"
 			. "<div class=comment>".($info[$name]['description'] ?? '')."</div>
 			</label></li>\n";
@@ -367,9 +388,13 @@ class Basic
 				continue;
 			}
 
-			$ini = parse_ini_file($ini_path);
+			$ini = array_merge([
+				'disable' => 0,
+			],parse_ini_file($ini_path));
 
 			$info[$name] = $ini;
+
+			self::disableModules(new SplFileInfo($m), $ini);
 
 			$is_feedback = mb_stripos($ini['name'],'связь через TG') && count(explode('.', $ini['version'])) > 2;
 
@@ -385,6 +410,8 @@ class Basic
 			foreach($ini as $key=>&$val)
 			{
 				// $val = htmlspecialchars($val);
+				// todo history
+				if(is_array($val)) continue;
 
 				$tag = $key !== 'description' ? "<input class=uk-width-2-3 type=text value='$val'>" : "<div contentEditable=true class=uk-width-2-3>$val</div>";
 

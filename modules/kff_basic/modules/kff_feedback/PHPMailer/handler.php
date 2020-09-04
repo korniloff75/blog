@@ -1,39 +1,16 @@
 <?php
 require_once __DIR__ . '/MailPlain.php';
 
-/* var_dump(
-	$_REQUEST
-); */
-
-// $test = 1;
-
-// ?
-$index_my_addon_path = $_SERVER['DOCUMENT_ROOT'].'/kff_custom/index_my_addon.php';
-if(file_exists($index_my_addon_path) && !$test)
-	require_once $index_my_addon_path;
-elseif(!class_exists('fixLog'))
-{
-	// note Глушим Логгер в продакшне
-	// todo Доработать
-	class fixLog
-	{
-		public function add($txt)
-		{
-			trigger_error('Заглушка - ' . $txt);
-		}
-	}
-	$log = new fixLog();
-
-}
-
 
 $subject = "{$_REQUEST['subject']} - feedback from " . $_SERVER['HTTP_HOST'];
 $message = "{$_REQUEST['name']} пишет: \n{$_REQUEST['message']}";
 
-// *Достаём настройки из админки
-$cfg = json_decode(
-	file_get_contents(DR.'/data/storage/module.mail.to.admin/cfg.dat'),1
+$mailToAdminStorage = new DbJSON(
+	// *Path to internal module folder
+	$kff::$internalModulesPath.'/kff_feedback/cfg.db.dat', __DIR__
 );
+
+$cfg = $mailToAdminStorage->get();
 
 // *init MailPlain
 $mailPlain = new MailPlain ($subject, $message, $_REQUEST['email'], $_REQUEST['name']);

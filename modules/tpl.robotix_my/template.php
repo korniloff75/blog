@@ -162,7 +162,7 @@
 	<div class="content">
 		<section id="cats">
 		<?php
-		if(Module::exists('admin_pages_category')) echo Get_PagesCategory();
+		if(function_exists('Get_PagesCategory')) echo Get_PagesCategory();
 		?>
 		</section>
 

@@ -11,7 +11,7 @@ use PHPMailer\PHPMailer\Exception;
 require_once __DIR__ . '/src/Exception.php';
 require_once __DIR__ . '/src/PHPMailer.php';
 require_once __DIR__ . '/src/SMTP.php';
-require_once "{$_SERVER['DOCUMENT_ROOT']}/kff_custom/index_my_addon.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/modules/kff_basic/integration_system.php";
 
 
 class MailPlain extends PHPMailer

@@ -6,6 +6,7 @@ class Index_my_addon
 		// $log = false,
 		// *Путь к kff_custom
 		$dir,
+		$internalModulesPath,
 		$modulesPath,
 		$cfgDB,
 		$cfg;
@@ -39,6 +40,8 @@ class Index_my_addon
 
 		// self::$modulesPath = '/' . self::getPathFromRoot($_SERVER['DOCUMENT_ROOT'].'/modules');
 		self::$modulesPath = '/modules';
+		// *Path to internal modules
+		self::$internalModulesPath = __DIR__.'/modules';
 
 		self::$log->add('REQUEST_URI=',null, [$_SERVER['REQUEST_URI']]);
 		self::$log->add(__CLASS__.'::$cfg=',null, [self::$cfg]);
@@ -264,6 +267,8 @@ class Index_my_addon
 	}
 }
 
+if(!defined('DR'))
+	define('DR', $_SERVER['DOCUMENT_ROOT']);
 
 $kff = new Index_my_addon();
 
@@ -278,15 +283,12 @@ $kff::headHtml();
 	</script>
 "); */
 
-
-// if(!defined('DR'))
-	// define('DR', $_SERVER['DOCUMENT_ROOT']);
-
 // $log->add('$URI=',null,[$URI]);
 
 
 // todo Разработать сохранение материалов по категориям
-if(class_exists('EngineStorage'))
+// ? Changed at DbJSON
+/* if(class_exists('EngineStorage'))
 {
 	require_once __DIR__.'/kff_custom/EngineStorage_kff.class.php';
-}
+} */

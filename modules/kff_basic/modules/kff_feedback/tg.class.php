@@ -20,9 +20,9 @@ interface iBotTG
 	// protected function init();
 }
 
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/Helper.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . "/kff_custom/traits/Get_set.trait.php";
-require_once $_SERVER['DOCUMENT_ROOT'] . "/kff_custom/traits/Curl.trait.php";
+
+require_once "{$_SERVER['DOCUMENT_ROOT']}/".Index_my_addon::$dir . "/traits/Get_set.trait.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/".Index_my_addon::$dir . "/traits/Curl.trait.php";
 
 
 class TG
