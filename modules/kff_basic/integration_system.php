@@ -1,5 +1,8 @@
 <?php
 
+if(!defined('DR'))
+	define('DR', $_SERVER['DOCUMENT_ROOT']);
+
 class Index_my_addon
 {
 	public static
@@ -232,6 +235,8 @@ class Index_my_addon
 
 	public function __destruct()
 	{
+		if(!self::$log) return;
+
 		self::$log->add('self::is_admPanel()',null,[self::is_admPanel(), realpath('')]);
 		// var_dump($GLOBALS['log']);
 		if(self::is_adm())
@@ -266,9 +271,6 @@ class Index_my_addon
 		}
 	}
 }
-
-if(!defined('DR'))
-	define('DR', $_SERVER['DOCUMENT_ROOT']);
 
 $kff = new Index_my_addon();
 

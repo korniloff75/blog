@@ -1,1 +1,1 @@
-{"system":["blog","ckeditor_plus","kff_basic","layout","news","news_categories","sitemap","turbo"],"pages":["blog","kff_ajaxMenu","kff_basic","mod_articles","news_categories"],"end":[]}
+{"system":["admin_pages_category","blog","ckeditor_plus","kff_basic","layout","news","news_categories","sitemap","turbo"],"pages":["admin_pages_category","blog","kff_ajaxMenu","kff_basic","mod_articles","news_categories"],"end":[]}

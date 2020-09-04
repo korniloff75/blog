@@ -307,7 +307,9 @@ class Basic
 	}
 
 
-	// todo не ловится disable === 1
+	/**
+	 * Отключение модулей
+	 */
 	static function disableModules($fileInfo, array &$ini)
 	{
 		if(empty($ini))
@@ -325,7 +327,7 @@ class Basic
 				$name = str_replace('dis_integration_', 'integration_', $i, $rcount);
 			elseif(strpos($i,'dis_')===false)
 				$name = str_replace('integration_', 'dis_integration_', $i, $rcount);
-			if($rcount) rename($i, $name);
+			if(!empty($rcount)) rename($i, $name);
 		}
 
 	}
@@ -405,8 +407,13 @@ class Basic
 
 
 			echo "<li ".($is_feedback?'class=uk-open':'').">
-			<h4 class=uk-accordion-title data-ini-path='$ini_path'>{$ini['name']} v.{$ini['version']}</h4>";
+			<h4 class='uk-accordion-title".(
+				!empty($ini['disable'])?" uk-background-primary uk-background-muted uk-light":''
+				)."' data-ini-path='$ini_path'>{$ini['name']} v.{$ini['version']}".(
+					!empty($ini['disable'])?" -- disabled":''
+				)."</h4>";
 			echo '<ul class="uk-accordion-content uk-margin-bottom">';
+
 			foreach($ini as $key=>&$val)
 			{
 				// $val = htmlspecialchars($val);

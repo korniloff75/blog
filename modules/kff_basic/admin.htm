@@ -70,13 +70,16 @@ body>#logWrapper {
 'use strict';
 // kff.checkLib('jQuery')
 // .then($=>{
+// UIkit.util.ready(()=>{
 $(()=>{
-	// *Украшения
-	$('.content input[type=checkbox]').addClass('uk-checkbox');
 
-	var cfg= <?=json_encode(Basic::$cfg)?>,
-	$list= $('.content');
-	$list.find('input[type=checkbox]')
+	var U= UIkit.util,
+	cfg= <?=json_encode(Basic::$cfg)?>,
+	$content= $('.content');
+
+	ajaxRender();
+
+	$content.find('input[type=checkbox]')
 	.each((ind,i)=>{
 		i.classList.add('uk-checkbox');
 
@@ -128,36 +131,13 @@ $(()=>{
 
 	function saveSTS (send_data) {
 		$.post('', send_data).then((response, status)=>{
-			// console.log();
-			$('.log').html($(response).find('.log'));
+			console.log(document.documentElement);
+			// $('.log').html($(response).find('.log'));
+			// document.documentElement.innerHTML = response;
+			ajaxRender(response);
 		});
 	}
 
-
-	// *Сохр настроек модулей
-	// console.log($('#mds_sts'));
-	var content;
-	$('#mds_sts').on('focus', 'div', $e=>{
-		var $t= $($e.target);
-		if(!$t.length) return;
-
-		content= $t.html();
-	});
-
-	$('#mds_sts').on('blur', 'div', $e=>{
-		var $t= $($e.target);
-		if(!$t.length) return;
-
-		if(content !== $t.html())
-			saveINI($t, 'html');
-	});
-
-	$('#mds_sts').on('change', 'input,textarea', $e=>{
-		var $t= $($e.target);
-		if(!$t.length) return;
-
-		saveINI($t, 'val');
-	});
 
 	/**
 	 * @param {jq} $t form element
@@ -170,8 +150,62 @@ $(()=>{
 			val: $t[method](),
 		}).then((response, status)=>{
 			// console.log();
-			$('<div/>').insertAfter($e.currentTarget)
-			.html($(response).find('pre.log'));
+			/* $('<div/>').insertAfter($e.currentTarget)
+			.html($(response).find('pre.log')); */
+
+			var lis = U.$$('#mds_sts>li');
+
+			localStorage.setItem('open', lis.indexOf(U.$('#mds_sts>li.uk-open')));
+
+			// console.log(U.$('.uk-open'));
+			// document.documentElement.innerHTML = response;
+
+			ajaxRender(response);
+		});
+	}
+
+	function ajaxRender (response) {
+		if(response) {
+			$content.html($(response).find('.content'));
+			$('.log').html($(response).find('.log'));
+		}
+
+		var open = localStorage.getItem('open') ;
+		console.log(open);
+		// *Открытый элемент
+		(
+			open && U.$$('#mds_sts>li')[open]
+			|| U.$('#mds_sts>li.uk-open')
+		).classList.add('uk-open');
+
+		// *Украшения
+		U.$$('.content input[type=checkbox]').forEach(i=>i.classList.add('uk-checkbox'));
+
+		// *Сохр настроек модулей
+		// console.log($('#mds_sts'));
+		var contentHtml,
+			$mds_sts = $('#mds_sts');
+
+		$mds_sts.on('focus', 'div', $e=>{
+			var $t= $($e.target);
+			if(!$t.length) return;
+
+			contentHtml= $t.html();
+		});
+
+		$mds_sts.on('blur', 'div', $e=>{
+			var $t= $($e.target);
+			if(!$t.length) return;
+
+			if(contentHtml !== $t.html())
+				saveINI($t, 'html');
+		});
+
+		$mds_sts.on('change', 'input,textarea', $e=>{
+			var $t= $($e.target);
+			if(!$t.length) return;
+
+			saveINI($t, 'val');
 		});
 	}
 });
