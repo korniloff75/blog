@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="<?php $Page->get_description();?>">
 <meta name="keywords" content="<?php $Page->get_keywords();?>">
-<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&family=Roboto+Condensed&display=swap" rel="stylesheet">
+<!-- <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&family=Roboto+Condensed&display=swap" rel="stylesheet"> -->
 <style>
 <?= file_get_contents($kff::getPathFromRoot(__DIR__).'/style.min.css');?>
 <?= file_get_contents('admin/include/windows/windows.css');?>
@@ -23,15 +23,16 @@
 
 <script src="/admin/include/windows/windows.js"></script>
 
-
 </head>
+
+
 <body>
 <div class="bgheader">
 	<div class="container">
 		<header>
-			<div class="logo">
+			<!-- <div class="logo">
 				<a href="/"><img src="/<?=$kff::getPathFromRoot(__DIR__)?>/images/ЛОГО_min.jpg" alt="<?php $Page->get_header();?>"></a>
-			</div>
+			</div> -->
 
 			<div class="hbr_menu">
 				<a href="javascript:void(0);" id="menu"><svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -65,99 +66,6 @@
 </div>
 
 <div class="container bgcontent">
-
-	<?php if($Page->isIndexPage()):?>
-		<!--Slick-->
-		<link href="/<?=$kff::getPathFromRoot(__DIR__)?>/slick/slick.css" rel="stylesheet">
-		<link href="/<?=$kff::getPathFromRoot(__DIR__)?>/slick/slick-theme.css" rel="stylesheet">
-		<script src="/<?=$kff::getPathFromRoot(__DIR__)?>/slick/slick.min.js"></script>
-
-		<div class="bgslider">
-			<div class="slider">
-				<section>
-					<div class="flex">
-						<div class="i1">
-							<h3 id="s1r1">Первый слайд</h3>
-
-							<p id="s1r2">Изображение</p>
-							<p class="btns editable" id="s1r3">Bottom text</p>
-						</div>
-						<div class="i2">
-							<p id="s1r4"></p>
-						</div>
-					</div>
-				</section>
-				<section>
-					<div class="flex">
-						<div class="i1">
-							<h3 id="s2r1">Второй слайд</h3>
-							<p id="s2r2">Изображение</p>
-							<p class="btns editable" id="s2r3">Bottom text</p>
-						</div>
-						<div class="i2">
-							<p id="s2r4"></p>
-						</div>
-					</div>
-				</section>
-				<section>
-					<div class="flex">
-						<div class="i1">
-							<h3 id="s3r1">Третий слайд</h3>
-							<p id="s3r2">Изображение</p>
-							<p class="btns editable" id="s3r3">Bottom text</p>
-						</div>
-						<div class="i2">
-							<p  id="s3r4"></p>
-						</div>
-					</div>
-				</section>
-			</div>
-			<div class="slick-dots"></div>
-		</div>
-
-
-		<div class="grid">
-			<section  id="c1"><?='
-				<h2>Офисы</h2>
-				<p><img src="/<?=$kff::getPathFromRoot(__DIR__)?>/images/card1.jpg" alt=""></p>
-				<p>Оснастим офисы самым современным оборудованием</p>
-				<p><a href="/">Узнать подробней &#8594;</a></p>
-			';?>
-			</section>
-			<section id="c2"><?='
-				<h2>Кабинеты</h2>
-				<p><img src="/<?=$kff::getPathFromRoot(__DIR__)?>/images/card2.jpg" alt=""></p>
-				<p>Организуем рабочее пространство кабинетов</p>
-				<p><a href="/">Узнать подробней &#8594;</a></p>
-			';?>
-			</section>
-			<section id="c3"><?='
-				<h2>Отдых</h2>
-				<p><img src="/<?=$kff::getPathFromRoot(__DIR__)?>/images/card3.jpg" alt=""></p>
-				<p>Оборудуем комнаты отдыха для сотрудников компании</p>
-				<p><a href="/">Узнать подробней &#8594;</a></p>
-			';?>
-			</section>
-			<section id="c4"><?='
-				<h2>Помощники</h2>
-				<p><img src="/<?=$kff::getPathFromRoot(__DIR__)?>/images/card4.jpg" alt=""></p>
-				<p>Оснастим роботами помощниками для посетителей</p>
-				<p><a href="/">Узнать подробней &#8594;</a></p>
-			';?>
-			</section>
-		</div>
-
-		<!-- Page script -->
-		<script>
-		$('.slider').slick({
-			autoplay: true,
-			arrows: false,
-			dots: true
-		});
-		</script>
-
-	<?php endif;?>
-
 
 	<div class="content">
 		<section id="cats">
@@ -245,6 +153,10 @@
 
 <script>
 'use strict';
+// *top padding
+UIkit.util.ready(()=>document.querySelector('.container.bgcontent').style.paddingTop= getComputedStyle(
+	$('.bgheader')[0]
+).height);
 
 // *burger button
 $('#menu').on('click', function(){
