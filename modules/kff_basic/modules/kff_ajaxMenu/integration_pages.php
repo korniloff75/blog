@@ -13,7 +13,7 @@ ob_start();
 	<div id="loading" uk-spinner class="uk-position-top-center uk-position-medium uk-position-fixed" style="z-index:100; "></div>
 
 
-<script>
+<script data-file="<?=basename(__DIR__)?>">
 'use strict';
 // window.addEventListener('load', function() {
 kff.checkLib('jQuery')

@@ -1,7 +1,9 @@
 <?php
 
 if(!defined('DR'))
+{
 	define('DR', $_SERVER['DOCUMENT_ROOT']);
+}
 
 class Index_my_addon
 {
@@ -62,15 +64,19 @@ class Index_my_addon
 			&& !file_exists($pathname = DR."/modules/$pathname")
 		)
 		{
-				return false;
+			return false;
 		}
 
-		require_once self::$dir.'/Pack.php';
-		Pack::$excludes = ['\.log$', '__$', 'cfg\.', 'token'];
-		$pack = new Pack;
-		$pack->RecursiveFolder($pathname);
+		require_once DR.'/' . self::$dir.'/Pack.php';
+		Pack::$excludes[] = '\.zip$';
+		// *Пакуем с добавлением корневой папки
+		Pack::$my_engine_format = 1;
 
+		$pack = new Pack;
+
+		return $pack->RecursiveDirectory($pathname);
 	}
+
 
 	public static function translit(string $s, $direct = 0)
 	:string

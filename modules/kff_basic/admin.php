@@ -198,33 +198,17 @@ class Basic
 	 */
 	static function RemoveModule($name)
 	{
-		global $kff;
 		if(
-			!$kff::is_adm()
-			|| !file_exists($pathdir = DR."/modules/$name")
-		) return;
+			!is_dir($name)
+			|| !is_dir($name = DR."/modules/$name")
+		)
+			return;
 
-		// system("rm $pathdir -rf");
-
-		$iter = new RecursiveDirectoryIterator($pathdir, FilesystemIterator::SKIP_DOTS|RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
-
-		foreach (new RecursiveIteratorIterator($iter, RecursiveIteratorIterator::CHILD_FIRST) as $fi)
-		{
-			if($fi->isFile())
-			{
-				unlink($fi->getRealPath());
-			}
-			else
-			{
-				rmdir($fi->getRealPath());
-			}
-			echo "$fi<br>";
-		}
-
-		rmdir($pathdir);
+		require_once __DIR__.'/kff_custom/cpDir.class.php';
+		cpDir::RemoveDir($name);
 	}
 
-	static function createKFF()
+	/* static function createKFF()
 	{
 		if(!file_exists(__DIR__.'/kff_custom/cpDir.class.php'))
 			link(__DIR__.'/cpDir.class.php', __DIR__.'/kff_custom/cpDir.class.php');
@@ -288,7 +272,7 @@ class Basic
 		{
 			echo "<pre><h3 style='color:#f55;'>Индексный файл восстановить не удалось.</h3>$ind</pre>";
 		}
-	}
+	} */
 
 
 	// *Перебираем свои модули

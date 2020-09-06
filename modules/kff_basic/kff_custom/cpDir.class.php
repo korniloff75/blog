@@ -63,9 +63,49 @@ class cpDir
 	} // copy_safe
 
 
+	static function getSize($pathdir)
+	{
+		if(is_file($pathdir))
+			return filesize($pathdir);
+
+		$size = 0;
+		foreach(new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($pathdir, FilesystemIterator::SKIP_DOTS)
+			) as $file
+		) {
+				$size+=$file->getSize();
+		}
+		return $size;
+	}
+
 	static function RemoveDir($pathdir)
 	{
-		exec("rm $pathdir -rf *");
+		// exec("rm $pathdir -rf *");
+
+		global $kff;
+		if(
+			!$kff::is_adm()
+			|| !is_dir($pathdir)
+		) return;
+
+		// system("rm $pathdir -rf");
+
+		$iter = new RecursiveDirectoryIterator($pathdir, FilesystemIterator::SKIP_DOTS|RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
+
+		foreach (new RecursiveIteratorIterator($iter, RecursiveIteratorIterator::CHILD_FIRST) as $fi)
+		{
+			if($fi->isFile())
+			{
+				unlink($fi->getRealPath());
+			}
+			else
+			{
+				rmdir($fi->getRealPath());
+			}
+			echo "$fi<br>";
+		}
+
+		rmdir($pathdir);
 	}
 
 	function fs_log($str)

@@ -7,7 +7,6 @@ if(empty($kff))
 	include_once __DIR__.'/kff_custom/index_my_addon.php';
 } */
 
-// Index_my_addon
 
 $kff::headHtml();
 
@@ -16,7 +15,7 @@ if(!empty($kff::$cfg['uk']['use_styles_input']))
 {
 	ob_start();
 ?>
-	<script data-file="<?=basename(__FILE__)?>">
+	<script data-file="<?=basename(__DIR__)?>">
 	'use strict';
 	kff.checkLib('jQuery')
 	.then($=>{

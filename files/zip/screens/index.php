@@ -73,7 +73,7 @@ function scanImgs(string $dir)
 
 		// $path = 'http://blog.js-master.ru' . str_replace(
 		$path = str_replace(
-			$_SERVER['DOCUMENT_ROOT'], '',
+			DR, '',
 			str_replace('\\','/',$fi->getRealPath())
 		);
 
