@@ -71,7 +71,10 @@ if($act=='index'){
 
 
 // *Save
-if($act=='saveCfg')
+if(
+	$act=='saveCfg'
+	&& $kff::is_adm()
+)
 {
 	$s_name = filter_var($_REQUEST['name']);
 	$s_val = filter_var($_REQUEST['val']);

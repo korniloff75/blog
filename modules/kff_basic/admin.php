@@ -356,9 +356,33 @@ class Basic
 	static function RenderPU()
 	{
 		$mds = self::scanModules();
-		echo '<h2>Модули '.(empty(self::$cfg['mds_prefix'])? 'из <i>/modules</i>': self::$cfg['mds_prefix']).'</h2>';
-		echo '<p class=comment>Все изменённые настройки сохраняются автоматически -- после потери фокуса редактируемым полем.</p>
-		<ul id=mds_sts uk-accordion>';
+		echo '<h2>Настройки <b>info.ini</b></h2>
+		';
+		?>
+
+		<div class="kff_sts">
+		<!-- <p class="box"><label>Префикс для модулей <input name="mds_prefix" type="text" value="<?= Basic::$cfg['mds_prefix']?>"></label></p> -->
+		<p class="box">
+			<label>Префикс для модулей
+			<select name="mds_prefix" type="text" value="<?= Basic::$cfg['mds_prefix']?>">
+				<option value="kff_">kff_</option>
+				<option value="" <?=empty(Basic::$cfg['mds_prefix'])?'selected':''?>>Все модули</option>
+			</select>
+			</label>
+		</p>
+		<p class="comment">Скрипт выбирает все модули с указанным префиксом. Например, папки искомых модулей должны называться как <b>kff_modulename</b>. Для выбора всех модулей из системы -- удалите префикс. После любого изменения префикса -- перезагрузите страницу.</p>
+		</div>
+
+		<h2>
+			Модули <?=empty(self::$cfg['mds_prefix'])? 'из <i>/modules</i>': self::$cfg['mds_prefix']?>
+		</h2>
+
+		<p class=comment>Все изменённые настройки сохраняются автоматически -- после потери фокуса редактируемым полем.</p>
+
+		<ul id=mds_sts uk-accordion>
+
+		<?php
+		// echo '';
 
 		$info = [];
 

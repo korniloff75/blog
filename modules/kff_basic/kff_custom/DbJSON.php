@@ -1,7 +1,7 @@
 <?php
 class DbJSON {
 	static
-		$convertPath = true;
+		$convertPath = false;
 
 	private
 		$path,
@@ -47,15 +47,14 @@ class DbJSON {
 	 */
 	public function get($id=null)
 	{
-		return empty($id)
-		? $this->db
-		: (
-			$this->db[$id] ?? null
-		);
+		return empty($id)?
+			$this->db : (
+				$this->db[$id] ?? null
+			);
 	}
 
 	/**
-	 * @param data <array>
+	 * @param array data
 	 */
 	public function set(array $data, $append = false)
 	{
@@ -102,8 +101,6 @@ class DbJSON {
 	{
 		// note test
 		// $this->db['change']= 1;
-
-		// trigger_error(__METHOD__." \$this->db['change']= " . ((bool) $this->db['change']) . "\nBase saved! \$this->path= {$this->path} current=" . realpath('.') . ' spl=' . $_SERVER['DOCUMENT_ROOT']. '/' .  $this->objPath->getPathname());
 
 		// *check changes
 		if(empty($this->db['change'])) return;

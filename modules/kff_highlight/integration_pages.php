@@ -10,7 +10,7 @@ $modDir = str_replace(
 ob_start();
 ?>
 
-<script src="<?=$modDir?>/hl.js" data-file="<?=basename(__DIR__)?>">
+<script defer src="<?=$modDir?>/hl.js" data-file="<?=basename(__DIR__)?>">
 </script>
 
 <?php

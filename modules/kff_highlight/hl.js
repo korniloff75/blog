@@ -13,16 +13,17 @@ pre > code .C{
 	font-size: 70%;
 }
 pre > code .kwrd{font-weight:bold}/* Ключевые слова полужирные */
-/* .kwrd2{font-weight:bold; color:#159;} */
+.kwrd_green{ color:green;}
 pre > code .R{color:gray} /*Серые регвыражения */
 `;
-document.head.append(hl_code.styleBox);
+document.querySelector('head')
+.appendChild(hl_code.styleBox);
 
 [].forEach.call(document.querySelectorAll('pre>code'), i=>{
 	i.innerHTML = hl_code(i.innerHTML);
 });
 
-console.info('hl inited!!!');
+console.info('hl inited');
 
 function hl_code(code){
 var comments = [],	// Тут собираем все каменты
@@ -54,7 +55,8 @@ var comments = [],	// Тут собираем все каменты
 	// Выделяем ключевые слова
 	.replace(/\b(var|function|typeof|throw|new\s+.+?|return|if|for|in|while|break|do|continue|switch|case)\b([^a-z0-9\$_])/gi, '<span class="kwrd">$1</span>$2')
 	// Выделяем ключевые слова 2 тип
-	// .replace(/(\|+|\b.+?::)/g, '<span class="kwrd2">$1</span>')
+	// .replace(/(\|+|\w+?\:\:)/g, '<span class="kwrd_green">$1</span>')
+	.replace(/(\w+?\:\:)/g, '<span class="kwrd_green">$1</span>')
 	// Выделяем скобки
 	.replace(/(\{|\}|\]|\[|\|)/gi, '<span class="gly">$1</span>')
 	// Выделяем имена функций

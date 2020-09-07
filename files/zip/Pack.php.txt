@@ -103,6 +103,8 @@ class Pack
 	{
 		$excludes = '~'.implode('|',static::$excludes).'~u';
 
+		$pathdir = Index_my_addon::fixSlashes($pathdir);
+
 		$nameZIP = Index_my_addon::translit(static::$dest . '/' . basename($pathdir) . (!$this->single ? ('_' . date("Ymd_His")):'')) .'.zip';
 
 		// *Под Админом - перепаковываем
@@ -118,7 +120,7 @@ class Pack
 
 		foreach ($iter as $fileInfo)
 		{
-			$name = $fileInfo->getPathname();
+			$name = Index_my_addon::fixSlashes($fileInfo->getPathname());
 
 			if(preg_match($excludes, $name))
 				continue;
@@ -135,7 +137,7 @@ class Pack
 			// *Напрямую в архив
 			{
 				$zipName = str_replace(
-					$pathdir.DIRECTORY_SEPARATOR,
+					$pathdir.'/',
 					'',$name
 				);
 			}

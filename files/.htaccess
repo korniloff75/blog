@@ -1,0 +1,20 @@
+Options -Indexes
+# <FilesMatch "\.*">
+# # SetHandler none
+# SetHandler null
+# </FilesMatch>
+
+# RemoveHandler .php
+# <Files ~ "\.php$">
+# 		ForceType text/plain
+# </Files>
+
+# <FilesMatch \.php$>
+# 		SetHandler None
+# 		ForceType text/plain
+# </FilesMatch>
+
+# Подсвечиваем исходный код вместо исполнения
+<FilesMatch \.(php.*|dat)$>
+	SetHandler application/x-httpd-php-source
+</FilesMatch>

@@ -34,9 +34,9 @@ body>#logWrapper {
 <hr>
 <h2>Глобальные настройки</h2>
 
-<div id="kff_sts" class="uk-section .uk-section-primary uk-padding">
-	<p class="box"><label>Префикс для модулей <input name="mds_prefix" type="text" value="<?= Basic::$cfg['mds_prefix']?>"></label></p>
-	<p class="comment">Скрипт выбирает все модули с указанным префиксом. Например, папки искомых модулей должны называться как <b>kff_modulename</b>. Для выбора всех модулей из системы -- удалите префикс. После любого изменения префикса -- перезагрузите страницу.</p>
+<div id="kff_sts" class="kff_sts uk-section uk-section-primary uk-padding">
+	<!-- <p class="box"><label>Префикс для модулей <input name="mds_prefix" type="text" value="<?= Basic::$cfg['mds_prefix']?>"></label></p>
+	<p class="comment">Скрипт выбирает все модули с указанным префиксом. Например, папки искомых модулей должны называться как <b>kff_modulename</b>. Для выбора всех модулей из системы -- удалите префикс. После любого изменения префикса -- перезагрузите страницу.</p> -->
 
 	<p><label>Init Modules <input name="init_mods" type="checkbox" ></label></p>
 	<p class="comment">Инициализация всех модулей. Системная.</p>
@@ -79,18 +79,21 @@ $(()=>{
 
 	ajaxRender();
 
+	// *Set group 4 checkboxes
 	$content.find('input[type=checkbox]')
 	.each((ind,i)=>{
 		i.classList.add('uk-checkbox');
 
 		i.group= i.closest('[data-group]')? i.closest('[data-group]').getAttribute('data-group'): null;
 		i.checked= i.group? cfg[i.group]&&cfg[i.group][i.name]: cfg[i.name];
+		// *fix 4 unchecked
 		if(i.hasAttribute('data-unchecked')) i.checked= false;
-		console.log(i, i.checked, /* cfg */);
+		// console.log(i, i.checked);
 	});
 
-	// *Сохр глоб. настроек
-	$('#kff_sts, #installModules').on('change', 'input', $e=>{
+
+	// *Сохр глоб. настроек kff_basic/cfg.json
+	$('.kff_sts, #installModules').on('change', 'input,select', $e=>{
 		var $t= $($e.target);
 		// console.log($t.prop('checked'));
 		if(!$t.length) return;
@@ -113,7 +116,9 @@ $(()=>{
 		// todo
 		// *installAll
 		var $installAll= $('input[name=installAll]');
+
 		console.log($installAll.prop('checked'));
+
 		if($installAll.prop('checked')) {
 			send_data.val= {installAll:1};
 			// $installAll.closest('ul').find('input[type=checkbox]').prop({checked:1});
@@ -130,7 +135,8 @@ $(()=>{
 	});
 
 	function saveSTS (send_data) {
-		$.post('', send_data).then((response, status)=>{
+		$.post('', send_data)
+		.then((response, status)=>{
 			console.log(document.documentElement);
 			// $('.log').html($(response).find('.log'));
 			// document.documentElement.innerHTML = response;

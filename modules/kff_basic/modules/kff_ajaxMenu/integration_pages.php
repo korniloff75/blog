@@ -18,7 +18,10 @@ ob_start();
 // window.addEventListener('load', function() {
 kff.checkLib('jQuery')
 .then($=> {
-	var $nav = $('#nav'),
+	var
+		navSelector = '<?=$cfg['nav_selector']?>' || '#nav',
+		mainSelector = '<?=$cfg['main_selector']?>' || 'main',
+		$nav = $(navSelector),
 		$loader = $('#loading');
 
 	$loader.hide();
@@ -37,14 +40,17 @@ kff.checkLib('jQuery')
 
 		$.post(t.href)
 		.done((response)=>{
-			var $main = $(response).find('main');
+			var $main = $(response).find(mainSelector);
 			$main.find('#ajax-menu').remove();
 
 			render(
 				$main.html()
 			);
 
-			history.pushState({mainHtml: $main.html(), href: t.href}, '', t.href);
+			history.pushState({
+				mainHtml: $main.html(),
+				href: t.href
+			}, '', t.href);
 			// console.log('main=',$('main').find('#ajax-menu'));
 		})
 		.always(()=>{
@@ -60,7 +66,7 @@ kff.checkLib('jQuery')
 
 	// *Change content
 	function render (mainHtml) {
-		$('main').html(
+		$(mainSelector).html(
 			mainHtml
 		);
 	}

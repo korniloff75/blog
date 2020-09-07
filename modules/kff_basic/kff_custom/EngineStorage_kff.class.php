@@ -1,5 +1,7 @@
 <?php
 
+// !Deprecated
+
 class EngineStorage_kff extends EngineStorage
 {
 	public
