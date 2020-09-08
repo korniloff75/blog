@@ -208,6 +208,27 @@ class Index_my_addon
 
 
 	/**
+	 * *PageInfo
+	 */
+	public static function getPageInfo($id, $storagePath=null)
+	:array
+	{
+		$array = explode('<||>', file_get_contents(
+			($storagePath ?? DR.'/data/pages/cfg_').$id.'.dat')
+		);
+
+		$array[7] = $array[7] ?? 'def/template';
+
+		$a = array_combine(
+			['name','title','keywords','description','show','module','time','template',], $array
+		);
+
+		$a['id'] = $id;
+		return $a;
+	}
+
+
+	/**
 	 * *Преобразование массива в формат INI
 	 */
 	public static function arr2ini(array $a, array $parent = [])

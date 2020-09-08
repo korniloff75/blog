@@ -1,54 +1,62 @@
 <?php
-if(!defined('DR'))
-	define('DR', $_SERVER['DOCUMENT_ROOT']);
+require_once __DIR__.'/fns.php';
+
+$Storage = getStorage();
+// *pathname to imgs folder
+$Folder = $Storage->get($Page->id) ?? __DIR__;
+
+// $log->add('Folder=',null,[$Storage, $Page->id, $Folder]);
 
 ob_start();
 
-// *Мой модуль подключён
-if(file_exists($kffBasicPath = DR.'/modules/kff_basic'))
+// *UIkit не подключён
+if(empty($kff::$cfg['uk']['include_uikit']))
 {
 	$UIKpath = '/modules/kff_basic/modules/kff_uikit-3.5.5';
+	// $UIKpath = 'https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.5'
+	?>
+
+	<!-- UIkit CSS -->
+	<link rel="stylesheet" href="<?=$UIKpath?>/css/uikit.min.css" />
+
+	<!-- UIkit JS -->
+	<script src="<?=$UIKpath?>/js/uikit.min.js"></script>
+
+	<?php
 }
-else
+
+
+// *Выводим изображения из Uploads::$pathname
+if($Folder !== __DIR__)
 {
-	$UIKpath = 'https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.5';
+	scanImgs($Folder);
 }
-?>
-
-<!-- UIkit CSS -->
-<link rel="stylesheet" href="<?=$UIKpath?>/css/uikit.min.css" />
-
-<!-- UIkit JS -->
-<script src="<?=$UIKpath?>/js/uikit.min.js"></script>
-
-
-<?php
-// *Выводим изображения из каждой подпапки в отдельный слайдер
-
-$iterator = new DirectoryIterator(__DIR__);
-foreach($iterator as $fi)
+// *Выводим изображения из каждой подпапки модуля в отдельный слайдер
+/* else
 {
-	if(
-		!$fi->isDir()
-		|| $fi->isDot()
-	) continue;
+	$iterator = new DirectoryIterator(__DIR__);
+	foreach($iterator as $fi)
+	{
+		if(
+			!$fi->isDir()
+			|| $fi->isDot()
+		) continue;
 
-	echo "<h2>".$fi->getFilename()."</h2>";
+		echo "<h2>".$fi->getFilename()."</h2>";
 
-	// echo $fi->getPathname();
+		// echo $fi->getPathname();
 
-	scanImgs($fi->getPathname());
+		scanImgs($fi->getPathname());
 
-}
+	}
+} */
+
 
 
 function scanImgs(string $dir)
 {
-	// $iterator = new DirectoryIterator(__DIR__);
-	// $iterator->rewind();
 	$iterator = scandir($dir);
 	// var_dump($iterator);
-	// echo $_SERVER['DOCUMENT_ROOT'];
 	?>
 
 	<div uk-slider class="uk-position-relative uk-visible-toggle uk-dark">
@@ -71,18 +79,15 @@ function scanImgs(string $dir)
 
 		// echo $fi->getRealPath();
 
-		// $path = 'http://blog.js-master.ru' . str_replace(
+		// *fix 4 Win
 		$path = str_replace(
-			DR, '',
+			str_replace('\\','/',DR), '',
 			str_replace('\\','/',$fi->getRealPath())
 		);
 
 		?>
 		<li>
-			<!-- <?=$fi->getRealPath()?> -->
-			<!-- <div class="uk-cover-container"> -->
-				<img src="<?=$path?>">
-			<!-- </div> -->
+			<img src="<?=$path?>">
 		</li>
 
 	<?php

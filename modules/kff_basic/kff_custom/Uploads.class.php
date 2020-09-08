@@ -1,7 +1,15 @@
 <?php
 /**
+ * ! required Index_my_addon
  * *Мультизагрузка файлов c защитой от исполняемых файлов и перезаписи дубликатов
  * доработано snipp.ru/php/uploads-files
+ * @param pathname path to remote dir
+ * @param input_name name of input type=file
+ * *Usage
+ * ?optional
+ * ? Uploads::staticProperties = 'new value';
+ * ???
+ * $upload = new Uploads(opt $pathname, opt input_name);
  *
  */
 class Uploads
@@ -30,18 +38,21 @@ class Uploads
 		$files = [];
 
 
-	public function __construct()
+	public function __construct($pathname=null, $input_name=null)
 	{
 		self::$log = Index_my_addon::get_log();
+
+		self::$pathname = $pathname ?? static::$pathname;
+		self::$input_name = $input_name ?? static::$input_name;
 
 		if (empty($_FILES[static::$input_name]))
 			return;
 
 		if(
-			!is_dir(self::$pathname)
-			&& !mkdir(self::$pathname, 0777, 1)
+			!is_dir(static::$pathname)
+			&& !mkdir(static::$pathname, 0777, 1)
 		)
-			die("Невозможно создать " . self::$pathname);
+			die("Невозможно создать " . static::$pathname);
 
 		$this->_checkFiles();
 
@@ -105,11 +116,11 @@ class Uploads
 		if (move_uploaded_file($file['tmp_name'], self::$pathname . '/' . $name))
 		{
 			// Далее можно сохранить название файла в БД и т.п.
-			$this->success []= 'Файл «' . $name . '» успешно загружен.';
+			$this->success []= 'Файл «' . self::$pathname."/$name" . '» успешно загружен.';
 		}
 		else
 		{
-			$this->error []= 'Не удалось загрузить файл.';
+			$this->error []= 'Не удалось загрузить файл ' . $name;
 		}
 
 	}
@@ -155,7 +166,7 @@ class Uploads
 
 			if (empty($name) || empty($parts['extension']))
 			{
-				$this->error []= 'Недопустимое тип файла';
+				$this->error []= 'Недопустимый тип файла';
 			}
 			elseif (!empty($allow) && !in_array(strtolower($parts['extension']), $allow))
 			{
@@ -171,6 +182,11 @@ class Uploads
 			}
 
 		}
+	}
+
+	public function getSuccess()
+	{
+		return count($this->success);
 	}
 
 }

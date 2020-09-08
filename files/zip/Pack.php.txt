@@ -4,15 +4,15 @@
  * ! required Index_my_addon
  * @param pathname todo ...
  * *Usage
- * newZip = new Pack;
+ * $newZip = new Pack;
  * ?optional
- * ? newZip::dest = '/path/to/destFolder';
- * ? newZip::excludes[] = '\.zip';
- * ? newZip::$my_engine_format = 1;
+ * ? Pack::dest = '/path/to/destFolder';
+ * ? Pack::excludes[] = '\.zip';
+ * ? Pack::$my_engine_format = 1;
  * ???
- * newZip->Directory('/path/to/source');
+ * $newZip->Directory('/path/to/source');
  * OR
- * newZip->RecursiveDirectory('/path/to/source');
+ * $newZip->RecursiveDirectory('/path/to/source');
  * @return archivePathname
  */
 
