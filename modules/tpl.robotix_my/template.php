@@ -154,7 +154,7 @@
 <script>
 'use strict';
 // *top padding
-UIkit.util.ready(()=>document.querySelector('.container.bgcontent').style.paddingTop= getComputedStyle(
+$(()=>document.querySelector('.container.bgcontent').style.paddingTop= getComputedStyle(
 	$('.bgheader')[0]
 ).height);
 

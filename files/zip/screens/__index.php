@@ -1,9 +1,9 @@
 <?php
+require_once __DIR__.'/fns.php';
 
-DbJSON::$convertPath = false;
-$Storage = new DbJSON(__DIR__.'/cfg.json');
+$Storage = getStorage();
 // *pathname to imgs folder
-$Folder = $Storage->get($Page->id) ?? __DIR__;
+$Folder = DR."/files/slider/{$Page->id}";
 
 // $log->add('Folder=',null,[$Storage, $Page->id, $Folder]);
 
@@ -32,7 +32,7 @@ if($Folder !== __DIR__)
 	scanImgs($Folder);
 }
 // *Выводим изображения из каждой подпапки модуля в отдельный слайдер
-else
+/* else
 {
 	$iterator = new DirectoryIterator(__DIR__);
 	foreach($iterator as $fi)
@@ -49,7 +49,7 @@ else
 		scanImgs($fi->getPathname());
 
 	}
-}
+} */
 
 
 
@@ -59,7 +59,7 @@ function scanImgs(string $dir)
 	// var_dump($iterator);
 	?>
 
-	<div uk-slider class="uk-position-relative uk-visible-toggle uk-dark">
+	<div uk-slider class="kff-slider uk-position-relative uk-visible-toggle uk-dark">
 	<!-- <div class="uk-slider-container"> -->
 	<div class="uk-slider-container">
 		<ul class="uk-slider-items uk-child-width-2" >

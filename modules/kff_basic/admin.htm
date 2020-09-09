@@ -31,7 +31,7 @@ body>#logWrapper {
 <script src="/modules/ckeditor_4.5.8_standard/ckeditor/ckeditor.js"></script>
 
 
-<hr>
+<!-- <hr> -->
 <h2>Глобальные настройки</h2>
 
 <div id="kff_sts" class="kff_sts uk-section uk-section-primary uk-padding">
@@ -70,11 +70,13 @@ body>#logWrapper {
 'use strict';
 // kff.checkLib('jQuery')
 // .then($=>{
-// UIkit.util.ready(()=>{
-$(()=>{
 
-	var U= UIkit.util,
-	cfg= <?=json_encode(Basic::$cfg)?>,
+var U= UIkit.util;
+// console.log('U=',U);
+
+U.ready(()=>{
+
+	var cfg= <?=json_encode(Basic::$cfg)?>,
 	$content= $('.content');
 
 	ajaxRender();
@@ -84,7 +86,8 @@ $(()=>{
 	.each((ind,i)=>{
 		i.classList.add('uk-checkbox');
 
-		i.group= i.closest('[data-group]')? i.closest('[data-group]').getAttribute('data-group'): null;
+		var group= i.closest('[data-group]');
+		i.group= group && group.getAttribute('data-group');
 		i.checked= i.group? cfg[i.group]&&cfg[i.group][i.name]: cfg[i.name];
 		// *fix 4 unchecked
 		if(i.hasAttribute('data-unchecked')) i.checked= false;
@@ -108,7 +111,10 @@ $(()=>{
 				val: val,
 			};
 
-		if(!$include_uikit.prop('checked')) {
+		if(
+			send_data.group === 'uk'
+			&& !$include_uikit.prop('checked')
+		) {
 			$include_uikit.closest('ul').find('input[type=checkbox]').prop({checked:0});
 			send_data.disable = 1;
 		}
@@ -135,12 +141,13 @@ $(()=>{
 	});
 
 	function saveSTS (send_data) {
+		var $activs = $('.uk-active');
 		$.post('', send_data)
 		.then((response, status)=>{
-			console.log(document.documentElement);
+			// console.log(document.documentElement);
 			// $('.log').html($(response).find('.log'));
 			// document.documentElement.innerHTML = response;
-			ajaxRender(response);
+			ajaxRender(response,$activs);
 		});
 	}
 
@@ -170,41 +177,67 @@ $(()=>{
 		});
 	}
 
-	function ajaxRender (response) {
+	function ajaxRender (response, $activs) {
 		if(response) {
 			$content.html($(response).find('.content'));
 			$('.log').html($(response).find('.log'));
 		}
 
-		var open = localStorage.getItem('open') ;
+		// *active tabs
+		if($activs && $activs.length) {
+			$('.uk-active').removeClass();
+			$activs.addClass('uk-active');
+		}
+
+		var open = localStorage.getItem('open'),
+			openEl = open && U.$$('#mds_sts>li')[open]
+			|| U.$('#mds_sts>li.uk-open');
 		console.log(open);
 		// *Открытый элемент
-		(
-			open && U.$$('#mds_sts>li')[open]
-			|| U.$('#mds_sts>li.uk-open')
-		).classList.add('uk-open');
+		openEl && openEl.classList.add('uk-open');
 
 		// *Украшения
 		U.$$('.content input[type=checkbox]').forEach(i=>i.classList.add('uk-checkbox'));
 
 		// *Сохр настроек модулей
 		// console.log($('#mds_sts'));
-		var contentHtml,
-			$mds_sts = $('#mds_sts');
+		var $mds_sts = $('#mds_sts'),
+			$descriptions = $('#mds_sts').find('div[contentEditable]');
+
+		$descriptions.each((ind,i)=>{
+			i.$saveBtn = $('<button>Save</button>');
+			i.initialHtml = i.innerHTML;
+
+			i.$saveBtn.hide();
+
+			i.$saveBtn.insertAfter(i)
+			.on('click', $e=>{
+				var $t= $($e.target),
+				$contDiv= $t.prev();
+
+				console.log($contDiv);
+
+				if($contDiv.prop('initialHtml') === $contDiv.prop('innerHTML'))
+					return;
+
+				saveINI($contDiv, 'html');
+
+				console.info('Data saved from', $t);
+				i.$saveBtn.hide();
+			});
+		});
 
 		$mds_sts.on('focus', 'div', $e=>{
 			var $t= $($e.target);
-			if(!$t.length) return;
 
-			contentHtml= $t.html();
+			console.log($t.prop('$saveBtn'));
+
+			$t.prop('$saveBtn') && $t.prop('$saveBtn').show();
 		});
 
 		$mds_sts.on('blur', 'div', $e=>{
 			var $t= $($e.target);
-			if(!$t.length) return;
-
-			if(contentHtml !== $t.html())
-				saveINI($t, 'html');
+			// $t.prop('$saveBtn').hide();
 		});
 
 		$mds_sts.on('change', 'input,textarea', $e=>{

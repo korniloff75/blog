@@ -13,17 +13,19 @@ echo '<pre>';
 	// $Page
 ); */
 
+$Imgpath = DR."/files/slider";
+
 require_once __DIR__.'/fns.php';
 
-$Storage = getStorage();
+// getStorage("$Imgpath/cfg.json");
+
+DbJSON::$convertPath = false;
+$Storage = new DbJSON(__DIR__."/cfg.json");
 // *pathname to imgs folder
 // $Folder = $Storage->get($Page->id) ?? __DIR__;
 $cfg = $Storage->get();
 
 $log->add('Storage=',null,[$Storage, ]);
-
-$Imgpath = DR."/files/slider";
-
 
 $log->add('$_FILES',null,[
 	$_FILES, $act, $_REQUEST
@@ -41,7 +43,7 @@ if(
 	$Page_id = filter_var($_REQUEST['id']);
 
 	require_once DR.'/'.$kff::$dir.'/Uploads.class.php';
-	Uploads::$pathname = $kff::fixSlashes($Imgpath) . "/{$Page_id}";
+	Uploads::$pathname = $Imgpath . "/{$Page_id}";
 	Uploads::$allow = ['jpg','jpeg','png','gif'];
 
 	$Upload = new Uploads;
@@ -50,7 +52,7 @@ if(
 	{
 		// *Add to $cfg
 		$Storage->set([
-			$Page_id=> Uploads::$pathname
+			$Page_id=> $kff::getPathFromRoot(Uploads::$pathname)
 		]);
 	}
 
@@ -65,6 +67,17 @@ echo '</pre>';
 	.uk-accordion-title {cursor:pointer;}
 	.uk-accordion-title:hover {background:#eee;}
 </style>
+
+<h2>Слайдеры на страницах</h2>
+<div class="comment">
+	<ul>
+		<li>Для добавления слайдера кликнуть по названию страницы и выбрать файлы для загрузки.</li>
+		<li>Добавленные слайдеры выводятся миниатюрами под названием страницы</li>
+		<li><b>Поддерживается мультизагрузка файлов</b>. Во время выбора изображений можно пользоваться клавишами Ctrl или Shift</li>
+		<li>Дополнительно подключать модуль к странице <u>не нужно</u>.</li>
+		<li>Все файлы сохраняются в директориях внутри <i>/files/slider</i>. При удалении оттуда любой директории - соответствующий слайдер будет удалён. При удалении файла - будет изъят из слайдера.</li>
+	</ul>
+</div>
 <?php
 
 echo '<ul id="sts" uk-accordion class="uk-margin-left">';
@@ -83,7 +96,8 @@ foreach(System::listPages() as $n=>$id)
 			<div class="existsImgs">
 			<?php
 			// *Выводим изображения из Uploads::$pathname
-			showImgs($Storage->get($id));
+			// showImgs($Storage->get($id));
+			showImgs("$Imgpath/{$pageInfo['id']}");
 			?>
 			</div>
 		</div>
@@ -128,4 +142,11 @@ $('#sts').on('submit', '.save_sts', $e=>{
 
 
 	/* $parent.find('input[type=file]')
-	.each((ind
+	.each((ind,i)=>{
+		console.log(i.files);
+	}); */
+
+	console.log($form);
+
+});
+</script>

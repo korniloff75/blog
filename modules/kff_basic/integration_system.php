@@ -250,7 +250,7 @@ class Index_my_addon
 			else
 			{
 				if(is_string($v))
-					$v= '"' . htmlspecialchars_decode($v) . '"';
+					$v= '"' . htmlspecialchars_decode($v, ENT_NOQUOTES) . '"';
 
 				//*plain key->value case
 				$out .= "$k=$v" . PHP_EOL;

@@ -2,6 +2,11 @@
 
 // $log->add('$Page',null,[$Page]);
 
+DbJSON::$convertPath = false;
+$db = new DbJSON(__DIR__.'/cfg.json');
+
+$cfg = $db->get();
+
 ob_start();
 ?>
 <style>
@@ -43,6 +48,8 @@ kff.checkLib('jQuery')
 			var $main = $(response).find(mainSelector);
 			$main.find('#ajax-menu').remove();
 
+			console.log(mainSelector);
+
 			render(
 				$main.html()
 			);
@@ -66,6 +73,7 @@ kff.checkLib('jQuery')
 
 	// *Change content
 	function render (mainHtml) {
+		// console.log(mainHtml);
 		$(mainSelector).html(
 			mainHtml
 		);

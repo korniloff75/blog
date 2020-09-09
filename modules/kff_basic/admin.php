@@ -12,7 +12,7 @@ if(empty($kff))
 echo $kff::headHtml();
 
 // *Только админам
-if(!$kff::is_adm()) die;
+if(!$kff::is_adm()) die('Access denied!');
 
 
 class Basic
@@ -180,7 +180,7 @@ class Basic
 			if(empty(self::$cfg['mds']["installed_$name"]))
 			{
 				self::RemoveModule($name);
-				System::initModules();
+				self::$log->add("Module $name",null,[self::checkModule($name)]);
 			}
 			else
 			{
@@ -198,11 +198,15 @@ class Basic
 	 */
 	static function RemoveModule($name)
 	{
+		self::$log->add("Вызываем ".__METHOD__,null,[$name,!is_dir($name),!is_dir(DR."/modules/$name")]);
+
 		if(
 			!is_dir($name)
-			|| !is_dir($name = DR."/modules/$name")
+			&& !is_dir($name = DR."/modules/$name")
 		)
 			return;
+
+		self::$log->add("Удаляем Module $name");
 
 		require_once __DIR__.'/kff_custom/cpDir.class.php';
 		cpDir::RemoveDir($name);
@@ -319,12 +323,16 @@ class Basic
 	static function installModules(array &$info)
 	{
 		// self::$log->add('$info',null,[$info]);
-		echo '<hr>;
+		echo '
 			<h2>Установить модули:</h2>
+			<div class="comment">
+				<p>Данная настройка позволяет подключить в систему дополнительный функционал. Каждый выбранный модуль будет установлен в общую папку модулей.</p>
+				<p>При снятии выбора модуль будет тут же удалён. Настройки сохранены не будут при последующей установке.</p>
+			</div>
 			<ul id="installModules" class="uk-list uk-list-striped uk-list-medium" data-group="mds">
-			<li><label>Подключить все внутренние модули <input name="installAll" type="checkbox" ' .
+			<li><h4><label>Подключить все внутренние модули <input name="installAll" type="checkbox" ' .
 			(!empty(Basic::$cfg['mds']['installAll'])?'checked':'')
-			.'></label>
+			.'></label></h4>
 			<p class="comment">Поставленный флажок внедряет и инициализирует все внутренние модули <b>kff</b>.</p>
 			</li>';
 
@@ -356,9 +364,21 @@ class Basic
 	static function RenderPU()
 	{
 		$mds = self::scanModules();
-		echo '<h2>Настройки <b>info.ini</b></h2>
-		';
 		?>
+
+		<!-- Это навигация, содержащая переключающие элементы -->
+		<!-- uk-switcher -->
+		<ul uk-tab>
+		<!-- <ul uk-switcher="connect: .switcher-container"> -->
+			<li><button>Модули</button></li>
+			<li><button>Подмодули</button></li>
+			<li><button>Настройки</button></li>
+		</ul>
+
+		<div class="uk-switcher">
+
+		<div class="switcher-item">
+		<h2>Настройки <b>info.ini</b></h2>
 
 		<div class="kff_sts">
 		<!-- <p class="box"><label>Префикс для модулей <input name="mds_prefix" type="text" value="<?= Basic::$cfg['mds_prefix']?>"></label></p> -->
@@ -371,7 +391,7 @@ class Basic
 			</label>
 		</p>
 		<p class="comment">Скрипт выбирает все модули с указанным префиксом. Например, папки искомых модулей должны называться как <b>kff_modulename</b>. Для выбора всех модулей из системы -- удалите префикс. После любого изменения префикса -- перезагрузите страницу.</p>
-		</div>
+		</div><!-- #kff_sts -->
 
 		<h2>
 			Модули <?=empty(self::$cfg['mds_prefix'])? 'из <i>/modules</i>': self::$cfg['mds_prefix']?>
@@ -400,7 +420,7 @@ class Basic
 
 			$ini = array_merge([
 				'disable' => 0,
-			],parse_ini_file($ini_path));
+			],parse_ini_file($ini_path) ?? []);
 
 			$info[$name] = $ini;
 
@@ -408,10 +428,10 @@ class Basic
 
 			$is_feedback = mb_stripos($ini['name'],'связь через TG') && count(explode('.', $ini['version'])) > 2;
 
-			if($name === 'kff_ajaxMenu')
+			/* if($name === 'kff_ajaxMenu')
 				self::$log->add(__METHOD__.' '.$ini['name'],null,[
 					$ini, $ini['name'],$ini['version']
-				]);
+				]); */
 
 
 			echo "<li ".($is_feedback?'class=uk-open':'').">
@@ -438,14 +458,21 @@ class Basic
 
 			echo '</li>';
 		}
-		echo '<!-- /uk-accordion --></ul>';
+		echo '<!-- /uk-accordion --></ul>
+		</div><!-- .switcher-item -->';
 
+		echo '<div class="switcher-item">';
 		self::installModules($info);
+		echo '</div><!-- .switcher-item -->';
 
 		// *Подключаем морду
+		echo '<div class="switcher-item">';
 		require_once __DIR__.'/admin.htm';
+		echo '</div><!-- .switcher-item -->';
 
 		// self::$log->add('self::$cfg=',null,[self::$cfg]);
+
+		echo '</div><!-- .uk-switcher -->';
 	}
 
 }

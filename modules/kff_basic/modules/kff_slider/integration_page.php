@@ -3,7 +3,7 @@ require_once __DIR__.'/fns.php';
 
 $Storage = getStorage();
 // *pathname to imgs folder
-$Folder = $Storage->get($Page->id) ?? __DIR__;
+$Folder = DR."/files/slider/{$Page->id}";
 
 // $log->add('Folder=',null,[$Storage, $Page->id, $Folder]);
 
@@ -59,7 +59,7 @@ function scanImgs(string $dir)
 	// var_dump($iterator);
 	?>
 
-	<div uk-slider class="uk-position-relative uk-visible-toggle uk-dark">
+	<div uk-slider class="kff-slider uk-position-relative uk-visible-toggle uk-dark">
 	<!-- <div class="uk-slider-container"> -->
 	<div class="uk-slider-container">
 		<ul class="uk-slider-items uk-child-width-2" >
