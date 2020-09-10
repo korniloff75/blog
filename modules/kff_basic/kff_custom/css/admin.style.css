@@ -1,0 +1,86 @@
+input[type="text"], input[type="password"], select {
+	width: 100%;
+	max-width: 500px;
+}
+.uk-accordion-title {
+	cursor: pointer;
+}
+body>#logWrapper {
+	margin-left: 225px;
+}
+*[contenteditable="true"]{
+	background-color: rgba(0, 0, 255, 0.151);
+	outline: 1px solid blue;
+	outline-offset: -1px;
+}
+*[contenteditable="true"]:hover{
+	background-color: rgba(0, 0, 255, 0.055);
+	outline: 1px solid blue;
+	outline-offset: -1px;
+}
+*[contenteditable="true"]:focus{
+	background-color: transparent;
+	outline: 1px solid red;
+	outline-offset: -1px;
+}
+
+#main{
+	margin-left: 0;
+}
+
+a.exit{
+	display: inline-block;
+	position: absolute;
+	width: 45px;
+	/* height: 40px; */
+}
+
+#bar{
+	background-color: #ccc;
+}
+
+.uk-tab::before {
+	content: "";
+	position: absolute;
+	bottom: 0;
+	left: 20px;
+	right: 0;
+	border-bottom: none !important;
+}
+
+.modules {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+
+}
+
+.uk-offcanvas-close{
+	/* position: static !important; */
+}
+
+@media (max-width: 450px) {
+	div.content {
+		padding: 5px;
+	}
+
+	.uk-tab {
+		/* justify-content: space-around; */
+		justify-content: stretch;
+	}
+
+	.uk-tab>li {
+		padding: 0;
+		padding-left: 0;
+		margin-left: 0;
+	}
+
+	.modules .module {
+		margin: 3px;
+	}
+
+	a.exit{
+		/* display: none; */
+	}
+}
+

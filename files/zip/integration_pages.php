@@ -4,13 +4,19 @@ require_once __DIR__.'/fns.php';
 $Storage = getStorage();
 // *pathname to imgs folder
 $Folder = DR."/files/slider/{$Page->id}";
+// die('FUCK!');
 
 // $log->add('Folder=',null,[$Storage, $Page->id, $Folder]);
 
 ob_start();
 
+$log->add("\$kff::\$cfg['uk']['include_uikit']",null,[$kff::$cfg['uk']['include_uikit']]);
+
 // *UIkit не подключён
-if(empty($kff::$cfg['uk']['include_uikit']))
+if(
+	file_exists($Folder)
+	&& empty($kff::$cfg['uk']['include_uikit'])
+)
 {
 	$UIKpath = '/modules/kff_basic/modules/kff_uikit-3.5.5';
 	// $UIKpath = 'https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.5'
@@ -55,6 +61,9 @@ if($Folder !== __DIR__)
 
 function scanImgs(string $dir)
 {
+	if(!file_exists($dir))
+		return;
+
 	$iterator = scandir($dir);
 	// var_dump($iterator);
 	?>

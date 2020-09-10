@@ -5,6 +5,7 @@ if(!defined('DR'))
 	define('DR', $_SERVER['DOCUMENT_ROOT']);
 }
 
+
 class Index_my_addon
 {
 	public static
@@ -43,10 +44,22 @@ class Index_my_addon
 
 		self::$cfg = self::$cfgDB->get();
 
-		// self::$modulesPath = '/' . self::getPathFromRoot($_SERVER['DOCUMENT_ROOT'].'/modules');
 		self::$modulesPath = '/modules';
 		// *Path to internal modules
 		self::$internalModulesPath = __DIR__.'/modules';
+
+		// *Подключаем класс для админки
+		if(self::is_admPanel())
+		{
+			require_once __DIR__.'/kff_custom/AdmPanel.class.php';
+			AdmPanel::$cfg = &self::$cfg;
+			AdmPanel::$cfgDB = &self::$cfgDB;
+
+			// *Корректировка системы
+			AdmPanel::fixSystem();
+
+			AdmPanel::addResponsive();
+		}
 
 		self::$log->add('REQUEST_URI=',null, [$_SERVER['REQUEST_URI']]);
 		self::$log->add(__CLASS__.'::$cfg=',null, [self::$cfg]);
@@ -194,13 +207,12 @@ class Index_my_addon
 
 
 	public static function is_adm ()
-
 	{
 		return $GLOBALS['status'] === 'admin';
 	}
 
-	public static function is_admPanel ()
 
+	public static function is_admPanel ()
 	{
 		// return file_exists('./newpassword.php');
 		return explode('/', REQUEST_URI)[1] === 'admin';
@@ -304,13 +316,6 @@ $kff = new Index_my_addon();
 $log = $kff::get_log();
 
 $kff::headHtml();
-
-/* System::addAdminEndHtml("
-	<script>
-	$('#main').append($('#logWrapper'));
-	console.log(111);
-	</script>
-"); */
 
 // $log->add('$URI=',null,[$URI]);
 

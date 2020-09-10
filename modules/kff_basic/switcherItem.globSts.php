@@ -1,31 +1,4 @@
-<style>
-input[type="text"], input[type="password"], select {
-	width: 100%;
-	max-width: 500px;
-}
-.uk-accordion-title {
-	cursor: pointer;
-}
-body>#logWrapper {
-	margin-left: 225px;
-}
-*[contenteditable="true"]{
-	background-color: rgba(0, 0, 255, 0.151);
-	outline: 1px solid blue;
-	outline-offset: -1px;
-}
-*[contenteditable="true"]:hover{
-	background-color: rgba(0, 0, 255, 0.055);
-	outline: 1px solid blue;
-	outline-offset: -1px;
-}
-*[contenteditable="true"]:focus{
-	background-color: transparent;
-	outline: 1px solid red;
-	outline-offset: -1px;
-}
-</style>
-
+<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
 <!-- <script src="/modules/ckeditor_plus/ckeditor/ckeditor.js"></script> -->
 <!-- <script src="https://cdn.ckeditor.com/4.7.3/standard/ckeditor.js"></script> -->
 <script src="/modules/ckeditor_4.5.8_standard/ckeditor/ckeditor.js"></script>
@@ -34,13 +7,10 @@ body>#logWrapper {
 <!-- <hr> -->
 <h2>Глобальные настройки</h2>
 
-<div id="kff_sts" class="kff_sts uk-section uk-section-primary uk-padding">
-	<!-- <p class="box"><label>Префикс для модулей <input name="mds_prefix" type="text" value="<?= Basic::$cfg['mds_prefix']?>"></label></p>
-	<p class="comment">Скрипт выбирает все модули с указанным префиксом. Например, папки искомых модулей должны называться как <b>kff_modulename</b>. Для выбора всех модулей из системы -- удалите префикс. После любого изменения префикса -- перезагрузите страницу.</p> -->
+<div id="kff_sts" class="kff_sts uk-section">
 
 	<p><label>Init Modules <input name="init_mods" type="checkbox" ></label></p>
 	<p class="comment">Инициализация всех модулей. Системная.</p>
-
 
 	<ul id="UIKit" data-group="uk" class="uk-list uk-list-striped uk-list-large">
 		<li><label>Подключить UIKIT <input id="include_uikit" name="include_uikit" type="checkbox"></label>
@@ -70,6 +40,11 @@ body>#logWrapper {
 'use strict';
 // kff.checkLib('jQuery')
 // .then($=>{
+// $('.bar').attr('uk-offcanvas',"overlay: true");
+/* $('#bar').addClass('uk-offcanvas-bar')
+.wrap('<div id="navbar" uk-offcanvas="overlay: true"/>');
+
+$('.topbar').append($('a.exit'),'<button class="uk-offcanvas-close" uk-toggle="target: #navbar">Menu</button>'); */
 
 var U= UIkit.util;
 // console.log('U=',U);
@@ -141,13 +116,10 @@ U.ready(()=>{
 	});
 
 	function saveSTS (send_data) {
-		var $activs = $('.uk-active');
 		$.post('', send_data)
 		.then((response, status)=>{
 			// console.log(document.documentElement);
-			// $('.log').html($(response).find('.log'));
-			// document.documentElement.innerHTML = response;
-			ajaxRender(response,$activs);
+			ajaxRender(response);
 		});
 	}
 
@@ -177,18 +149,17 @@ U.ready(()=>{
 		});
 	}
 
-	function ajaxRender (response, $activs) {
+	function ajaxRender (response, $currentTab) {
+		$currentTab = $currentTab || $('div.uk-active');
+		var tabIndex = $currentTab.index();
+
+		// *Переписываем активный таб и лог
 		if(response) {
-			$content.html($(response).find('.content'));
-			$('.log').html($(response).find('.log'));
+			$currentTab.html($(response).find('.uk-switcher')[tabIndex].innerHTML);
+			$('.log').html($(response).find('.log').html());
 		}
 
-		// *active tabs
-		if($activs && $activs.length) {
-			$('.uk-active').removeClass();
-			$activs.addClass('uk-active');
-		}
-
+		// *Открываем аккордион
 		var open = localStorage.getItem('open'),
 			openEl = open && U.$$('#mds_sts>li')[open]
 			|| U.$('#mds_sts>li.uk-open');
