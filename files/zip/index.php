@@ -67,13 +67,7 @@ foreach($Txts as $n=>$fi)
 		file_get_contents($fi->getPathname())
 	)
 	. "</code></pre>";
-	/* echo "<hr><h3>$name</h3>
-	<textarea id='{$nameArr[0]}' class=\"codepress {$nameArr[1]}\" style='width:100%; height:300px' spellcheck=false>"
-	. htmlspecialchars(
-		file_get_contents($fi->getPathname())
-	)
-	. "</textarea>";
-	*/
+
 }
 
 ?>

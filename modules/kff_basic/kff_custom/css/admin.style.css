@@ -5,9 +5,9 @@ input[type="text"], input[type="password"], select {
 .uk-accordion-title {
 	cursor: pointer;
 }
-body>#logWrapper {
+/* body>#logWrapper {
 	margin-left: 225px;
-}
+} */
 *[contenteditable="true"]{
 	background-color: rgba(0, 0, 255, 0.151);
 	outline: 1px solid blue;
@@ -55,9 +55,6 @@ a.exit{
 
 }
 
-.uk-offcanvas-close{
-	/* position: static !important; */
-}
 
 @media (max-width: 450px) {
 	div.content {
@@ -79,8 +76,8 @@ a.exit{
 		margin: 3px;
 	}
 
-	a.exit{
-		/* display: none; */
-	}
+	/* a.exit{
+		display: none;
+	} */
 }
 

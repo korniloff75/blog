@@ -19,13 +19,12 @@ require_once __DIR__.'/fns.php';
 
 // getStorage("$Imgpath/cfg.json");
 
-DbJSON::$convertPath = false;
-$Storage = new DbJSON(__DIR__."/cfg.json");
+// DbJSON::$convertPath = false;
+// $Storage = new DbJSON(__DIR__."/cfg.json");
 // *pathname to imgs folder
 // $Folder = $Storage->get($Page->id) ?? __DIR__;
-$cfg = $Storage->get();
+// $cfg = $Storage->get();
 
-$log->add('Storage=',null,[$Storage, ]);
 
 $log->add('$_FILES',null,[
 	$_FILES, $act, $_REQUEST
@@ -48,13 +47,13 @@ if(
 
 	$Upload = new Uploads;
 
-	if(count($Upload->getSuccess()))
+	/* if(count($Upload->getSuccess()))
 	{
 		// *Add to $cfg
 		$Storage->set([
 			$Page_id=> $kff::getPathFromRoot(Uploads::$pathname)
 		]);
-	}
+	} */
 
 	// die;
 
@@ -106,8 +105,8 @@ foreach(System::listPages() as $n=>$id)
 		<form action='' method='post' class="uk-accordion-content" enctype="multipart/form-data">
 			<input type="hidden" name="act" value="upload">
 			<input type="hidden" name="id" value="<?=$id ?>">
-			<!-- <input type="text" name="imgpath" placeholder="путь к папке и изображениями" value="<?=$cfg[$id] ?? "$Imgpath/$id" ?>"> -->
-			<input type="file" name="file[]" class="" value="<?=$cfg[$id] ?? $Imgpath?>" multiple>
+
+			<input type="file" name="file[]" class="" value="<?=$Imgpath?>" multiple>
 			<button class="save_sts">Сохранить</button>
 		</form>
 	</li>

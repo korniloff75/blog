@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__.'/fns.php';
 
-$Storage = getStorage();
+// $Storage = getStorage();
 // *pathname to imgs folder
 $Folder = DR."/files/slider/{$Page->id}";
 // die('FUCK!');
@@ -37,25 +37,6 @@ if($Folder !== __DIR__)
 {
 	scanImgs($Folder);
 }
-// *Выводим изображения из каждой подпапки модуля в отдельный слайдер
-/* else
-{
-	$iterator = new DirectoryIterator(__DIR__);
-	foreach($iterator as $fi)
-	{
-		if(
-			!$fi->isDir()
-			|| $fi->isDot()
-		) continue;
-
-		echo "<h2>".$fi->getFilename()."</h2>";
-
-		// echo $fi->getPathname();
-
-		scanImgs($fi->getPathname());
-
-	}
-} */
 
 
 

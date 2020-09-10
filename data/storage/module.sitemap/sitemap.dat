@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url><loc>http://blog.js-master/</loc></url>
-<url><loc>http://blog.js-master/news</loc></url>
 <url><loc>http://blog.js-master/contact</loc></url>
-<url><loc>http://blog.js-master/about</loc></url>
 <url><loc>http://blog.js-master/user</loc></url>
 <url><loc>http://blog.js-master/search</loc></url>
 <url><loc>http://blog.js-master/chat</loc></url>
 <url><loc>http://blog.js-master/fz152</loc></url>
-<url><loc>http://blog.js-master/news/1485542332</loc></url>
-<url><loc>http://blog.js-master/news/1485542366</loc></url>
+<url><loc>http://blog.js-master/basiczip</loc></url>
+<url><loc>http://blog.js-master/blog_all_cats</loc></url>
+<url><loc>http://blog.js-master/Stranica_s_kategoriej_novostej</loc></url>
+<url><loc>http://blog.js-master/Stranica_statej</loc></url>
+<url><loc>http://blog.js-master/Blog_3shaga</loc></url>
+<url><loc>http://blog.js-master/Stranica_uikit-355</loc></url>
+<url><loc>http://blog.js-master/Rekursivnoe_kopirovanie_direktorii_PHP</loc></url>
+<url><loc>http://blog.js-master/Stati_iz_articles</loc></url>
+<url><loc>http://blog.js-master/TEST</loc></url>
+<url><loc>http://blog.js-master/Debug_my-engine_CMS/Novost_vo_2_kategorii</loc></url>
 </urlset>

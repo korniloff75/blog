@@ -150,7 +150,7 @@ class Logger
 		}
 		</style>
 		<?php
-		print_r("<h3>Log</h3><pre class='log'>\n");
+		print_r("<h3 class='logCaption' style='text-align:center;'>Log</h3><pre class='log'>\n");
 		foreach ($this->log as &$string) {
 			print_r($string . "\n");
 		}

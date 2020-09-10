@@ -59,6 +59,7 @@ class Index_my_addon
 			AdmPanel::fixSystem();
 
 			AdmPanel::addResponsive();
+			self::headHtml();
 		}
 
 		self::$log->add('REQUEST_URI=',null, [$_SERVER['REQUEST_URI']]);
@@ -81,6 +82,7 @@ class Index_my_addon
 		}
 
 		require_once DR.'/' . self::$dir.'/Pack.php';
+		Pack::$dest = DR . '/files/zip';
 		Pack::$excludes[] = '\.zip$';
 		// *Пакуем с добавлением корневой папки
 		Pack::$my_engine_format = 1;
@@ -113,7 +115,7 @@ class Index_my_addon
 
 
 	/**
-	 * ?Запускать из integration_pages.php
+	 * *Для обработки $Page - апускать из integration_pages.php
 	 */
 	public static function headHtml()
 	{
@@ -191,7 +193,7 @@ class Index_my_addon
 		return preg_replace("#(?!https?|^)//+#", '/', $path);
 	}
 
-	// *Получаем путь относительно DR
+	// *Путь относительно DR
 	public static function getPathFromRoot(string $absPath)
 	:string
 	{
@@ -200,7 +202,6 @@ class Index_my_addon
 
 	// *Реальный IP
 	public static function realIP ()
-
 	{
 		return $_SERVER['HTTP_CLIENT_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? null;
 	}
@@ -221,6 +222,8 @@ class Index_my_addon
 
 	/**
 	 * *PageInfo
+	 * данные по странице с id
+	 * System::listPages()
 	 */
 	public static function getPageInfo($id, $storagePath=null)
 	:array
@@ -296,15 +299,6 @@ class Index_my_addon
 				self::$log->print();
 				echo "</div>";
 
-				if(self::is_admPanel())
-				{
-				?>
-					<script>
-					$('#main').append($('#logWrapper'));
-					</script>
-				<?php
-				}
-
 				self::$log::$printed = 1;
 			}
 		}
@@ -314,8 +308,6 @@ class Index_my_addon
 $kff = new Index_my_addon();
 
 $log = $kff::get_log();
-
-$kff::headHtml();
 
 // $log->add('$URI=',null,[$URI]);
 
