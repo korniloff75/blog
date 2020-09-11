@@ -1,5 +1,4 @@
 <?php
-$START_PROFILE = microtime(true);
 require('./system/global.dat');
 ob_start($Config->gzip?'ob_gzhandler':null);
 
@@ -102,6 +101,5 @@ foreach($RunModules->end as $value){
 	}
 }
 
-echo Index_my_addon::profile('base');
 ob_end_flush();
 ?>

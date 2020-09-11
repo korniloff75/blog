@@ -10,6 +10,7 @@ class Index_my_addon
 {
 	public static
 		// $log = false,
+		$tmp,
 		// *Путь к kff_custom
 		$dir,
 		$internalModulesPath,
@@ -17,7 +18,7 @@ class Index_my_addon
 		$cfgDB,
 		$cfg;
 
-	private static $log = false;
+	protected static $log = false;
 
 
 	public function __construct()
@@ -52,8 +53,8 @@ class Index_my_addon
 		if(self::is_admPanel())
 		{
 			require_once __DIR__.'/kff_custom/AdmPanel.class.php';
-			AdmPanel::$cfg = &self::$cfg;
-			AdmPanel::$cfgDB = &self::$cfgDB;
+			// AdmPanel::$cfg = &self::$cfg;
+			// AdmPanel::$cfgDB = &self::$cfgDB;
 
 			// *Корректировка системы
 			AdmPanel::fixSystem();
@@ -90,6 +91,25 @@ class Index_my_addon
 		$pack = new Pack;
 
 		return $pack->RecursiveDirectory($pathname);
+	}
+
+
+	public static function profile($rem='')
+	:string
+	{
+		global $START_PROFILE;
+
+		if(empty($START_PROFILE))
+		{
+			return '';
+		}
+		else
+		{
+			$info = '<p>Page generation - ' . round((microtime(true) - $START_PROFILE)*1e4)/10 . 'ms | Memory usage - now ( '. round (memory_get_usage()/1024) . ') max (' . round (memory_get_peak_usage()/1024) . ') kB</p>';
+
+			return  "<div class='core info'><b>Used PHP-" . phpversion() . " block $n Technical Info $rem </b>: $info</div>";
+		}
+
 	}
 
 

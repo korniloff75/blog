@@ -1,0 +1,24 @@
+.core{
+	color: #147;
+	background: #eef;
+	border: 2px solid;
+	border-left-width: 5px;
+	padding: 3px 3px 3px 7px;
+}
+
+.core.info{
+	color: #159;
+	background: #eef;
+	border: 2px solid;
+	border-left-width: 5px;
+	padding: 3px 3px 3px 7px;
+}
+
+
+@media (max-width: 450px) {
+	div.content {
+		padding: 5px;
+		margin: 0;
+	}
+}
+

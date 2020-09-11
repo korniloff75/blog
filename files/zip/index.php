@@ -11,8 +11,11 @@ if(!empty($Module = filter_var($_GET['module'])))
 	die;
 }
 ?>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <h1>Archives</h1>
+
+<div class="content" style="width: 100%;white-space: pre-wrap;word-wrap: break-word;word-break: break-word;">
 
 <p><a href="screens/" target="_blank">Скрины</a></p>
 
@@ -71,5 +74,5 @@ foreach($Txts as $n=>$fi)
 }
 
 ?>
-
+</div><!-- .content -->
 <script src="/modules/kff_highlight/hl.js"></script>

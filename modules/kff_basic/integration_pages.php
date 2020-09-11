@@ -1,14 +1,8 @@
 <?php
 
-/* // *Basic::cfg['kff']==0
-if(empty($kff))
-{
-	include_once $_SERVER['DOCUMENT_ROOT'].'/system/global.dat';
-	include_once __DIR__.'/kff_custom/index_my_addon.php';
-} */
-
-
 $kff::headHtml();
+
+$Page->endhtml.= '<link rel="stylesheet" href="/'.$kff::$dir.'/css/core.style.css" />';
 
 // *UIKit
 if(!empty($kff::$cfg['uk']['use_styles_input']))
@@ -56,5 +50,17 @@ if(!empty($kff::$cfg['uk']['use_styles_ul']))
 	</script>';
 }
 
+// *Examples 4 Surfyk
+/* $pages_start = System::listPages();
+print_r($pages_start);
+// *Нужно поднять вверх $pages_start[4]
+list($pages_start[4], $pages_start[3]) = [$pages_start[3], $pages_start[4]];
+print_r($pages_start);
+
+// *Если нужно записать в файл
+if(
+	file_put_contents(DR.'/data/pages/list.dat', json_encode($pages_start))
+)
+	echo "Файл весело записан."; */
+
 return null;
-?>

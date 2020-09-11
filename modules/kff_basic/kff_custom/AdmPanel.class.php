@@ -6,11 +6,11 @@ if(realpath('.') === __DIR__) die('Access denied!');
  * Подключается в Index_my_addon
  */
 
-class AdmPanel
+class AdmPanel extends Index_my_addon
 {
-	static
+	/* static
 		$cfg,
-		$cfgDB;
+		$cfgDB; */
 	/**
 	 *
 	 */
@@ -38,23 +38,58 @@ class AdmPanel
 	 */
 	static function fixSystem()
 	{
-		if(!Index_my_addon::is_adm()) die('Access denied!');
+		// if(!Index_my_addon::is_adm()) die('Access denied!');
+
+		$fixes=[];
 
 		self::$cfg['fixSystem'] = self::$cfgDB->get('fixSystem');
 		if(self::$cfg['fixSystem'] === 'disable')
 			return;
 
 		// *Адаптивный дизайн
-		$startPath = '/admin/include/start.dat';
-		if(!in_array($startPath, self::$cfg['fixSystem']))
+		$sourcePath = '/admin/include/start.dat';
+		if(!file_exists(DR."$sourcePath.bak"))
 		{
-			copy(DR.$startPath,DR."$startPath.bak");
-			$start = file_get_contents(DR.$startPath);
-			$start = str_replace('<meta name="viewport" content="width=1300">','<meta name="viewport" content="width=device-width, initial-scale=1.0">',$start);
-			file_put_contents(DR.$startPath,$start);
-			self::$cfgDB->set(['fixSystem' => [$startPath]]);
+			$start = file_get_contents(DR.$sourcePath);
+			$fixes[$sourcePath] = str_replace('<meta name="viewport" content="width=1300">','<meta name="viewport" content="width=device-width, initial-scale=1.0">',$start);
+
+			if(!in_array($sourcePath, self::$cfg['fixSystem']))
+				self::$cfgDB->set(['fixSystem' => [$sourcePath]], 'append');
 		}
 
+		// *Обработка ресурсов
+		$sourcePath = '/index.php';
+
+		if(!file_exists(DR."$sourcePath.bak"))
+		{
+			$start = file_get_contents(DR.$sourcePath);
+			$fixes[$sourcePath] = str_replace([
+				'<?php'.PHP_EOL
+				.'require(\'./system/global.dat\');',
+				'ob_end_flush();'.PHP_EOL
+				.'?>'
+			],[
+				'<?php'.PHP_EOL
+				.'$START_PROFILE = microtime(true);'.PHP_EOL
+				.'require(\'./system/global.dat\');',
+				'echo Index_my_addon::profile(\'base\');'.PHP_EOL
+				.'ob_end_flush();'.PHP_EOL.'?>'
+			], $start);
+
+			if(!in_array($sourcePath, self::$cfg['fixSystem']))
+				self::$cfgDB->set(['fixSystem' => [$sourcePath]], 'append');
+		}
+
+		// *Изменение файлов
+		foreach(self::$cfgDB->get('fixSystem') as $fp) {
+			if(file_exists(DR."$fp.bak"))
+			{
+				self::$log->add("Файл $fp не был обработан. Для его обработки переименуйте файл {$fp}.bak -> $fp");
+				continue;
+			}
+			copy(DR.$fp,DR."$fp.bak");
+			file_put_contents(DR.$fp,$fixes[$fp]);
+		}
 
 		// self::$log->add
 	}

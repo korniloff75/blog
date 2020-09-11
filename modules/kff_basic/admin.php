@@ -49,6 +49,17 @@ class Basic
 		// *save INI
 		self::saveINI();
 
+		?>
+		<div class="header"><h1>Настройки <?=$MODULE?></h1></div>
+
+		<div class="content">
+			<?php
+			self::RenderPU();
+			?>
+		</div><!-- .content -->
+
+		<?php
+
 	}
 
 
@@ -359,42 +370,8 @@ class Basic
 	}
 
 
-/* 	/**
-	 * *Хирургия
-	 * *Отмена - self::restoreSystem()
 
-	static function fixSystem()
-	{
-		self::$cfg['fixSystem'] = self::$cfg['fixSystem'] ?? [];
-		if(self::$cfg['fixSystem'] === 'disable')
-			return;
-		// *Адаптивный дизайн
-		$startPath = '/admin/include/start.dat';
-		if(!in_array($startPath, self::$cfg['fixSystem']))
-		{
-			copy(DR.$startPath,DR."$startPath.bak");
-			$start = file_get_contents(DR.$startPath);
-			$start = str_replace('<meta name="viewport" content="width=1300">','<meta name="viewport" content="width=device-width, initial-scale=1.0">',$start);
-			file_put_contents(DR.$startPath,$start);
-			self::$cfgDB->set(['fixSystem' => [$startPath]]);
-		}
-
-
-		// self::$log->add
-	}
-
-	/**
-	 * *Восстановление после self::fixSystem()
-
-	static function restoreSystem()
-	{
-		foreach(self::$cfg['fixSystem'] as $fp) {
-			rename(DR."$fp.bak", DR.$fp);
-		}
-		self::$cfgDB->replace(['fixSystem' => 'disable']);
-	} */
-
-	static function RenderPU()
+	private static function RenderPU()
 	{
 		$mds = self::scanModules();
 		?>
@@ -434,23 +411,6 @@ class Basic
 
 Basic::init();
 
-?>
-<div class="header"><h1>Настройки <?=$MODULE?></h1></div>
 
-<!-- <div class="menu_page">
-<ul uk-tab>
-			<li><button>Модули</button></li>
-			<li><button>Подмодули</button></li>
-			<li><button>Настройки</button></li>
-		</ul>
-</div> -->
-
-<div class="content">
-	<?php
-	Basic::RenderPU();
-	?>
-</div>
-
-<?php
 // *Тесты
 // $log->add('$Page',null,[$Page]);
