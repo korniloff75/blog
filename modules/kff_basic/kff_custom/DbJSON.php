@@ -54,9 +54,9 @@ class DbJSON {
 	}
 
 	/**
-	 * @param array data
+	 * @param data {array}
 	 */
-	public function set(array $data, $append = false)
+	public function set(array &$data, $append = false)
 	{
 		$handler = $append ? 'array_merge_recursive' : 'array_replace_recursive';
 
@@ -68,9 +68,9 @@ class DbJSON {
 	}
 
 	/**
-	 * @param data <array>
+	 * @param data {array}
 	 */
-	public function replace(array $data)
+	public function replace(array &$data)
 	{
 		$this->db = $data;
 		$this->db['change']= 1;

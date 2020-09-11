@@ -84,7 +84,7 @@ class AdmPanel extends Index_my_addon
 		foreach(self::$cfgDB->get('fixSystem') as $fp) {
 			if(file_exists(DR."$fp.bak"))
 			{
-				self::$log->add("Файл $fp не был обработан. Для его обработки переименуйте файл {$fp}.bak -> $fp");
+				self::$log->add("Файл $fp уже был обработан ранее. Для его повторной обработки переименуйте файл {$fp}.bak -> $fp");
 				continue;
 			}
 			copy(DR.$fp,DR."$fp.bak");

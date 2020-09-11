@@ -45,13 +45,15 @@ kff.checkLib('jQuery')
 
 		$.post(t.href)
 		.done((response)=>{
-			var $main = $(response).find(mainSelector);
+			var $main = $(response).find(mainSelector),
+				$sysInfo = $(response).find('.core.info'),
+				$log = $(response).find('.log');
 			$main.find('#ajax-menu').remove();
 
 			console.log(mainSelector);
 
 			render(
-				$main.html()
+				$main.html(), $sysInfo.html(), $log.html()
 			);
 
 			history.pushState({
@@ -72,10 +74,18 @@ kff.checkLib('jQuery')
 	}
 
 	// *Change content
-	function render (mainHtml) {
+	function render (mainHtml,sysInfo, log) {
 		// console.log(mainHtml);
 		$(mainSelector).html(
 			mainHtml
+		);
+		<?php if($kff::is_adm()): ?>
+		$('.core.info').html(
+			sysInfo
+		);
+		<?php endif ?>
+		$('.log').html(
+			log
 		);
 	}
 

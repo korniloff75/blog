@@ -15,7 +15,9 @@ class BlogKff extends Index_my_addon
 	protected static
 		$modDir,
 		// *Локальный конфиг
-		$l_cfg;
+		$l_cfg,
+		$storegePath = \DR.'/kff_blog_data',
+		$catPath = __DIR__.'/categories.json';
 
 
 	public function __construct()
@@ -33,6 +35,8 @@ class BlogKff extends Index_my_addon
 			], $this->DB->get()
 		);
 
+		$this->catsDB = new DbJSON(self::$catPath);
+
 		// self::$log->add('self::$cfg=',null, [self::$cfg]);
 
 		?>
@@ -49,12 +53,39 @@ class BlogKff extends Index_my_addon
 	}
 
 
+	function updateCategories()
+	{
+		$cats = [];
+		foreach(
+			new FilesystemIterator(self::$storegePath, FilesystemIterator::SKIP_DOTS) as $catFI
+		) {
+			if(!$catFI->isDir()) continue;
+			echo $catFI->getFilename() . '<br>';
+			$cats []= $catFI->getFilename();
+
+		}
+
+		return $cats;
+	}
+
+	static function getCategories()
+	{
+		// $cats;
+	}
+
 	private function RenderPU()
 	{
 		?>
 		<h2>Тут будет ПУ Блога</h2>
+
+
 		<?php
 	}
 }
 
 $Blog = new BlogKff;
+
+// *Tests
+$Blog->catsDB->replace(
+	$Blog->updateCategories()
+);
