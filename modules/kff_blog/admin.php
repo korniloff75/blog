@@ -2,21 +2,20 @@
 if(__DIR__ === realpath('.')) die;
 if(empty($kff)) global $kff;
 
-echo $kff::headHtml();
+$kff::headHtml();
 
 // *Только админам
 if(!$kff::is_adm()) die('Access denied!');
-?>
 
 
-<?php
+
 class BlogKff extends Index_my_addon
 {
 	protected static
 		$modDir,
 		// *Локальный конфиг
 		$l_cfg,
-		$storegePath = \DR.'/kff_blog_data',
+		$storagePath = \DR.'/kff_blog_data',
 		$catPath = __DIR__.'/categories.json';
 
 
@@ -39,6 +38,8 @@ class BlogKff extends Index_my_addon
 
 		// self::$log->add('self::$cfg=',null, [self::$cfg]);
 
+		$this->_InputController();
+
 		?>
 		<div class="header"><h1>Настройки <?=$MODULE?></h1></div>
 
@@ -50,42 +51,99 @@ class BlogKff extends Index_my_addon
 
 		<?php
 
+	} // __construct
+
+
+	/**
+	 * *Обработка внешних запросов
+	 * Методы контроллера с префиксом c_
+	 */
+	private function _InputController()
+	{
+		$r = &$_REQUEST;
+		if(!empty($m_name = "c_{$r['name']}") && method_exists($this, $m_name))
+		{
+			$this->{$m_name}(filter_var($r['value']));
+		}
 	}
 
 
+	/**
+	 * Перезаписываем категории
+	 */
 	function updateCategories()
 	{
 		$cats = [];
 		foreach(
-			new FilesystemIterator(self::$storegePath, FilesystemIterator::SKIP_DOTS) as $catFI
+			new FilesystemIterator(self::$storagePath, FilesystemIterator::SKIP_DOTS) as $catFI
 		) {
 			if(!$catFI->isDir()) continue;
-			echo $catFI->getFilename() . '<br>';
+			// echo $catFI->getFilename() . '<br>';
 			$cats []= $catFI->getFilename();
-
 		}
+
+		$this->catsDB->replace($cats);
 
 		return $cats;
 	}
 
-	static function getCategories()
+	/**
+	 * Получаем категории из базы
+	 */
+	public function getCategories()
 	{
-		// $cats;
+		return empty($this->catsDB->get()) ?
+			$this->updateCategories()
+			: $this->catsDB->get();
 	}
 
+
+	// *Методы контроллера
+	/**
+	 * *Добавляем категорию
+	 */
+	public function c_addCategory($new_cat)
+	{
+		$catPath = self::$storagePath."/$new_cat";
+
+		if(is_dir($catPath))
+		{
+			die("<div class=content>Категория <b>$new_cat</b> уже существует!</div>");
+		}
+		elseif(!$success = mkdir($catPath,0755,1))
+		{
+			die("<div class=content>Категория <b>$new_cat</b> не создана!</div>");
+		}
+		$this->updateCategories();
+		return $success;
+	}
+
+	/**
+	 * *Вывод в админку
+	 */
 	private function RenderPU()
 	{
 		?>
+		<script src="/<?=self::getPathFromRoot(__DIR__)?>/js/blogHelper.js"></script>
 		<h2>Тут будет ПУ Блога</h2>
 
+		<h3>Категории</h3>
+
+		<input type="text" name="addCategory" placeholder="Название категории"><button>Новая</button>
+
+		<ul id="categories">
 
 		<?php
+		foreach($this->getCategories() as $cat) {
+			echo '<li>'.$cat.'</li>';
+		}
+
+		echo '</ul><!-- #categories -->';
 	}
 }
 
 $Blog = new BlogKff;
 
+
 // *Tests
-$Blog->catsDB->replace(
-	$Blog->updateCategories()
-);
+// print_r($Blog->getCategories());

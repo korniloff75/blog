@@ -38,7 +38,7 @@ var comments = [],	// Тут собираем все каменты
 		return safe[m];
 	})
 	// Убираем каменты
-	.replace(/([^\\])(?:\/\/|\#)[^\n]*\n/g, function(m, f){
+	.replace(/([^\\]|^)(?:\/\/|\#)[^\n]*$/mg, function(m, f){
 		var l=comments.length; comments.push(m); return f+'~~~C'+l+'~~~';
 	})
 	.replace(/\/\*[\s\S]*?\*\//g, function(m){
@@ -50,7 +50,7 @@ var comments = [],	// Тут собираем все каменты
 		var l=strings.length; strings.push(s); return f+'~~~S'+l+'~~~';
 	})
 	// Убираем regexp
-	.replace(/\/([^\/\n])*?\/[gim]{0,3}/g, function(m){
+	.replace(/\/([^\/\n])+?\/[gim]{0,3}/g, function(m){
 		var l=res.length; res.push(m); return '~~~R'+l+'~~~';   })
 	// Выделяем ключевые слова
 	.replace(/\b(var|function|typeof|throw|new\s+.+?|return|if|for|in|while|break|do|continue|switch|case)\b([^a-z0-9\$_])/gi, '<span class="kwrd">$1</span>$2')

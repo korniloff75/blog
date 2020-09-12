@@ -26,23 +26,17 @@ var kff = {
 	 * Базовая подсветка кодов
 	 * @param {string} selector
 	 */
-	highlight: function (selector) {
+	highlight: function highlight(selector) {
 		if(!`1`) return;
 		selector= selector||'.log';
 		if(selector instanceof NodeList) {
 			// todo
 		}
-		var node= document.querySelector(selector);
+		var nodes= document.querySelectorAll(selector);
 
-		if(!node) return;
+		if(!nodes.length) return;
 
-		var styleBox = document.createElement('style'),
-			storage = {
-				'i_block': [],
-				'strings': [],
-				'comments': [],
-			},
-			safe = { '<': '<', '>': '>', '&': '&' };
+		var styleBox = document.createElement('style');
 
 		styleBox.textContent = `
 		${selector} {
@@ -60,9 +54,18 @@ var kff = {
 		${selector} .ERROR{color:red;}
 		`;
 
+		[].forEach.call(nodes, node=>{
+			var storage = {
+				'i_block': [],
+				'strings': [],
+				'comments': [],
+			},
+			safe = { '<': '<', '>': '>', '&': '&' };
+
 		document.querySelector('head').appendChild(styleBox);
 
-		node.innerHTML = node.textContent
+		// node.innerHTML = node.textContent
+		node.innerHTML = node.innerHTML
 		// *Маскируем HTML
 		.replace(/[<>&]/g, function (m){
 			return safe[m];
@@ -72,7 +75,8 @@ var kff = {
 			m= m.replace(/:(\d+)/, ':<span class="kwrd kwrd_2">$1</span>')
 			.replace(/(INFO|WARNING|ERROR)/, '<span class="$1">$1</span>');
 
-			storage.i_block.push(m); return '~~~i_block'+(storage.i_block.length-1)+'~~~';})
+			storage.i_block.push(m); return '~~~i_block'+(storage.i_block.length-1)+'~~~';
+		})
 		// *Убираем строки
 		.replace(/([^\\])((?:'(?:\\'|[^'])*')|(?:"(?:\\"|[^"])*"))/g, function(m, f, s){
 			storage.strings.push(s); return f+'~~~strings'+(storage.strings.length-1)+'~~~';
@@ -97,8 +101,29 @@ var kff = {
 		.replace(/([\n])+/g, '$1<br>')
 		// Табуляцию заменяем неразрывными пробелами
 		.replace(/\t/g, '&nbsp;&nbsp;');
+		});
 
 		// console.log('storage=',storage);
+	},
+
+
+	/**
+	 * Обёртка для аякс-запроса
+	 * @param uri
+	 * @param {Object} data
+	 * @param {Array} sel - массив с селекторами перерисовываемых блоков
+	 * @returns Promise
+	 */
+	request: function(uri, data, sel) {
+		return $.post(uri, data)
+		.then(response=>{
+			if(sel) {
+				sel.forEach(i=>{
+					var node= document.querySelector(i);
+					node.innerHTML= $(response).find(i).html();
+				})
+			}
+		})
 	}
 }
 

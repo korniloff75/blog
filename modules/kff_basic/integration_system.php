@@ -49,6 +49,8 @@ class Index_my_addon
 		// *Path to internal modules
 		self::$internalModulesPath = __DIR__.'/modules';
 
+		self::headHtml();
+
 		// *Подключаем класс для админки
 		if(self::is_admPanel())
 		{
@@ -60,7 +62,6 @@ class Index_my_addon
 			AdmPanel::fixSystem();
 
 			AdmPanel::addResponsive();
-			self::headHtml();
 		}
 
 		self::$log->add('REQUEST_URI=',null, [$_SERVER['REQUEST_URI']]);
@@ -178,9 +179,13 @@ class Index_my_addon
 			$Page->headhtml.= $addonsPages;
 		}
 
-		// *Подключаем скрипты в админпанель
-		elseif(!self::is_admPanel()) return $addonsPages;
+		elseif(!self::is_admPanel())
+		{
+			echo $addonsPages;
+			return;
+		}
 
+		// *Подключаем скрипты в админпанель
 		$addonsAdm= '
 
 		<!-- Start from '.__METHOD__.' -->
@@ -318,7 +323,7 @@ class Index_my_addon
 				echo "</div>";
 			?>
 				<script>
-					kff.highlight('.log');
+					undefined !== kff && kff.highlight('.log');
 				</script>
 			<?php
 
