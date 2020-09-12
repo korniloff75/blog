@@ -1,11 +1,11 @@
 <?php
 
-// $log->add('$Page',null,[$Page]);
+// $log->add('$Page=',null,[$Page]);
 
 DbJSON::$convertPath = false;
-$db = new DbJSON(__DIR__.'/cfg.json');
+$DB = new DbJSON(__DIR__.'/cfg.json');
 
-$cfg = $db->get();
+$cfg = $DB->get();
 
 ob_start();
 ?>
@@ -87,6 +87,8 @@ kff.checkLib('jQuery')
 		$('.log').html(
 			log
 		);
+
+		kff.highlight('.log');
 	}
 
 	// *Active btn
@@ -103,6 +105,6 @@ kff.checkLib('jQuery')
 })
 </script>
 
-</div>
+</div><!-- #ajax-menu -->
 <?php
 return ob_get_clean();

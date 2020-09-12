@@ -299,11 +299,10 @@ class Index_my_addon
 	{
 		if(!self::$log) return;
 
-		self::$log->add('self::is_admPanel()',null,[self::is_admPanel(), realpath('')]);
+		self::$log->add('self::is_admPanel()',null,[self::is_admPanel(), realpath('.')]);
 		// var_dump($GLOBALS['log']);
 		if(self::is_adm())
 		{
-			// if(empty($_GET['dev']))
 			if(self::$log && !self::$log::$printed)
 			{
 			?>
@@ -315,9 +314,13 @@ class Index_my_addon
 				</style>
 			<?php
 				echo "<div id='logWrapper'>";
-				// self::$log->__destruct();
 				self::$log->print();
 				echo "</div>";
+			?>
+				<script>
+					kff.highlight('.log');
+				</script>
+			<?php
 
 				self::$log::$printed = 1;
 			}
