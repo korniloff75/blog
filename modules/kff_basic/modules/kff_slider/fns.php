@@ -8,9 +8,11 @@ function getStorage($filename = __DIR__.'/cfg.json')
 
 function showImgs($dir)
 {
-	if(is_null($dir)) return;
-	// if(!file_exists($dir))
-	// echo "\$dir= $dir";
+	if(
+		is_null($dir)
+		|| !file_exists($dir)
+	) return;
+
 	$iterator = scandir($dir);
 	// var_dump($iterator);
 	?>

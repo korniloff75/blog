@@ -192,6 +192,8 @@ class Index_my_addon
 		<!-- Load UIKit from '.$UIKitPath.' -->
 		<link rel="stylesheet" href="'.$UIKitPath.'/css/uikit.min.css" />
 		<script src="'.$UIKitPath.'/js/uikit.min.js"></script>
+		<!-- UIkit picts-->
+		<script src="'.$UIKitPath.'/js/uikit-icons.min.js"></script>
 		<!-- / UIKit -->
 		<script src="'.$kffJsPath.'/kff.js"></script>
 		<script src="'.$kffJsPath.'/jquery-3.3.1.min.js"></script>

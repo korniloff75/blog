@@ -47,9 +47,10 @@ class DbJSON {
 	 */
 	public function get($id=null)
 	{
+		$db = array_diff_key($this->db, ['change'=>1]);
 		return empty($id)?
-			$this->db : (
-				$this->db[$id] ?? null
+			$db : (
+				$db[$id] ?? null
 			);
 	}
 
