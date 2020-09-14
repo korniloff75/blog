@@ -111,18 +111,17 @@ var kff = {
 	 * Обёртка для аякс-запроса
 	 * @param uri
 	 * @param {Object} data
-	 * @param {Array} sel - массив с селекторами перерисовываемых блоков
+	 * @param {Array} sel - заменяем контент узлов из sel
 	 * @returns Promise
 	 */
 	request: function(uri, data, sel) {
+		sel = sel || ['.content','.log'];
 		return $.post(uri, data)
 		.then(response=>{
-			if(sel) {
-				sel.forEach(i=>{
-					var node= document.querySelector(i);
-					node.innerHTML= $(response).find(i).html();
-				})
-			}
+			sel.forEach(i=>{
+				var node= document.querySelector(i);
+				node.innerHTML= $(response).find(i).html();
+			})
 		})
 	}
 }

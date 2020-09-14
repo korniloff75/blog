@@ -40,16 +40,7 @@ class BlogKff extends Index_my_addon
 
 		$this->_InputController();
 
-		?>
-		<div class="header"><h1>Настройки <?=$MODULE?></h1></div>
-
-		<div class="content">
-			<?php
-			$this->RenderPU();
-			?>
-		</div><!-- .content -->
-
-		<?php
+		$this->RenderPU();
 
 	} // __construct
 
@@ -69,7 +60,7 @@ class BlogKff extends Index_my_addon
 
 
 	/**
-	 * Перезаписываем категории
+	 * *Перезаписываем категории
 	 */
 	function updateCategories()
 	{
@@ -88,13 +79,13 @@ class BlogKff extends Index_my_addon
 	}
 
 	/**
-	 * Получаем категории из базы
+	 * *Получаем категории из базы
 	 */
 	public function getCategories()
 	{
-		return empty($this->catsDB->get()) ?
+		return empty($cats = $this->catsDB->get()) ?
 			$this->updateCategories()
-			: $this->catsDB->get();
+			: $cats;
 	}
 
 
@@ -124,21 +115,36 @@ class BlogKff extends Index_my_addon
 	private function RenderPU()
 	{
 		?>
-		<script src="/<?=self::getPathFromRoot(__DIR__)?>/js/blogHelper.js"></script>
-		<h2>Тут будет ПУ Блога</h2>
 
-		<h3>Категории</h3>
+		<div class="header"><h1>Настройки <?=$MODULE?></h1></div>
 
-		<input type="text" name="addCategory" placeholder="Название категории"><button>Новая</button>
+		<div class="content">
 
-		<ul id="categories">
+			<script src="/<?=self::getPathFromRoot(__DIR__)?>/js/blogHelper.js"></script>
+			<h2>Тут будет ПУ Блога</h2>
 
+			<h3>Категории</h3>
+
+			<input type="text" name="addCategory" placeholder="Название категории"><button>Новая</button>
+
+			<ul id="categories">
+
+				<?php
+				foreach($this->getCategories() as $cat) {
+				?>
+					<li>
+					<h4><?=$cat?></h4>
+					<ul class="listArticles">
+
+					</ul>
+					</li>
+				<?php
+				}
+				?>
+
+			</ul><!-- #categories -->
+		</div><!-- .content -->
 		<?php
-		foreach($this->getCategories() as $cat) {
-			echo '<li>'.$cat.'</li>';
-		}
-
-		echo '</ul><!-- #categories -->';
 	}
 }
 
