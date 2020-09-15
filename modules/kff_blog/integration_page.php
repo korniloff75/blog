@@ -7,7 +7,6 @@ $Blog = new BlogKff;
 
 $Blog->Render();
 
-$log->add('$URI=',null,[$URI]);
 ?>
 
 

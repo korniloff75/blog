@@ -29,7 +29,8 @@ class BlogKff extends Index_my_addon
 
 		$this->catsDB = new DbJSON(self::$catPath);
 
-		self::addUIkit();
+		if(!$this->_InputController())
+			self::addUIkit();
 
 		// self::$log->add('self::$cfg=',null, [self::$cfg]);
 
@@ -37,28 +38,72 @@ class BlogKff extends Index_my_addon
 
 
 	/**
+	 * *Обработка внешних запросов
+	 * Методы контроллера с префиксом c_
+	 */
+	protected function _InputController()
+	{
+		if(!self::is_adm()) return false;
+
+		$r = &$_REQUEST;
+		if(!empty($m_name = "c_{$r['name']}") && method_exists($this, $m_name))
+		{
+			$this->opts = json_decode($r['opts'],1);
+			return $this->{$m_name}(filter_var($r['value']));
+		}
+		return false;
+	}
+
+
+	/**
+	 * *Сохраняем редактирование
+	 */
+	public function c_saveEdit($html)
+
+	{
+		self::$log->add('$this->opts=',null,[$this->opts]);
+		return file_put_contents(self::$storagePath . "/{$this->opts['cat']}/{$this->opts['art']}" . self::$l_cfg['ext'], $html);
+	}
+
+
+	/**
 	 * *Получаем категории из базы
 	 */
 	public function getCategories()
+	:array
 	{
 		return $this->catsDB->get();
 	}
 
 
 	/**
-	 * *Вывод контента по /Blog/catName/artName
+	 * *Получаем категорию по id
 	 */
-	public function addContent()
+	public function getCategory($id)
+	:array
 	{
-		global $URI;
-		$path = str_replace('Blog', basename(self::$storagePath), DR.REQUEST_URI) . self::$l_cfg['ext'];
+		return (new DbJSON(self::$storagePath . "/$id/data.json"))->get();
+	}
 
-		self::$log->add('$path=',null,[$path, file_exists($path)]);
 
+	/**
+	 * *Вывод контента по /Blog/catName/artName
+	 * todo добавить страницу по умолчанию
+	 */
+	public function addArticle()
+	{
+		global $URI, $Page;
 		if(
-			count($URI) < 3
-			|| !file_exists($path)
-		) return;
+			!is_object($Page)
+			|| count($URI) < 3
+		)
+			return;
+
+		$path = str_replace($Page->id, basename(self::$storagePath), DR.explode('?',REQUEST_URI)[0]) . self::$l_cfg['ext'];
+
+		self::$log->add('$path=',null,[$path, file_exists($path), $URI]);
+
+		if( !file_exists($path) ) return;
 
 		require_once $path;
 	}
@@ -94,6 +139,8 @@ class BlogKff extends Index_my_addon
 	 */
 	public function Render()
 	{
+		global $Page;
+		$edit= isset($_GET['edit']);
 	?>
 
 		<script src="/<?=self::$modDir?>/js/blogHelper.js"></script>
@@ -101,27 +148,27 @@ class BlogKff extends Index_my_addon
 		<ul id="categories" class="uk-subnav uk-subnav-divider">
 
 		<?php
-		foreach($this->getCategories() as $cat=>&$arts) {
-			if(!count($arts)) continue;
-
-			$catInfo = (new DbJSON(self::$storagePath."/$cat/cfg.json"))->get();
-			// print_r ($catInfo);
+		foreach($this->getCategories() as &$cat) {
+			// $catData = (new DbJSON(self::$storagePath."/$cat/cfg.json"))->get();
+			$catData = $this->getCategory($cat);
+			if(!count($catData['items']))
+				continue;
+			// print_r ($catData);
 		?>
 
 			<li>
 
-				<a href="#"><h4><?=$catInfo['name']?></h4></a>
+				<a href="#"><h4><?=$catData['name']?></h4></a>
 				<div uk-dropdown="mode: click;">
 
 					<ul data-cat=<?=$cat?>  class="uk-nav uk-dropdown-nav">
 
 					<?php
 
-					foreach($arts as &$art) {
-						$pageInfo = (new DbJSON(self::$storagePath."/$cat/{$art}.json"))->get();
+					foreach($catData['items'] as &$art) {
 
-						echo "<li data-id=$art data-cat=$cat>
-						<a href=\"/".self::getPathFromRoot(self::$storagePath)."/$cat/$art" . self::$l_cfg['ext'] . "\" target='_blank'>{$pageInfo['name']}</a>
+						echo "<li data-id={$art['id']} data-cat=$cat>
+						<a href=\"/{$Page->id}/$cat/{$art['id']} \">{$art['name']}</a>
 
 						</li>";
 					}
@@ -137,8 +184,24 @@ class BlogKff extends Index_my_addon
 
 	</ul><!-- #categories -->
 
-	<div class="blog_content">
-		<?php $this->addContent()?>
+	<?php
+	if($edit)
+	{
+	?>
+	<div>
+		<button id="saveEdit">SAVE</button>
+	</div>
+	<script>
+		document.querySelector('#saveEdit')
+		.addEventListener('click', BH.editRequest.bind(null, '.blog_content'));
+
+	</script>
+	<?php
+	}
+	?>
+
+	<div class="blog_content" <?=$edit?'contenteditable=true':''?>>
+		<?php $this->addArticle()?>
 	</div><!-- .blog_content -->
 	<?php
 	}

@@ -30,7 +30,7 @@ if (!NodeList.prototype.forEach) {
 // closest && fix matches
 ;(function(EL) {
 	if(EL.closest) return;
-	
+
 	EL.matches = EL.matches || EL.mozMatchesSelector || EL.msMatchesSelector || EL.oMatchesSelector || EL.webkitMatchesSelector;
 
 	EL.closest = function closest(selector) {
@@ -224,6 +224,11 @@ var kff = {
 	},
 
 
+	get URI(){
+		return location.pathname.split('/');
+	},
+
+
 	/**
 	 * Обёртка для аякс-запроса
 	 * @param uri
@@ -238,7 +243,8 @@ var kff = {
 			sel.forEach(i=>{
 				var node= document.querySelector(i);
 				node.innerHTML= $(response).find(i).html();
-			})
+			});
+			sel.includes('.log') && this.highlight('.log');
 		})
 	}
 }

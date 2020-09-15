@@ -1,6 +1,26 @@
 'use strict';
 var BH = {
-
+	get name(){
+		var uri= kff.URI;
+		return {
+			category: uri[2],
+			article: uri[3],
+		}
+	},
+	// *Save edit article
+	editRequest: function(selector, e) {
+		console.log(location, kff.URI, BH.name);
+		// return;
+		return kff.request('',{
+			act: 'save',
+			name: 'saveEdit',
+			value: document.querySelector(selector).innerHTML,
+			opts: JSON.stringify({
+				cat: BH.name.category,
+				art: BH.name.article,
+			}),
+		}, ['.blog_content','.log']);
+	}
 }
 
 // ?

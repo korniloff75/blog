@@ -19,24 +19,9 @@ class BlogKff_adm extends BlogKff
 	{
 		parent::__construct();
 
-		$this->_InputController();
 		$this->RenderPU();
 
 	} // __construct
-
-
-	/**
-	 * *Обработка внешних запросов
-	 * Методы контроллера с префиксом c_
-	 */
-	private function _InputController()
-	{
-		$r = &$_REQUEST;
-		if(!empty($m_name = "c_{$r['name']}") && method_exists($this, $m_name))
-		{
-			$this->{$m_name}(filter_var($r['value']));
-		}
-	}
 
 
 	/**
@@ -51,14 +36,39 @@ class BlogKff_adm extends BlogKff
 		) {
 			if(!$catFI->isDir()) continue;
 			// echo $catFI->getFilename() . '<br>';
-			$glob = glob($catFI->getPathname() . "/*" . self::$l_cfg['ext']);
+			$catPathname = $catFI->getPathname();
+			$catFilename = $catFI->getFilename();
+
 			// self::$log->add($catFI->getPathname() . "/*" . self::$l_cfg['ext']);
-			$cats [$catFI->getFilename()]= array_map(
-				function(&$i){return pathinfo($i, PATHINFO_FILENAME);}, $glob
-			);
-			$catDB = new DbJSON($catFI->getPathname() . "/cfg.json");
-			$map = ['map'=>$cats [$catFI->getFilename()]];
-			$catDB->set($map);
+
+			$catDB = new DbJSON($catPathname . "/data.json");
+			$catDB->clear('items');
+			// $catDB->append(['name'=>$catFilename]);
+
+			foreach(glob($catPathname . "/*" . self::$l_cfg['ext']) as &$i) {
+				$artName = pathinfo($i, PATHINFO_FILENAME);
+
+				$catDB->append(['items'=>[[
+					'id'=>$artName,
+					'name'=>(new DbJSON("$catPathname/$artName.json"))->get('name'),
+				]]]);
+			}
+
+			$cats []= $catFilename;
+
+			/* $cats [$catFilename]= array_map(
+				function(&$i) use($catPathname, $catDB) {
+					$artName = pathinfo($i, PATHINFO_FILENAME);
+
+					$catDB->append(['items'=>[[
+						'id'=>$artName,
+						'name'=>(new DbJSON("$catPathname/$artName.json"))->get('name'),
+					]]]);
+					return $artName;
+				},
+				glob($catPathname . "/*" . self::$l_cfg['ext'])
+			); */
+
 		}
 
 		$this->catsDB->replace($cats);
@@ -167,6 +177,7 @@ class BlogKff_adm extends BlogKff
 	 */
 	private function RenderPU()
 	{
+		global $MODULE;
 		?>
 
 		<div class="header"><h1><a href="#" onclick="location.reload(); return false;">Настройки</a> <?=$MODULE?></h1></div>
@@ -174,7 +185,6 @@ class BlogKff_adm extends BlogKff
 		<div class="content">
 
 			<script src="/<?=self::$modDir?>/js/blogHelper.js"></script>
-			<h2>Тут будет ПУ Блога</h2>
 
 			<h3>Категории</h3>
 
@@ -183,22 +193,23 @@ class BlogKff_adm extends BlogKff
 			<ul id="categories" class="uk-nav uk-nav-default">
 
 			<?php
-			foreach($this->getCategories() as $cat=>&$arts) {
+			foreach($this->getCategories() as &$cat) {
+				$catData = $this->getCategory($cat);
 			?>
 				<li>
-				<h4><?=$cat?></h4>
+				<h4><?=$catData['name']?></h4>
 				<div style="display: inline-block;">
-					<input type="hidden" name="cat" value="<?=$cat?>">
+					<input type="hidden" name="cat" value="<?=$catData['id']?>">
 					<input type="text" name="addArticle" placeholder="Название статьи">
 				</div><button>ADD</button>
 
-				<ul data-cat=<?=$cat?> class="listArticles uk-nav uk-nav-default uk-width-medium" uk-sortable="group: cat-items; handle: .uk-sortable-handle; cls-custom: uk-box-shadow-small uk-flex uk-flex-middle uk-background">
+				<ul data-id=<?=$catData['id']?> class="listArticles uk-nav uk-nav-default uk-width-medium" uk-sortable="group: cat-items; handle: .uk-sortable-handle; cls-custom: uk-box-shadow-small uk-flex uk-flex-middle uk-background">
 
 				<?php
-				foreach($arts as &$art) {
-					echo "<li data-id=$art data-cat=$cat class='uk-flex uk-flex-middle'>
+				foreach($catData['items'] as &$art) {
+					echo "<li data-id={$art['id']} data-cat=\"{$catData['id']}\" class=\"uk-flex uk-flex-middle\">
 					<div class=\"uk-sortable-handle\" uk-icon=\"icon: table\"></div>
-					<a href=\"/".self::getPathFromRoot(self::$storagePath)."/$cat/$art" . self::$l_cfg['ext'] . "\"target='_blank'>$art</a>
+					<a href=\"/Blog/$cat/{$art['id']}?edit \" target='_blank'>{$art['name']}</a>
 
 					<!-- <div style=\"display: inline-block;\">
 					<input type=\"hidden\" name=\"cat\" value=\"$cat\">
@@ -206,6 +217,7 @@ class BlogKff_adm extends BlogKff
 
 					<input type='button' class='uk-button-secondary delArticle' value=DEL>
 					</li>";
+					// print_r($art);
 				}
 
 				?>

@@ -44,6 +44,17 @@ class DbJSON {
 	}
 
 	/**
+	 * *Clear base
+	 * @id optional <string|int>
+	 */
+	public function clear($id=null)
+	{
+		if(!empty($id))
+			unset($this->db[$id]);
+		else $this->db = ['change'=>1];
+	}
+
+	/**
 	 * @id optional <string|int>
 	 */
 	public function get($id=null)
@@ -67,6 +78,14 @@ class DbJSON {
 		$this->db['change']= 1;
 
 		return $this;
+	}
+
+	/**
+	 * alias $this->set()
+	 */
+	public function append(array $data)
+	{
+		return $this->set($data, true);
 	}
 
 	/**
