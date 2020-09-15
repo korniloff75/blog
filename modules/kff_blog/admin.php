@@ -9,38 +9,17 @@ if(!$kff::is_adm()) die('Access denied!');
 
 
 
-class BlogKff extends Index_my_addon
+class BlogKff_adm extends BlogKff
 {
-	protected static
-		$modDir,
-		// *Локальный конфиг
-		$def_cfg = [
-			'name'=> 'Блог',
-		],
-		$l_cfg,
-		$storagePath = \DR.'/kff_blog_data',
-		$catPath = __DIR__.'/categories.json';
+	// protected static
+	// 	$modDir;
 
 
 	public function __construct()
 	{
-		global $kff;
-
-		// *Директория модуля от DR
-		self::$modDir = $kff::getPathFromRoot(__DIR__);
-
-		$this->DB = new DbJSON(__DIR__.'/cfg.json');
-
-		self::$l_cfg= $this->DB->get();
-		if(empty(self::$l_cfg))
-			$this->DB->set(self::$def_cfg);
-
-		$this->catsDB = new DbJSON(self::$catPath);
-
-		// self::$log->add('self::$cfg=',null, [self::$cfg]);
+		parent::__construct();
 
 		$this->_InputController();
-
 		$this->RenderPU();
 
 	} // __construct
@@ -61,26 +40,32 @@ class BlogKff extends Index_my_addon
 
 
 	/**
-	 * *Перезаписываем категории
+	 * *Перезаписываем категории из ФС
+	 * note сортировка статей сбрасывается
 	 */
 	function updateCategories()
 	{
 		$cats = [];
 		foreach(
-			new FilesystemIterator(self::$storagePath, FilesystemIterator::SKIP_DOTS) as $catFI
+			new FilesystemIterator(self::$storagePath, FilesystemIterator::SKIP_DOTS|FilesystemIterator::UNIX_PATHS) as $catFI
 		) {
 			if(!$catFI->isDir()) continue;
 			// echo $catFI->getFilename() . '<br>';
-			$glob = glob($catFI->getPathname() . "/*.dat");
+			$glob = glob($catFI->getPathname() . "/*" . self::$l_cfg['ext']);
+			// self::$log->add($catFI->getPathname() . "/*" . self::$l_cfg['ext']);
 			$cats [$catFI->getFilename()]= array_map(
-				function(&$i){return basename($i);}, $glob
+				function(&$i){return pathinfo($i, PATHINFO_FILENAME);}, $glob
 			);
+			$catDB = new DbJSON($catFI->getPathname() . "/cfg.json");
+			$map = ['map'=>$cats [$catFI->getFilename()]];
+			$catDB->set($map);
 		}
 
 		$this->catsDB->replace($cats);
 
 		return $cats;
 	}
+
 
 	/**
 	 * *Получаем категории из базы
@@ -94,11 +79,28 @@ class BlogKff extends Index_my_addon
 
 
 	// *Методы контроллера
+
+	/**
+	 * *Сохрааняем сортировку статей
+	 */
+	function c_setCategories($cats)
+	{
+		$cats = json_decode($cats, 1);
+
+		$this->catsDB->replace($cats);
+
+		return $cats;
+	}
+
 	/**
 	 * *Добавляем категорию
 	 */
 	public function c_addCategory($new_cat)
 	{
+		if(is_numeric($new_cat))
+		{
+			die("<div class=content>Категория <b>$new_cat</b> не может быть создана с таким именем!</div>");
+		}
 		$cfg = ['name'=>$new_cat];
 		$new_cat = Index_my_addon::translit($new_cat);
 		$catPath = self::$storagePath."/$new_cat";
@@ -116,7 +118,11 @@ class BlogKff extends Index_my_addon
 		{
 			die("<div class=content>Категория <b>$new_cat</b> не создана!</div>");
 		}
-		$this->updateCategories();
+		// $this->updateCategories();
+
+		$addCat = ["$new_cat"=>[]];
+		$this->catsDB->set($addCat,'append');
+
 		return $success;
 	}
 
@@ -131,24 +137,29 @@ class BlogKff extends Index_my_addon
 
 		$cat = filter_var($_REQUEST['opts']['cat']) ?? 'default';
 		$catPath = self::$storagePath."/$cat";
-		$cfg['path'] = $artPath = "$catPath/{$new_article}.dat";
+		$cfg['path'] = Index_my_addon::getPathFromRoot($catPath) . "/{$new_article}";
+		$artPath = $cfg['path'] . self::$l_cfg['ext'];
 		$artDB = new DbJSON("$catPath/{$new_article}.json");
-		$artDB->set($cfg);
 
 		if(!is_dir($catPath))
 		{
 			$this->c_addCategory($catPath);
 		}
 
-		if(file_exists($artPath) || file_exists($cfgPath))
+		if(file_exists($artPath))
 			return false;
 
-		$addToCat = [$cat=>[basename($artPath)]];
-		$this->catsDB->set($addToCat,'append');
-
-		return (
-			file_put_contents($artPath,'')
-		);
+		if (
+			!file_put_contents(DR."/$artPath",'')
+		) {
+			$addToCat = [$cat=>[basename($cfg['path'])]];
+			$this->catsDB->set($addToCat,'append');
+			$artDB->set($cfg);
+		}
+		else
+		{
+			self::$log->add('=',E_USER_WARNING, [$artPath]);
+		}
 	}
 
 	/**
@@ -171,43 +182,48 @@ class BlogKff extends Index_my_addon
 
 			<ul id="categories" class="uk-nav uk-nav-default">
 
+			<?php
+			foreach($this->getCategories() as $cat=>&$arts) {
+			?>
+				<li>
+				<h4><?=$cat?></h4>
+				<div style="display: inline-block;">
+					<input type="hidden" name="cat" value="<?=$cat?>">
+					<input type="text" name="addArticle" placeholder="Название статьи">
+				</div><button>ADD</button>
+
+				<ul data-cat=<?=$cat?> class="listArticles uk-nav uk-nav-default uk-width-medium" uk-sortable="group: cat-items; handle: .uk-sortable-handle; cls-custom: uk-box-shadow-small uk-flex uk-flex-middle uk-background">
+
 				<?php
-				foreach($this->getCategories() as $cat=>&$arts) {
-				?>
-					<li>
-					<h4><?=$cat?></h4>
-					<div style="display: inline-block;">
-						<input type="hidden" name="cat" value="<?=$cat?>">
-						<input type="text" name="addArticle" placeholder="Название статьи">
-					</div><button>ADD</button>
+				foreach($arts as &$art) {
+					echo "<li data-id=$art data-cat=$cat class='uk-flex uk-flex-middle'>
+					<div class=\"uk-sortable-handle\" uk-icon=\"icon: table\"></div>
+					<a href=\"/".self::getPathFromRoot(self::$storagePath)."/$cat/$art" . self::$l_cfg['ext'] . "\"target='_blank'>$art</a>
 
-					<ul class="listArticles uk-nav uk-nav-default uk-width-medium" uk-sortable="group: cat-items; handle: .uk-sortable-handle; cls-custom: uk-box-shadow-small uk-flex uk-flex-middle uk-background">
+					<!-- <div style=\"display: inline-block;\">
+					<input type=\"hidden\" name=\"cat\" value=\"$cat\">
+					</div> -->
 
-					<?php
-					foreach($arts as &$art) {
-						echo "<li>
-						<div class=\"uk-sortable-handle\" uk-icon=\"icon: table\"></div>
-						$art
-						<div style=\"display: inline-block;\">
-						<input type=\"hidden\" name=\"cat\" value=\"$cat\">
-						</div>
-						<input type='button' class=uk-button-secondary value=DEL></li>";
-					}
-
-					?>
-					</ul>
-					</li>
-				<?php
+					<input type='button' class='uk-button-secondary delArticle' value=DEL>
+					</li>";
 				}
-				?>
 
-			</ul><!-- #categories -->
-		</div><!-- .content -->
-		<?php
+				?>
+				</ul>
+			</li>
+			<?php
+			}
+			?>
+
+		</ul><!-- #categories -->
+
+		<button id="save_sts">Save</button>
+	</div><!-- .content -->
+	<?php
 	}
 }
 
-$Blog = new BlogKff;
+$Blog = new BlogKff_adm;
 
 
 // *Tests

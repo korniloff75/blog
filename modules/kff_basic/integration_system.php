@@ -108,7 +108,7 @@ class Index_my_addon
 		{
 			$info = '<p>Page generation - ' . round((microtime(true) - $START_PROFILE)*1e4)/10 . 'ms | Memory usage - now ( '. round (memory_get_usage()/1024) . ') max (' . round (memory_get_peak_usage()/1024) . ') kB</p>';
 
-			return  "<div class='core info'><b>Used PHP-" . phpversion() . " block $n Technical Info $rem </b>: $info</div>";
+			return  "<div class='core info'><b>Used PHP-" . phpversion() . " Technical Info $rem </b>: $info</div>";
 		}
 
 	}
@@ -181,7 +181,7 @@ class Index_my_addon
 
 		elseif(!self::is_admPanel())
 		{
-			echo $addonsPages;
+			// echo $addonsPages;
 			return;
 		}
 

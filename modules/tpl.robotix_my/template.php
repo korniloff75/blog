@@ -68,12 +68,6 @@
 <div class="container bgcontent">
 
 	<div class="content">
-		<section id="cats">
-		<?php
-		if(function_exists('Get_PagesCategory')) echo Get_PagesCategory();
-		?>
-		</section>
-
 
 		<main>
 			<article>

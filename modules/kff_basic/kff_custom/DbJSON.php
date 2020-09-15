@@ -38,6 +38,7 @@ class DbJSON {
 
 		$this->json = @file_get_contents($this->path);
 		// trigger_error(__METHOD__.' ./'.$path." \$this->path= " . $this->path);
+		// $this->json = str_replace(["'", '"'], ["\'", '\"'], $this->json);
 		$this->db = json_decode($this->json, true) ?? [];
 
 	}
@@ -94,7 +95,7 @@ class DbJSON {
 	# Массив в JSON
 	public static function toJSON(array $arr)
 	{
-		return json_encode($arr, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES);
+		return json_encode($arr, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_PARTIAL_OUTPUT_ON_ERROR |JSON_HEX_QUOT | JSON_HEX_APOS );
 	}
 
 
