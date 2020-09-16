@@ -231,7 +231,7 @@ class BlogKff_adm extends BlogKff
 			foreach($this->getCategories() as &$cat) {
 				$catData = $this->getCategory($cat);
 				$catData['id'] = $catData['id'] ?? $cat;
-				self::$log->add(__METHOD__,null,[$cat, $catData]);
+				// self::$log->add(__METHOD__,null,[$cat, $catData]);
 			?>
 				<li>
 				<h4><?=$catData['name']?></h4>

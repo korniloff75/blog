@@ -53,6 +53,7 @@ $('.content').on('click', 'button:not([id])', $e=>{
 	kff.request('',data,['.content','.log']);
 });
 
+
 // *.delArticle
 // todo ...
 $('.content').on('click', '.delArticle', $e=>{
@@ -104,6 +105,28 @@ $('.content').on('click', '#save_sts', $e=>{
 
 	console.log(out);
 });
+
+
+// *AJAX nav
+$(()=>{
+	$('article #categories').on('click', 'a', $e=>{
+		var link = $e.target,
+			href = link.href;
+
+		if(!href || href === '#') return;
+
+			$e.stopPropagation();
+			$e.preventDefault();
+
+			console.log(link);
+			kff.request(href,null,['.blog_content','.log'])
+			.then((response)=>{
+				// console.log(response);
+				UIkit.dropdown($e.target.closest('.uk-open')).hide();
+			});
+	})
+})
+
 
 
 // *Test

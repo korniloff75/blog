@@ -228,24 +228,102 @@ var kff = {
 		return location.pathname.split('/');
 	},
 
+	menu: function($nav, mainSelector) {
+		this.$nav = $nav[0]? $nav: $($nav);
+		mainSelector = mainSelector || 'main';
+
+		var $loader = $('#loading');
+		if(!$loader.length) {
+			$loader = $('<div id="loading" uk-spinner class="uk-position-center uk-position-medium uk-position-fixed" style="z-index:1000; display:none;"></div>').appendTo(document.body);
+		}
+
+		this.$nav.on('click', $e=>{
+			var t= $e.target.closest('a');
+
+			if(!t.href) return;
+
+			$e.preventDefault();
+			$e.stopPropagation();
+
+			// console.log(this);
+			$loader.show();
+			this.setActive(t.href);
+
+			// todo
+			kff.request(t.href,null,[mainSelector,'.core.info','.log']).then(r=>{
+				// console.log(Object.keys(r).length && Object.keys(r) || r,r.main);
+
+				history.pushState({
+					mainHtml: r[mainSelector],
+					href: t.href
+				}, '', t.href);
+				$loader.hide();
+			})
+
+			return false;
+		});
+	},
+
 
 	/**
 	 * Обёртка для аякс-запроса
 	 * @param uri
 	 * @param {Object} data
-	 * @param {Array} sel - заменяем контент узлов из sel
+	 * @param {Array} sel - массив из селекторов
 	 * @returns Promise
 	 */
 	request: function(uri, data, sel) {
 		sel = sel || ['.content','.log'];
 		return $.post(uri, data)
 		.then(response=>{
-			sel.forEach(i=>{
-				var node= document.querySelector(i);
-				node.innerHTML= $(response).find(i).html();
-			});
-			sel.includes('.log') && this.highlight('.log');
+			return kff.render(sel,response);
 		})
+	},
+
+	/**
+	 *
+	 * @param {Array} sel - заменяем контент узлов из sel
+	 * @param {string HTML} response
+	 */
+	render: function(sel,response) {
+		var out = {};
+
+		return kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/js/uikit.min.js')
+		.then(UIkit=>{
+			sel.forEach(i=>{
+				var targetNode= document.querySelector(i),
+					$tmp= $(response),
+					$sourceNode = $tmp.find(i);
+
+				if(!targetNode) return;
+
+				if(!$sourceNode.length)
+					$sourceNode = $tmp;
+
+				out[i]= targetNode.innerHTML= $sourceNode.html();
+			});
+			// *Подсвечиваем лог
+			sel.includes('.log') && this.highlight('.log');
+			return out;
+		});
+
+
+		// return response;
 	}
 }
 
+// *Расширяем конструкторы
+
+// *Active btn
+kff.menu.prototype.setActive = function setActive (href) {
+// kff.menu.setActive = function setActive (href) {
+	if(!this.$nav.length) return;
+
+	$('.active').removeClass();
+	this.$nav.find('a').filter((ind,i)=> i.href === href).addClass('active');
+	// console.log($nav.css('height'));
+	// *Hide nav
+	if(parseInt(this.$nav.css('height')) > 100) {
+		this.$nav.css('height',0);
+	}
+}
