@@ -1,6 +1,6 @@
 'use strict';
 var BH = {
-	get name(){
+	get pageInfo(){
 		var uri= kff.URI;
 		return {
 			category: uri[2],
@@ -9,15 +9,15 @@ var BH = {
 	},
 	// *Save edit article
 	editRequest: function(selector, e) {
-		console.log(location, kff.URI, BH.name);
+		console.log(location, kff.URI, BH.pageInfo);
 		// return;
 		return kff.request('',{
 			act: 'save',
 			name: 'saveEdit',
 			value: document.querySelector(selector).innerHTML,
 			opts: JSON.stringify({
-				cat: BH.name.category,
-				art: BH.name.article,
+				cat: BH.pageInfo.category,
+				art: BH.pageInfo.article,
 			}),
 		}, ['.blog_content','.log']);
 	}
@@ -54,6 +54,7 @@ $('.content').on('click', 'button:not([id])', $e=>{
 });
 
 // *.delArticle
+// todo ...
 $('.content').on('click', '.delArticle', $e=>{
 	$e.stopPropagation();
 	$e.preventDefault();
@@ -65,6 +66,7 @@ $('.content').on('click', '.delArticle', $e=>{
 });
 
 
+// *Сохраняем сортировку страниц
 $('.content').on('click', '#save_sts', $e=>{
 	$e.stopPropagation();
 	$e.preventDefault();
@@ -75,13 +77,20 @@ $('.content').on('click', '#save_sts', $e=>{
 
 	$('.listArticles').each((ind,i)=>{
 		var $i=$(i);
-		out[$i.data('cat')]= [];
+		out[$i.data('id')]= [];
 		$i.find('[data-id]').each((ind,i)=>{
-			var id = i.getAttribute('data-id');
-			if(out[$i.data('cat')].includes(id)) {
+			var
+				id = i.getAttribute('data-id'),
+				name = i.getAttribute('data-name'),
+				oldCatId = i.getAttribute('data-oldCatId');
+
+			if(out[$i.data('id')].filter(function(i){return i.id === id}).length) {
 				err.push('Элемент ' + id + ' не может дублироваться в одной категории!');
 			}
-			out[$i.data('cat')].push(id);
+			out[$i.data('id')].push({
+				id: id, name: name, oldCatId: oldCatId
+			});
+			// out[$i.data('id')].push(id);
 		})
 	})
 
@@ -90,15 +99,12 @@ $('.content').on('click', '#save_sts', $e=>{
 		location.reload();
 		// setTimeout(()=>{location.reload()}, 2000);
 	} else {
-		kff.request('',{name:'setCategories', value: JSON.stringify(out)},['.content','.log']);
+		kff.request('',{name:'sortCategories', value: JSON.stringify(out)},['.content','.log']);
 	}
 
 	console.log(out);
 });
 
-/* $(()=>{
-
-}); */
 
 // *Test
 // kff.request('',null,'.log');

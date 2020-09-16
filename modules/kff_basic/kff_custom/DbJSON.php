@@ -67,7 +67,7 @@ class DbJSON {
 	}
 
 	/**
-	 * @param data {array}
+	 * @param data {&array} - ссылка на массив
 	 */
 	public function set(array &$data, $append = false)
 	{
@@ -82,6 +82,7 @@ class DbJSON {
 
 	/**
 	 * alias $this->set()
+	 * можно передавать массив как аргумент
 	 */
 	public function append(array $data)
 	{

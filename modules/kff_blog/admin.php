@@ -25,6 +25,31 @@ class BlogKff_adm extends BlogKff
 
 
 	/**
+	 * *Перезаписываем catName/data.json
+	 *
+	 */
+	private function _updateCatData(SplFileInfo &$catFI, $humName=null)
+	{
+		$catPathname = $catFI->getPathname();
+
+		// self::$log->add($catFI->getPathname() . "/*" . self::$l_cfg['ext']);
+
+		$catDB = new DbJSON($catPathname . "/data.json");
+		$catDB->clear('items');
+		// $catDB->append(['name'=>$catFilename]);
+
+		foreach(glob($catPathname . "/*" . self::$l_cfg['ext']) as &$i) {
+			// *без расширения
+			$artName = pathinfo($i, PATHINFO_FILENAME);
+
+			$catDB->append(['items'=>[[
+				'id'=> $artName,
+				'name'=> (new DbJSON("$catPathname/$artName.json"))->get('name') ?? $humName,
+			]]]);
+		}
+	}
+
+	/**
 	 * *Перезаписываем категории из ФС
 	 * note сортировка статей сбрасывается
 	 */
@@ -36,40 +61,14 @@ class BlogKff_adm extends BlogKff
 		) {
 			if(!$catFI->isDir()) continue;
 			// echo $catFI->getFilename() . '<br>';
-			$catPathname = $catFI->getPathname();
+
 			$catFilename = $catFI->getFilename();
 
-			// self::$log->add($catFI->getPathname() . "/*" . self::$l_cfg['ext']);
-
-			$catDB = new DbJSON($catPathname . "/data.json");
-			$catDB->clear('items');
-			// $catDB->append(['name'=>$catFilename]);
-
-			foreach(glob($catPathname . "/*" . self::$l_cfg['ext']) as &$i) {
-				$artName = pathinfo($i, PATHINFO_FILENAME);
-
-				$catDB->append(['items'=>[[
-					'id'=>$artName,
-					'name'=>(new DbJSON("$catPathname/$artName.json"))->get('name'),
-				]]]);
-			}
+			$this->_updateCatData($catFI);
 
 			$cats []= $catFilename;
 
-			/* $cats [$catFilename]= array_map(
-				function(&$i) use($catPathname, $catDB) {
-					$artName = pathinfo($i, PATHINFO_FILENAME);
-
-					$catDB->append(['items'=>[[
-						'id'=>$artName,
-						'name'=>(new DbJSON("$catPathname/$artName.json"))->get('name'),
-					]]]);
-					return $artName;
-				},
-				glob($catPathname . "/*" . self::$l_cfg['ext'])
-			); */
-
-		}
+		} // foreach
 
 		$this->catsDB->replace($cats);
 
@@ -93,11 +92,45 @@ class BlogKff_adm extends BlogKff
 	/**
 	 * *Сохрааняем сортировку статей
 	 */
-	function c_setCategories($cats)
+	function c_sortCategories($cats)
 	{
-		$cats = json_decode($cats, 1);
+		$catsAll = json_decode($cats, 1);
+		$cats = array_keys($catsAll);
+
+		self::$log->add(__METHOD__.' $catsAll',null,[$catsAll]);
 
 		$this->catsDB->replace($cats);
+
+		// *Перебираем категории
+		foreach($cats as $cat) {
+			$catPathname = self::$storagePath . "/$cat";
+			$items = &$catsAll[$cat];
+
+			$catDB = new DbJSON($catPathname . "/data.json");
+			$catDB->clear('items');
+
+			self::$log->add(__METHOD__,null,[$cat,$items]);
+
+			// *Перебираем элементы
+			foreach($items as &$item) {
+				// *Элемент перемещён в другую категорию
+				if($item['oldCatId'] !== $cat)
+				{
+					$oldCatPath = self::$storagePath . "/{$item['oldCatId']}";
+					rename("{$oldCatPath}/{$item['id']}" . self::$l_cfg['ext'], "$catPathname/{$item['id']}" . self::$l_cfg['ext']);
+					rename("{$oldCatPath}/{$item['id']}.json", "$catPathname/{$item['id']}.json");
+				}
+				$catDB->append(['items'=>[[
+					'id'=>$item['id'],
+					'name'=>$item['name'],
+				]]]);
+			}
+
+			if(!empty($oldCatPath))
+				$this->_updateCatData(new SplFileInfo($oldCatPath));
+
+
+		}
 
 		return $cats;
 	}
@@ -111,12 +144,12 @@ class BlogKff_adm extends BlogKff
 		{
 			die("<div class=content>Категория <b>$new_cat</b> не может быть создана с таким именем!</div>");
 		}
-		$cfg = ['name'=>$new_cat];
+		$data = ['name'=>$new_cat];
 		$new_cat = Index_my_addon::translit($new_cat);
+		$data ['id']= $new_cat;
 		$catPath = self::$storagePath."/$new_cat";
-		$catDB = new DbJSON("$catPath/cfg.json");
-		$catDB->set($cfg);
-		// $new_cat = Transliterator::create('id')->transliterate($new_cat);
+		$catDB = new DbJSON("$catPath/data.json");
+		$catDB->set($data);
 
 		// echo "<div class=content><b>$new_cat</b></div>";
 
@@ -130,8 +163,7 @@ class BlogKff_adm extends BlogKff
 		}
 		// $this->updateCategories();
 
-		$addCat = ["$new_cat"=>[]];
-		$this->catsDB->set($addCat,'append');
+		$this->catsDB->append([$new_cat]);
 
 		return $success;
 	}
@@ -145,10 +177,11 @@ class BlogKff_adm extends BlogKff
 		$new_article = Index_my_addon::translit($new_article);
 		$cfg['id'] = $new_article;
 
-		$cat = filter_var($_REQUEST['opts']['cat']) ?? 'default';
+		$cat = $this->opts['cat'] ?? 'default';
 		$catPath = self::$storagePath."/$cat";
-		$cfg['path'] = Index_my_addon::getPathFromRoot($catPath) . "/{$new_article}";
-		$artPath = $cfg['path'] . self::$l_cfg['ext'];
+		$cfg['path'] = Index_my_addon::getPathFromRoot($catPath);
+		$artPath = "{$cfg['path']}/{$new_article}" . self::$l_cfg['ext'];
+
 		$artDB = new DbJSON("$catPath/{$new_article}.json");
 
 		if(!is_dir($catPath))
@@ -156,19 +189,21 @@ class BlogKff_adm extends BlogKff
 			$this->c_addCategory($catPath);
 		}
 
-		if(file_exists($artPath))
+		// *Already exists
+		if(file_exists($artPath)) {
+			self::$log->add(__METHOD__." Файл $artPath уже существует!",E_USER_WARNING);
 			return false;
+		}
 
 		if (
-			!file_put_contents(DR."/$artPath",'')
+			file_put_contents(DR."/$artPath",'<p>New Article!</p>')
 		) {
-			$addToCat = [$cat=>[basename($cfg['path'])]];
-			$this->catsDB->set($addToCat,'append');
 			$artDB->set($cfg);
+			$this->_updateCatData(new SplFileInfo($catPath), $cfg['name']);
 		}
 		else
 		{
-			self::$log->add('=',E_USER_WARNING, [$artPath]);
+			self::$log->add(__METHOD__,E_USER_WARNING, [$artPath, file_exists($artPath)]);
 		}
 	}
 
@@ -195,6 +230,8 @@ class BlogKff_adm extends BlogKff
 			<?php
 			foreach($this->getCategories() as &$cat) {
 				$catData = $this->getCategory($cat);
+				$catData['id'] = $catData['id'] ?? $cat;
+				self::$log->add(__METHOD__,null,[$cat, $catData]);
 			?>
 				<li>
 				<h4><?=$catData['name']?></h4>
@@ -206,8 +243,8 @@ class BlogKff_adm extends BlogKff
 				<ul data-id=<?=$catData['id']?> class="listArticles uk-nav uk-nav-default uk-width-medium" uk-sortable="group: cat-items; handle: .uk-sortable-handle; cls-custom: uk-box-shadow-small uk-flex uk-flex-middle uk-background">
 
 				<?php
-				foreach($catData['items'] as &$art) {
-					echo "<li data-id={$art['id']} data-cat=\"{$catData['id']}\" class=\"uk-flex uk-flex-middle\">
+				if(is_array($catData['items'])) foreach($catData['items'] as &$art) {
+					echo "<li data-id={$art['id']} data-name=\"{$art['name']}\" data-oldCatId= {$catData['id']} class=\"uk-flex uk-flex-middle\">
 					<div class=\"uk-sortable-handle\" uk-icon=\"icon: table\"></div>
 					<a href=\"/Blog/$cat/{$art['id']}?edit \" target='_blank'>{$art['name']}</a>
 

@@ -47,7 +47,7 @@ class Index_my_addon
 
 		self::$modulesPath = '/modules';
 		// *Path to internal modules
-		self::$internalModulesPath = __DIR__.'/modules';
+		self::$internalModulesPath = self::getPathFromRoot(__DIR__).'/modules';
 
 		self::headHtml();
 

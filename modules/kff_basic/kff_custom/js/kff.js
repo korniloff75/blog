@@ -195,7 +195,7 @@ var kff = {
 			storage.i_block.push(m); return '~~~i_block'+(storage.i_block.length-1)+'~~~';
 		})
 		// *Убираем строки
-		.replace(/([^\\])((?:'(?:\\'|[^'])*')|(?:"(?:\\"|[^"])*"))/g, function(m, f, s){
+		.replace(/([^\\\w])((?:'(?:\\'|[^'])*?')|(?:"(?:\\"|[^"])*?"))/g, function(m, f, s){
 			storage.strings.push(s); return f+'~~~strings'+(storage.strings.length-1)+'~~~';
 		})
 		// *Убираем комменты

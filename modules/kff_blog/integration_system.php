@@ -46,9 +46,11 @@ class BlogKff extends Index_my_addon
 		if(!self::is_adm()) return false;
 
 		$r = &$_REQUEST;
-		if(!empty($m_name = "c_{$r['name']}") && method_exists($this, $m_name))
+		if(!empty($r['name']) && method_exists($this, ($m_name = "c_{$r['name']}")))
 		{
-			$this->opts = json_decode($r['opts'],1);
+			if(is_string($r['opts']))
+				$r['opts'] = json_decode($r['opts'],1);
+			$this->opts = @$r['opts'];
 			return $this->{$m_name}(filter_var($r['value']));
 		}
 		return false;
@@ -70,7 +72,7 @@ class BlogKff extends Index_my_addon
 	 * *Получаем категории из базы
 	 */
 	public function getCategories()
-	:array
+
 	{
 		return $this->catsDB->get();
 	}
@@ -87,17 +89,39 @@ class BlogKff extends Index_my_addon
 
 
 	/**
-	 * *Вывод контента по /Blog/catName/artName
+	 * *Лента новостей
+	 */
+	public function newsTape()
+	{
+		echo "<h2>Тут будет лента новостей</h2>";
+	}
+
+
+	// *Стартовая страница
+	public function is_indexPage()
+	{
+		global $URI, $Page;
+		return is_object($Page) && $URI[1] === $Page->id && empty($URI[2]);
+	}
+
+
+	/**
+	 * *Вывод контента по /$Page->id/catName/artName
 	 * todo добавить страницу по умолчанию
 	 */
 	public function addArticle()
 	{
 		global $URI, $Page;
-		if(
-			!is_object($Page)
-			|| count($URI) < 3
-		)
+		// *вырубаем в админке
+		if(	!is_object($Page)	) {
 			return;
+		}
+
+		// *На стартовой - новостная лента
+		if($this->is_indexPage()) {
+			$this->newsTape();
+			return;
+		}
 
 		$path = str_replace($Page->id, basename(self::$storagePath), DR.explode('?',REQUEST_URI)[0]) . self::$l_cfg['ext'];
 
@@ -119,7 +143,7 @@ class BlogKff extends Index_my_addon
 			!empty(self::$cfg['uk']['include_uikit'])
 		) return;
 
-		$UIKpath = '/modules/kff_basic/modules/kff_uikit-3.5.5';
+		$UIKpath = '/'. self::$internalModulesPath . '/kff_uikit-3.5.5';
 		?>
 
 		<!-- UIkit CSS -->
