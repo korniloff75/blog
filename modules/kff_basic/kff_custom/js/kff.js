@@ -250,15 +250,23 @@ var kff = {
 			this.setActive(t.href);
 
 			// todo
-			kff.request(t.href,null,[mainSelector,'.core.info','.log']).then(r=>{
-				// console.log(Object.keys(r).length && Object.keys(r) || r,r.main);
+			kff.request(t.href,null,[mainSelector,'.core.info','.log'])
+			.then(r=>{
+				if(!r[mainSelector]){
+					console.warn(r)
+				}
+				// console.log(Object.keys(r).length && Object.keys(r) || r);
 
-				history.pushState({
-					mainHtml: r[mainSelector],
-					href: t.href
-				}, '', t.href);
+				var ps={};
+				ps[mainSelector]= {
+					href: t.href,
+					html: r[mainSelector]
+				};
+				console.log('ps=',ps);
+
+				history.pushState(ps, '', t.href);
 				$loader.hide();
-			})
+			});
 
 			return false;
 		});
@@ -269,28 +277,28 @@ var kff = {
 	 * Обёртка для аякс-запроса
 	 * @param uri
 	 * @param {Object} data
-	 * @param {Array} sel - массив из селекторов
+	 * @param {Array} sels - массив из селекторов
 	 * @returns Promise
 	 */
-	request: function(uri, data, sel) {
-		sel = sel || ['.content','.log'];
+	request: function(uri, data, sels) {
+		sels = sels || ['.content','.log'];
 		return $.post(uri, data)
 		.then(response=>{
-			return kff.render(sel,response);
+			return kff.render(sels,response);
 		})
 	},
 
 	/**
 	 *
-	 * @param {Array} sel - заменяем контент узлов из sel
+	 * @param {Array} sels - заменяем контент узлов из sels
 	 * @param {string HTML} response
 	 */
-	render: function(sel,response) {
+	render: function(sels,response) {
 		var out = {};
 
 		return kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/js/uikit.min.js')
 		.then(UIkit=>{
-			sel.forEach(i=>{
+			sels.forEach(i=>{
 				var targetNode= document.querySelector(i),
 					$tmp= $(response),
 					$sourceNode = $tmp.find(i);
@@ -303,7 +311,7 @@ var kff = {
 				out[i]= targetNode.innerHTML= $sourceNode.html();
 			});
 			// *Подсвечиваем лог
-			sel.includes('.log') && this.highlight('.log');
+			sels.includes('.log') && this.highlight('.log');
 			return out;
 		});
 

@@ -14,7 +14,7 @@ var BH = {
 		return kff.request('',{
 			act: 'save',
 			name: 'saveEdit',
-			value: document.querySelector(selector).innerHTML,
+			value: CKEDITOR.instances.editor1.getData(),
 			opts: JSON.stringify({
 				cat: BH.pageInfo.category,
 				art: BH.pageInfo.article,
@@ -109,6 +109,27 @@ $('.content').on('click', '#save_sts', $e=>{
 
 // *AJAX nav
 $(()=>{
+	var targetSel = '.blog_content',
+		bm = new kff.menu($('article #categories'), targetSel);
+
+	console.log(bm);
+
+	// *AJAX history
+	window.onpopstate = function(e) {
+		if(!e.state || !e.state[targetSel]) return false;
+
+		// console.log('e=',e);
+		kff.render([targetSel], e.state[targetSel].html);
+		bm.setActive(e.state[targetSel].href);
+	}
+});
+
+
+
+
+
+// *AJAX nav old
+/* $(()=>{
 	$('article #categories').on('click', 'a', $e=>{
 		var link = $e.target,
 			href = link.href;
@@ -125,7 +146,7 @@ $(()=>{
 				UIkit.dropdown($e.target.closest('.uk-open')).hide();
 			});
 	})
-})
+}) */
 
 
 

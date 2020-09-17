@@ -32,6 +32,9 @@ class Uploads
 	// Директория куда будут загружаться файлы.
 		$pathname = \DR . '/files';
 
+	public
+		$fileNames= [];
+
 	protected
 		$error = [],
 		$success = [],
@@ -59,9 +62,7 @@ class Uploads
 		// Логгируем сообщение о результате загрузки.
 		self::$log->add(
 			__METHOD__,null,
-			!empty($this->success) ?
-				$this->success :
-				$this->error
+			$this->getResult()
 		);
 	}
 
@@ -95,6 +96,7 @@ class Uploads
 
 		foreach ($this->files as $file)
 		{
+			$this->fileNames[]= $file['name'];
 			$this->_iterFiles($file);
 		}
 	}
@@ -184,9 +186,16 @@ class Uploads
 		}
 	}
 
-	public function getSuccess()
+	public function checkSuccess()
 	{
 		return count($this->success);
+	}
+
+	public function getResult()
+	{
+		return !empty($this->success) ?
+			$this->success :
+			$this->error;
 	}
 
 }

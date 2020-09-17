@@ -8,17 +8,40 @@ CKEDITOR.editorConfig = function( config ) {
 	// For complete reference see:
 	// http://docs.ckeditor.com/#!/api/CKEDITOR.config
 
+	// Common config injected by examples building script.
+	config.uploadUrl = kff.URI.join('/');
+	// config.filebrowserBrowseUrl = '/apps/ckfinder/3.4.5/ckfinder.html';
+	// config.filebrowserImageBrowseUrl = '/apps/ckfinder/3.4.5/ckfinder.html?type=Images';
+
+	// config.filebrowserUploadUrl = '/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Files';
+	config.filebrowserUploadUrl = kff.URI.join('/');
+	// console.log('config.filebrowserUploadUrl=',config.filebrowserUploadUrl);
+
+	config.filebrowserImageUploadUrl = kff.URI.join('/');
+	// config.baseFloatZIndex = 10005;
+
 	// *Allow use tags & scripts
 	config.allowedContent = true;
 	config.protectedSource.push(/<(script)[^>]*>.*<\/\1>/ig);
 	config.protectedSource.push(/<\?[\s\S]*?\?>/g);// разрешить php-код
 
-	/* config.toolbar = [
-		{ name: 'document', groups: [ 'mode', 'document', 'doctools' ], items: ['Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates'] }
-	]; */
+	config.toolbarGroups = [
+		{ name: 'clipboard',   groups: [ 'clipboard' ] },
+		{ name: 'links' },
+		{ name: 'insert' },
+		{ name: 'forms' },
+		{ name: 'tools' },
+		{ name: 'document',	   groups: [ 'mode', 'document', 'doctools' ] },
+		{ name: 'others' },
+		'/',
+		{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+		{ name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ] },
+		{ name: 'styles' },
+		{ name: 'colors' },
+	];
 
 	// The toolbar groups arrangement, optimized for two toolbar rows.
-	config.toolbarGroups = [
+/* 	config.toolbarGroups = [
 		// { name: 'document',	   groups: [ 'mode', 'document', 'doctools' ]},
 		{ name: 'document',	   groups: [ 'mode' ]},
 		{ name: 'clipboard',   groups: [ 'clipboard', 'undo' ] },
@@ -34,7 +57,8 @@ CKEDITOR.editorConfig = function( config ) {
 		{ name: 'styles' },
 		{ name: 'colors' },
 		// { name: 'about' }
-	];
+	]; */
+
 
 	// Remove some buttons provided by the standard plugins, which are
 	// not needed in the Standard(s) toolbar.

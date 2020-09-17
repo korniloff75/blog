@@ -119,10 +119,13 @@ ob_clean();
 
 	// *AJAX history
 	window.onpopstate = function(e) {
-		kff.render([mainSelector], e.state.mainHtml);
-		km.setActive(e.state.href);
+		if(!e.state) return false;
+		// console.log('e.state[mainSelector].html=', e.state[mainSelector].html);
+
+		kff.render([mainSelector], e.state[mainSelector].html);
+		km.setActive(e.state[mainSelector].href);
 	}
-	console.log(km);
+	console.log('km=',km);
 </script>
 
 <?php
