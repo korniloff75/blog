@@ -15,20 +15,9 @@ $log->add("\$kff::\$cfg['uk']['include_uikit']",null,[$kff::$cfg['uk']['include_
 // *UIkit не подключён
 if(
 	file_exists($Folder)
-	&& empty($kff::$cfg['uk']['include_uikit'])
 )
 {
-	$UIKpath = '/modules/kff_basic/modules/kff_uikit-3.5.5';
-	// $UIKpath = 'https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.5'
-	?>
-
-	<!-- UIkit CSS -->
-	<link rel="stylesheet" href="<?=$UIKpath?>/css/uikit.min.css" />
-
-	<!-- UIkit JS -->
-	<script src="<?=$UIKpath?>/js/uikit.min.js"></script>
-
-	<?php
+	BlogKff::addUIkit();
 }
 
 

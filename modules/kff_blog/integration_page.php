@@ -50,6 +50,43 @@ class BlogKff_page extends BlogKff
 
 
 	/**
+	 * *Upload images
+	 */
+	// private function _Upload()
+	public function Upload()
+	{
+		// *inputs handler
+		global $Page, $URI;
+		if(
+			!count($_FILES)
+		) return;
+
+		if(!self::is_adm())
+			die('Access denied!');
+
+		require_once DR.'/'.self::$dir.'/Uploads.class.php';
+		$pathInFiles = "/{$Page->id}/{$URI[2]}";
+		Uploads::$input_name = "upload";
+		Uploads::$pathname .= $pathInFiles;
+		Uploads::$allow = ['jpg','jpeg','png','gif'];
+
+		$Upload = new Uploads;
+
+		if(!$Upload->checkSuccess()) foreach($Upload->getResult() as &$str){
+			echo $str;
+		}
+		else {
+			$out= '';
+			foreach($Upload->fileNames as $name){
+				$out.= "/files$pathInFiles/$name<br>";
+			}
+			echo $out;
+		}
+
+	}
+
+
+	/**
 	 * *Вывод в страницу
 	 */
 	public function Render()
@@ -100,25 +137,38 @@ class BlogKff_page extends BlogKff
 	</ul><!-- #categories -->
 
 	<?php
-	if($edit)
-	{
-	?>
-	<div>
-		<button id="saveEdit">SAVE</button>
-	</div>
-	<script>
-		document.querySelector('#saveEdit')
-		.addEventListener('click', BH.editRequest.bind(null, '.blog_content'));
 
-	</script>
-	<?php
-	}
 	?>
 
-	<div class="blog_content" <?=$edit?'contenteditable=true':''?>>
-		<?php $this->_addArticle()?>
-	</div><!-- .blog_content -->
-	<?php
+		<div id='editor1' class="blog_content" <?=$edit?'contenteditable=true':''?>>
+			<?php $this->_addArticle()?>
+		</div><!-- .blog_content -->
+
+		<?php
+		if($edit)
+		{
+		?>
+		<div>
+			<button id="saveEdit" class="uk-button-primary">SAVE</button>
+		</div>
+
+		<script type="text/javascript" src="/modules/ckeditor_4.5.8_standard/ckeditor/ckeditor.js"></script>
+
+		<script>
+			document.querySelector('#saveEdit')
+			.addEventListener('click', BH.editRequest.bind(null, '.blog_content'));
+
+			CKEDITOR.replace( 'editor1');
+
+			CKEDITOR.disableAutoInline = true;
+			/* CKEDITOR.inline( 'editor1', {
+				customConfig: ''
+			}); */
+
+		</script>
+
+		<?php
+		}
 	}
 }
 
@@ -126,7 +176,8 @@ ob_start();
 
 $Blog = new BlogKff_page;
 
-$Blog->Render();
+if(!$Blog->Upload())
+	$Blog->Render();
 
 ?>
 
