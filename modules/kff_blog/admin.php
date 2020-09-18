@@ -92,9 +92,9 @@ class BlogKff_adm extends BlogKff
 	/**
 	 * *Сохрааняем сортировку статей
 	 */
-	function c_sortCategories($cats)
+	function c_sortCategories($catsAllJson)
 	{
-		$catsAll = json_decode($cats, 1);
+		$catsAll = json_decode($catsAllJson, 1);
 		$cats = array_keys($catsAll);
 
 		self::$log->add(__METHOD__.' $catsAll',null,[$catsAll]);
@@ -196,7 +196,7 @@ class BlogKff_adm extends BlogKff
 		}
 
 		if (
-			file_put_contents(DR."/$artPath",'<p>New Article!</p>')
+			file_put_contents(DR."/$artPath","<p>New Article - <b>$new_article</b>!</p>")
 		) {
 			$artDB->set($cfg);
 			$this->_updateCatData(new SplFileInfo($catPath), $cfg['name']);
@@ -225,7 +225,7 @@ class BlogKff_adm extends BlogKff
 
 			<input type="text" name="addCategory" placeholder="Название категории"><button>Новая</button>
 
-			<ul id="categories" class="uk-nav uk-nav-default">
+			<ul id="categories" class="uk-nav uk-nav-default" uk-sortable="group: cats; handle: .uk-sortable-handle;">
 
 			<?php
 			foreach($this->getCategories() as &$cat) {
@@ -234,7 +234,12 @@ class BlogKff_adm extends BlogKff
 				// self::$log->add(__METHOD__,null,[$cat, $catData]);
 			?>
 				<li>
-				<h4><?=$catData['name']?></h4>
+				<div class="uk-flex uk-flex-middle uk-margin-top">
+					<div class="uk-sortable-handle uk-margin-small-right" uk-icon="icon: table; ratio: 1.5"></div>
+					<!-- Category name -->
+					<h4 class="uk-margin-remove"><?=$catData['name']?></h4>
+				</div>
+
 				<div style="display: inline-block;">
 					<input type="hidden" name="cat" value="<?=$catData['id']?>">
 					<input type="text" name="addArticle" placeholder="Название статьи">
@@ -245,7 +250,7 @@ class BlogKff_adm extends BlogKff
 				<?php
 				if(is_array($catData['items'])) foreach($catData['items'] as &$art) {
 					echo "<li data-id={$art['id']} data-name=\"{$art['name']}\" data-oldCatId= {$catData['id']} class=\"uk-flex uk-flex-middle\">
-					<div class=\"uk-sortable-handle\" uk-icon=\"icon: table\"></div>
+					<div class=\"uk-sortable-handle uk-margin-small-right\" uk-icon=\"icon: table\"></div>
 					<a href=\"/Blog/$cat/{$art['id']}?edit \" target='_blank'>{$art['name']}</a>
 
 					<!-- <div style=\"display: inline-block;\">

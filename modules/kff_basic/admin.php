@@ -345,13 +345,12 @@ class Basic
 			<p class="comment">Поставленный флажок внедряет и инициализирует все внутренние модули <b>kff</b>.</p>
 			</li>';
 
-		foreach (new DirectoryIterator(__DIR__.'/modules') as $fileInfo) {
+		foreach (new FilesystemIterator(__DIR__.'/modules', FilesystemIterator::SKIP_DOTS) as $fileInfo) {
 			$name= $fileInfo->getFilename();
 			// self::$log->add('$name=',null,[$name]);
 
 			if(
-				$fileInfo->isDot()
-				|| !file_exists($fileInfo->getPathname().'/admin.php')
+				!file_exists($fileInfo->getPathname().'/admin.php')
 			) continue;
 
 			if(empty($info[$name]) && file_exists($ini_path = $fileInfo->getPathname()."/info.ini"))
@@ -379,11 +378,14 @@ class Basic
 
 		<!-- uk-switcher -->
 		<!-- class="menu_page" -->
-		<ul uk-tab uk-sticky="top: 100; show-on-up:true;">
-			<li><button>Модули</button></li>
-			<li><button>Подмодули</button></li>
-			<li><button>Настройки</button></li>
-		</ul>
+		<!-- <div class="uk-flex"> -->
+			<!-- <div style="width: 4em;"></div> -->
+			<ul uk-tab uk-sticky="top: 100; show-on-up:true;">
+				<li><button>Модули</button></li>
+				<li><button>Подмодули</button></li>
+				<li><button>Настройки</button></li>
+			</ul>
+		<!-- </div> -->
 
 		<div class="uk-switcher">
 		<!--  -->

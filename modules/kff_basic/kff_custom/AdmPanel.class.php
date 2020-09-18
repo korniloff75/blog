@@ -1,5 +1,5 @@
 <?php
-if(realpath('.') === __DIR__) die('Access denied!');
+if(realpath('.') === __DIR__) die('Access denied to file '.__FILE__);
 
 /**
  * Вспомогательный класс для внесения изменений в админпанель.
