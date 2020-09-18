@@ -102,6 +102,5 @@ foreach($RunModules->end as $value){
 	}
 }
 
-echo Index_my_addon::profile('base');
 ob_end_flush();
 ?>

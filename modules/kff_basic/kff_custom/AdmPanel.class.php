@@ -54,7 +54,7 @@ class AdmPanel extends Index_my_addon
 			$fixes[$sourcePath] = str_replace('<meta name="viewport" content="width=1300">','<meta name="viewport" content="width=device-width, initial-scale=1.0">',$start);
 
 			if(!in_array($sourcePath, self::$cfg['fixSystem']))
-				self::$cfgDB->set(['fixSystem' => [$sourcePath]], 'append');
+				self::$cfgDB->append(['fixSystem' => [$sourcePath]]);
 		}
 
 		// *Обработка ресурсов
@@ -66,18 +66,14 @@ class AdmPanel extends Index_my_addon
 			$fixes[$sourcePath] = str_replace([
 				'<?php'.PHP_EOL
 				.'require(\'./system/global.dat\');',
-				'ob_end_flush();'.PHP_EOL
-				.'?>'
 			],[
 				'<?php'.PHP_EOL
 				.'$START_PROFILE = microtime(true);'.PHP_EOL
 				.'require(\'./system/global.dat\');',
-				'echo Index_my_addon::profile(\'base\');'.PHP_EOL
-				.'ob_end_flush();'.PHP_EOL.'?>'
 			], $start);
 
 			if(!in_array($sourcePath, self::$cfg['fixSystem']))
-				self::$cfgDB->set(['fixSystem' => [$sourcePath]], 'append');
+				self::$cfgDB->append(['fixSystem' => [$sourcePath]]);
 		}
 
 		// *Изменение файлов

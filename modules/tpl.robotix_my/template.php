@@ -15,6 +15,9 @@
 * {
 	box-sizing: border-box;
 }
+.sidebar, .sidebar div{
+	/* background:inherit; */
+}
 </style>
 <script>
 <?php #echo file_get_contents(DR.'/admin/include/windows/windows.js');?>
@@ -77,7 +80,10 @@
 		</main>
 
 		<div class="sidebar">
-			<?php $Page->get_column('right','<aside><div class="aside_content">#content#</div></aside>');?>
+			<div uk-sticky="show-on-up:true;">
+				<?php $Page->get_column('right','<aside><div class="aside_content">#content#</div></aside>');?>
+			</div>
+
 		</div>
 
 	</div>
@@ -162,9 +168,7 @@ $('#menu').on('click', function(){
 </script>
 
 <?php
-require_once $kff::$dir . '/contentEditable/init.php';
-
-if(function_exists('CustomizeInit')) CustomizeInit();
+// require_once $kff::$dir . '/contentEditable/init.php';
 
 $Page->get_endhtml();
 ?>

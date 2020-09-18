@@ -75,7 +75,7 @@ var CE = {
 				'status=', "<?=$status?>\n",
 			);
 
-			$('#logWrapper').html(response);
+			// $('#logWrapper').html(response);
 
 			var msg, color;
 			if(status === 'success'){

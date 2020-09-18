@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__.'/fns.php';
 
-$Storage = getStorage();
+// $Storage = getStorage();
 // *pathname to imgs folder
 $Folder = DR."/files/slider/{$Page->id}";
 // die('FUCK!');
@@ -15,20 +15,9 @@ $log->add("\$kff::\$cfg['uk']['include_uikit']",null,[$kff::$cfg['uk']['include_
 // *UIkit не подключён
 if(
 	file_exists($Folder)
-	&& empty($kff::$cfg['uk']['include_uikit'])
 )
 {
-	$UIKpath = '/modules/kff_basic/modules/kff_uikit-3.5.5';
-	// $UIKpath = 'https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.5'
-	?>
-
-	<!-- UIkit CSS -->
-	<link rel="stylesheet" href="<?=$UIKpath?>/css/uikit.min.css" />
-
-	<!-- UIkit JS -->
-	<script src="<?=$UIKpath?>/js/uikit.min.js"></script>
-
-	<?php
+	BlogKff::addUIkit();
 }
 
 
@@ -37,25 +26,6 @@ if($Folder !== __DIR__)
 {
 	scanImgs($Folder);
 }
-// *Выводим изображения из каждой подпапки модуля в отдельный слайдер
-/* else
-{
-	$iterator = new DirectoryIterator(__DIR__);
-	foreach($iterator as $fi)
-	{
-		if(
-			!$fi->isDir()
-			|| $fi->isDot()
-		) continue;
-
-		echo "<h2>".$fi->getFilename()."</h2>";
-
-		// echo $fi->getPathname();
-
-		scanImgs($fi->getPathname());
-
-	}
-} */
 
 
 

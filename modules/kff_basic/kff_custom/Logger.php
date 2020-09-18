@@ -140,6 +140,7 @@ class Logger
 	 */
 	public function print()
 	{
+		ob_start();
 		?>
 		<meta charset="UTF-8">
 		<style>
@@ -156,6 +157,7 @@ class Logger
 		}
 		echo "</pre>";
 		self::$printed = 1;
+		return ob_get_clean();
 	}
 
 	public function printTG()

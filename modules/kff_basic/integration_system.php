@@ -302,36 +302,17 @@ class Index_my_addon
 	}
 
 
+	public static function printLog()
+	{
+
+	}
+
 	public function __destruct()
 	{
 		if(!self::$log) return;
 
 		self::$log->add('self::is_admPanel()',null,[self::is_admPanel(), realpath('.')]);
 		// var_dump($GLOBALS['log']);
-		if(self::is_adm())
-		{
-			if(self::$log && !self::$log::$printed)
-			{
-			?>
-				<style>
-				pre.log{
-					background: #111;
-					color: #3f3;
-				}
-				</style>
-			<?php
-				echo "<div id='logWrapper'>";
-				self::$log->print();
-				echo "</div>";
-			?>
-				<script>
-					undefined !== kff && kff.highlight('.log');
-				</script>
-			<?php
-
-				self::$log::$printed = 1;
-			}
-		}
 	}
 }
 
@@ -340,11 +321,3 @@ $kff = new Index_my_addon();
 $log = $kff::get_log();
 
 // $log->add('$URI=',null,[$URI]);
-
-
-// todo Разработать сохранение материалов по категориям
-// ? Changed at DbJSON
-/* if(class_exists('EngineStorage'))
-{
-	require_once __DIR__.'/kff_custom/EngineStorage_kff.class.php';
-} */

@@ -129,7 +129,7 @@ class BlogKff_page extends BlogKff
 					</ul>
 				</div>
 
-		</li>
+			</li>
 		<?php
 		}
 		?>
