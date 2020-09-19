@@ -8,7 +8,7 @@ class BlogKff_sidebar extends BlogKff
 	public function Render()
 	{
 		global $Page;
-		echo '<ul id="categories" class="uk-nav">';
+		echo '<ul id="categories" class="uk-nav" uk-sticky="show-on-up:true; media:@m; ">';
 
 		foreach($this->getCategories() as &$cat) {
 			// $catData = (new DbJSON(self::$storagePath."/$cat/cfg.json"))->get();

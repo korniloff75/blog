@@ -136,7 +136,7 @@ class Uploads
 		{
 			switch (@$file['error']) {
 				case 1:
-				case 2: $this->error []= 'Превышен размер загружаемого файла.'; break;
+				case 2: $this->error []= 'Превышен размер загружаемого файла. Максимально допустимый размер - ' . self::getMaxSizeUpload()/1024 . 'kB'; break;
 				case 3: $this->error []= 'Файл был получен только частично.'; break;
 				case 4: $this->error []= 'Файл не был загружен.'; break;
 				case 6: $this->error []= 'Файл не загружен - отсутствует временная директория.'; break;
@@ -184,6 +184,38 @@ class Uploads
 			}
 
 		}
+	}
+
+
+	/**
+	 * Вычисление максимальной загрузки
+	 */
+	public static function getMaxSizeUpload ()
+	{
+		return min(self::sizeToBytes(ini_get('post_max_size')), self::sizeToBytes(ini_get('upload_max_filesize')));
+	}
+
+	protected static function sizeToBytes ($sSize)
+	{
+		$sSuffix = strtoupper(substr($sSize, -1));
+	   if (!in_array($sSuffix, ['P','T','G','M','K']))
+		 return (int)$sSize;
+
+	   $iValue = substr($sSize, 0, -1);
+	   switch ($sSuffix) {
+			case 'P':
+				$iValue *= 1024;
+			case 'T':
+				$iValue *= 1024;
+			case 'G':
+				$iValue *= 1024;
+			case 'M':
+				$iValue *= 1024;
+			case 'K':
+				$iValue *= 1024;
+				break;
+	   }
+	   return (int)$iValue;
 	}
 
 	public function checkSuccess()

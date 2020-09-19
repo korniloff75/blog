@@ -302,11 +302,6 @@ class Index_my_addon
 	}
 
 
-	public static function printLog()
-	{
-
-	}
-
 	public function __destruct()
 	{
 		if(!self::$log) return;

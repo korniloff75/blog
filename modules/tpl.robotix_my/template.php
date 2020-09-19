@@ -80,9 +80,9 @@
 		</main>
 
 		<div class="sidebar">
-			<div uk-sticky="show-on-up:true;">
+			<!-- <div uk-sticky="show-on-up:true;"> -->
 				<?php $Page->get_column('right','<aside><div class="aside_content">#content#</div></aside>');?>
-			</div>
+			<!-- </div> -->
 
 		</div>
 

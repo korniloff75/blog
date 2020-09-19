@@ -109,10 +109,18 @@ $('.content').on('click', '#save_sts', $e=>{
 
 // *AJAX nav
 $(()=>{
+	// uk-sticky
 	var targetSel = '.blog_content',
-		bm = new kff.menu($('article #categories'), targetSel);
+		$sidebar = $('.aside_content>ul');
+	// var bm = new kff.menu($('article #categories'), targetSel);
 
-	console.log(bm);
+	// console.log(bm);
+
+	if($sidebar){
+		var stiky= $sidebar.attr('uk-sticky') + 'offset:' + $sidebar.prop('offsetTop') + ';';
+		console.log('stiky=',stiky);
+		$sidebar.attr('uk-sticky', stiky);
+	}
 
 	// *AJAX history
 	window.onpopstate = function(e) {
@@ -120,7 +128,9 @@ $(()=>{
 
 		// console.log('e=',e);
 		kff.render([targetSel], e.state[targetSel].html);
-		bm.setActive(e.state[targetSel].href);
+
+		(new kff.menu($('article #categories')))
+		.setActive(e.state[targetSel].href);
 	}
 });
 
