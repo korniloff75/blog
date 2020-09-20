@@ -191,7 +191,7 @@ class Logger
 			case E_COMPILE_ERROR:
 			case E_PARSE:
 				$this->_addToLog($fileName, $errline, $errstr, $errno);
-				$this->__destruct();
+				// $this->__destruct();
 				die("Завершение работы.<br />\n");
 				break;
 

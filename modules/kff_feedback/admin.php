@@ -11,7 +11,7 @@
 if (!class_exists('System')) exit; // Запрет прямого доступа
 
 // *Path to internal module folder
-$internalDir = $kff::$internalModulesPath.'/'.basename(__DIR__);
+$internalDir = DR.'/' . $kff::$internalModulesPath.'/'.basename(__DIR__);
 
 $mailToAdminStorage = new DbJSON($internalDir.'/cfg.db.dat', __DIR__);
 // $mailToAdminStorage = new EngineStorage_kff('cfg.db', __DIR__);
@@ -28,7 +28,8 @@ $emails = &$cfg['emails'];
 
 $fromallform = &$cfg['fromallform'];
 
-$tg_token = file_get_contents($internalDir.'/token');
+$tokenDB= new DbJSON(__DIR__.'/../token.json');
+$tg_token = $tokenDB->get('tg');
 
 $checked = $fromallform?' checked':'';
 if($emails == false){ $emails = '';}
@@ -101,6 +102,7 @@ if($act=='add')
 	if(isset($_POST['tg_token']) && $_POST['tg_token'] !== $tg_token)
 	{
 		file_put_contents($internalDir.'/token', $_POST['tg_token']);
+		$tokenDB->set(['tg'=> filter_var($_POST['tg_token'])]);
 	}
 
 	$mailToAdminStorage->set($cfg );

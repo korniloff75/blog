@@ -306,7 +306,7 @@ class Index_my_addon
 	{
 		if(!self::$log) return;
 
-		self::$log->add('self::is_admPanel()',null,[self::is_admPanel(), realpath('.')]);
+		self::$log->add(__METHOD__.' self::is_admPanel()',null,[self::is_admPanel(), realpath('.')]);
 		// var_dump($GLOBALS['log']);
 	}
 }

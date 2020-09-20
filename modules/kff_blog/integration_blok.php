@@ -9,20 +9,21 @@ class BlogKff_sidebar extends BlogKff
 	{
 		global $Page;
 		// uk-visible@m
-		echo '<ul class="categories uk-nav uk-visible@m" uk-sticky="show-on-up:true; media:@m; " style="background: inherit;">';
+		// echo '<ul class="categories uk-nav uk-visible@m" uk-sticky="show-on-up:true; media:@m; " style="background: inherit;">';
+		echo '<ul uk-nav="multiple: false" class="categories uk-nav-parent-icon " uk-sticky="show-on-up:true; media:@m; " style="background: inherit;">';
 
 		foreach($this->getCategories() as &$cat) {
-			// $catData = (new DbJSON(self::$storagePath."/$cat/cfg.json"))->get();
+
 			$catData = $this->getCategory($cat);
 			if(!count($catData['items']))
 				continue;
 			// print_r ($catData);
 		?>
 
-			<li>
+			<li class="uk-parent">
 
-				<span><h4><?=$catData['name']?></h4></span>
-				<div uk-dropdown="mode: hover; delay-hide: 100; pos: left-top@m;">
+				<a href="#" style="text-decoration:underline;"><?=$catData['name']?></a>
+				<!-- <div uk-dropdown="mode: hover; delay-hide: 100; pos: left-top@m;">
 
 					<ul data-cat=<?=$cat?>  class="uk-nav uk-dropdown-nav">
 
@@ -38,7 +39,23 @@ class BlogKff_sidebar extends BlogKff
 
 					?>
 					</ul>
-				</div>
+				</div> -->
+
+					<!-- <ul data-cat=<?=$cat?>  class="uk-nav uk-dropdown-nav"> -->
+					<ul data-cat=<?=$cat?>  class="">
+
+					<?php
+
+					foreach($catData['items'] as &$art) {
+
+						echo "<li data-id={$art['id']} data-cat=$cat>
+						<a href=\"/{$Page->id}/$cat/{$art['id']} \">{$art['name']}</a>
+
+						</li>";
+					}
+
+					?>
+					</ul>
 
 			</li>
 		<?php

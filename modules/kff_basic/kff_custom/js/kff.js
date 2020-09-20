@@ -350,9 +350,12 @@ kff.menu.prototype.clickHahdler = function ($e) {
 		history.pushState(state, '', t.href);
 		self.$loader.hide();
 
-		// Close uk
-		var open= $e.target.closest('.uk-open');
-		open && UIkit.dropdown(open).hide();
+		// *Close uk-dropdown
+		if(t.closest('.uk-dropdown')){
+			console.log('uk-dropdown',t.closest('.uk-open'), );
+			var open= $e.target.closest('.uk-open');
+			open && UIkit.dropdown(open).hide();
+		}
 	});
 
 	return false;
@@ -366,8 +369,10 @@ kff.menu.prototype.setActive = function setActive (href) {
 	$('.active').removeClass();
 	this.$nav.find('a').filter((ind,i)=> i.href === href).addClass('active');
 	// console.log($nav.css('height'));
+
 	// *Hide nav
-	if(parseInt(this.$nav.css('height')) > 100) {
+	// todo убивает высоту в сайдбаре
+	/* if(parseInt(this.$nav.css('height')) > 100) {
 		this.$nav.css('height',0);
-	}
+	} */
 }

@@ -12,7 +12,10 @@ require_once __DIR__ . '/src/Exception.php';
 require_once __DIR__ . '/src/PHPMailer.php';
 require_once __DIR__ . '/src/SMTP.php';
 // require_once "{$_SERVER['DOCUMENT_ROOT']}/modules/kff_basic/integration_system.php";
-require_once $_SERVER['DOCUMENT_ROOT'] . "/system/global.dat";
+if(!defined('DR'))
+{
+	require_once $_SERVER['DOCUMENT_ROOT'] . "/system/global.dat";
+}
 
 
 class MailPlain extends PHPMailer

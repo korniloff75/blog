@@ -112,4 +112,9 @@ class BlogKff extends Index_my_addon
 		self::$cfg['uk']['include_uikit'] = 0;
 	}
 
+	public function __destruct()
+	{
+		return false;
+	}
+
 }

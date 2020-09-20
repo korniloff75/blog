@@ -1,18 +1,21 @@
 <?php
-$buf = ob_get_clean();
+$buf = ob_get_contents();
+ob_clean();
 
 $buf = preg_replace('~(<\/body>)~',
 	Index_my_addon::profile('base')
 	. "\n$1", $buf, 1
 );
 
+$log->add("Уровень буфера= ". ob_get_level());
+
 
 // *Admin
 if($kff::is_adm())
 {
 	ob_start();
+?>
 
-	?>
 	<style>
 		pre.log{
 			background: #111;
@@ -30,7 +33,7 @@ if($kff::is_adm())
 
 	// *Add to End HTML
 
-	echo preg_replace('~(<\/body>)~',
+	$buf= preg_replace('~(<\/body>)~',
 		"<div id='logWrapper'>"
 		. $log->print()
 		. "\n</div>"
@@ -38,7 +41,8 @@ if($kff::is_adm())
 		. "\n$1", $buf, 1
 	);
 
-	$log::$printed = 1;
 }
-else
-	echo $buf;
+
+
+echo $buf;
+// -> to flush in index

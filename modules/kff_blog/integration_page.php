@@ -97,49 +97,6 @@ class BlogKff_page extends BlogKff
 
 		<script src="/<?=self::$modDir?>/js/blogHelper.js"></script>
 
-		<ul class="categories uk-hidden@m uk-subnav uk-subnav-divider">
-
-		<?php
-		foreach($this->getCategories() as &$cat) {
-			// $catData = (new DbJSON(self::$storagePath."/$cat/cfg.json"))->get();
-			$catData = $this->getCategory($cat);
-			if(!count($catData['items']))
-				continue;
-			// print_r ($catData);
-		?>
-
-			<li>
-
-				<a href="#"><h4><?=$catData['name']?></h4></a>
-				<div uk-dropdown="mode: hover; delay-hide: 100;">
-
-					<ul data-cat=<?=$cat?>  class="uk-nav uk-dropdown-nav">
-
-					<?php
-
-					foreach($catData['items'] as &$art) {
-
-						echo "<li data-id={$art['id']} data-cat=$cat>
-						<a href=\"/{$Page->id}/$cat/{$art['id']} \">{$art['name']}</a>
-
-						</li>";
-					}
-
-					?>
-					</ul>
-				</div>
-
-			</li>
-		<?php
-		}
-		?>
-
-	</ul><!-- #categories -->
-
-	<?php
-
-	?>
-
 		<div id='editor1' class="blog_content" <?=$edit?'contenteditable=true':''?>>
 			<?php $this->_addArticle()?>
 		</div><!-- .blog_content -->
@@ -170,6 +127,7 @@ class BlogKff_page extends BlogKff
 		<?php
 		}
 	}
+
 }
 
 ob_start();
