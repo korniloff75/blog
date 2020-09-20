@@ -8,7 +8,8 @@ class BlogKff_sidebar extends BlogKff
 	public function Render()
 	{
 		global $Page;
-		echo '<ul id="categories" class="uk-nav" uk-sticky="show-on-up:true; media:@m; ">';
+		// uk-visible@m
+		echo '<ul class="categories uk-nav uk-visible@m" uk-sticky="show-on-up:true; media:@m; " style="background: inherit;">';
 
 		foreach($this->getCategories() as &$cat) {
 			// $catData = (new DbJSON(self::$storagePath."/$cat/cfg.json"))->get();
@@ -21,7 +22,7 @@ class BlogKff_sidebar extends BlogKff
 			<li>
 
 				<span><h4><?=$catData['name']?></h4></span>
-				<div uk-dropdown="mode: hover; delay-hide: 100; pos: left-top">
+				<div uk-dropdown="mode: hover; delay-hide: 100; pos: left-top@m;">
 
 					<ul data-cat=<?=$cat?>  class="uk-nav uk-dropdown-nav">
 

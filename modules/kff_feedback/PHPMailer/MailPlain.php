@@ -11,7 +11,8 @@ use PHPMailer\PHPMailer\Exception;
 require_once __DIR__ . '/src/Exception.php';
 require_once __DIR__ . '/src/PHPMailer.php';
 require_once __DIR__ . '/src/SMTP.php';
-require_once "{$_SERVER['DOCUMENT_ROOT']}/modules/kff_basic/integration_system.php";
+// require_once "{$_SERVER['DOCUMENT_ROOT']}/modules/kff_basic/integration_system.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/system/global.dat";
 
 
 class MailPlain extends PHPMailer
@@ -209,7 +210,7 @@ class MailPlain extends PHPMailer
 		global $log;
 		require_once __DIR__."/../tg.class.php";
 
-		$log->add('token path= ' . realpath(__DIR__.'/../token'));
+		$log->add('token path= ' . realpath(__DIR__.'/../token.json'));
 
 		$tg = new TG(
 			$this->cfg['tg']['token']
@@ -314,7 +315,8 @@ class MailPlain extends PHPMailer
 
 		// *Проверка данных для Telegram
 		$is_TG = (
-			($this->cfg['tg']['token'] = $this->cfg['tg']['token'] ?? file_get_contents(__DIR__.'/../token'))
+			// ($this->cfg['tg']['token'] = $this->cfg['tg']['token'] ?? file_get_contents(__DIR__.'/../token.json'))
+			($this->cfg['tg']['token'] = $this->cfg['tg']['token'] ?? (new DbJSON(__DIR__.'/../token.json'))->get('tg'))
 			&& ($this->cfg['tg']['chat_id']= $this->cfg['tg']['chat_id'])
 		);
 

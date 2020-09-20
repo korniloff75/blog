@@ -97,7 +97,7 @@ class BlogKff_page extends BlogKff
 
 		<script src="/<?=self::$modDir?>/js/blogHelper.js"></script>
 
-		<ul id="categories" class="uk-subnav uk-subnav-divider">
+		<ul class="categories uk-hidden@m uk-subnav uk-subnav-divider">
 
 		<?php
 		foreach($this->getCategories() as &$cat) {

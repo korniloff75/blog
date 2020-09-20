@@ -243,7 +243,7 @@ class Index_my_addon
 	public static function is_admPanel ()
 	{
 		// return file_exists('./newpassword.php');
-		return explode('/', REQUEST_URI)[1] === 'admin';
+		return explode('/', \REQUEST_URI)[1] === 'admin';
 	}
 
 

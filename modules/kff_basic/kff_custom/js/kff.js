@@ -232,43 +232,32 @@ var kff = {
 		this.$nav = $nav[0]? $nav: $($nav);
 		mainSelector = mainSelector || 'main';
 
-		var $loader = $('#loading');
+		var self = this,
+			$loader = $('#loading');
+
 		if(!$loader.length) {
 			$loader = $('<div id="loading" uk-spinner class="uk-position-center uk-position-medium uk-position-fixed" style="z-index:1000; display:none;"></div>').appendTo(document.body);
 		}
 
-		this.$nav.on('click', $e=>{
-			var t= $e.target.closest('a');
+		this.mainSelector= mainSelector;
+		this.$loader= $loader;
 
-			if(!t.href) return;
+		this.$nav.on('click', this.clickHahdler.bind(this));
+		/* this.$nav.on({
+			click: this.clickHahdler,
+			// touch: self.clickHahdler,
+		}); */
 
-			$e.preventDefault();
-			$e.stopPropagation();
+		// *AJAX history
+		$(window).on('popstate', function($e) {
+			var e= $e.originalEvent;
 
-			// console.log(this);
-			$loader.show();
-			this.setActive(t.href);
+			if(!e.state || !e.state[mainSelector]) return false;
 
-			// todo
-			kff.request(t.href,null,[mainSelector,'.core.info','.log'])
-			.then(r=>{
-				if(!r[mainSelector]){
-					console.warn(r)
-				}
-				// console.log(Object.keys(r).length && Object.keys(r) || r);
+			console.log(e.state, 'e.state[mainSelector].html=', e.state[mainSelector].html);
 
-				var ps={};
-				ps[mainSelector]= {
-					href: t.href,
-					html: r[mainSelector]
-				};
-				console.log('ps=',ps);
-
-				history.pushState(ps, '', t.href);
-				$loader.hide();
-			});
-
-			return false;
+			kff.render([mainSelector], e.state[mainSelector].html);
+			self.setActive(e.state[mainSelector].href);
 		});
 	},
 
@@ -308,7 +297,8 @@ var kff = {
 				if(!$sourceNode.length)
 					$sourceNode = $tmp;
 
-				out[i]= targetNode.innerHTML= $sourceNode.html();
+				// out[i]= targetNode.innerHTML= $sourceNode.html();
+				out[i]= $(targetNode).html($sourceNode.html()).html();
 			});
 			// *Подсвечиваем лог
 			sels.includes('.log') && this.highlight('.log');
@@ -321,6 +311,52 @@ var kff = {
 }
 
 // *Расширяем конструкторы
+
+// *Клик по меню
+kff.menu.prototype.clickHahdler = function ($e) {
+	// console.log($e);
+	var t= $e.target.closest('a'),
+		self= this;
+
+	if(!t || !t.href) return;
+
+	$e.preventDefault();
+	$e.stopPropagation();
+
+	if(t.href === location.href+'#') return;
+
+	// console.log('t.href=', t.href, location.href+'#', t.href === location.href+'#');
+	mainSelector= this.mainSelector;
+	// $= this.mainSelector;
+	// console.log('this.mainSelector=', this.mainSelector);
+	this.$loader.show();
+	this.setActive(t.href);
+
+	// todo
+	kff.request(t.href,null,[mainSelector,'.core.info','.log'])
+	.then(r=>{
+		if(!r[mainSelector]){
+			console.warn(r)
+		}
+		// console.log(Object.keys(r).length && Object.keys(r) || r);
+
+		var state={};
+		state[mainSelector]= {
+			href: t.href,
+			html: r[mainSelector]
+		};
+		console.log('ps=',state);
+
+		history.pushState(state, '', t.href);
+		self.$loader.hide();
+
+		// Close uk
+		var open= $e.target.closest('.uk-open');
+		open && UIkit.dropdown(open).hide();
+	});
+
+	return false;
+}
 
 // *Active btn
 kff.menu.prototype.setActive = function setActive (href) {

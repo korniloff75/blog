@@ -15,8 +15,8 @@
 * {
 	box-sizing: border-box;
 }
-.sidebar, .sidebar div{
-	/* background:inherit; */
+.sidebar, .aside_content{
+	background: #eee;
 }
 </style>
 <script>

@@ -41,6 +41,8 @@ class DbJSON {
 		// $this->json = str_replace(["'", '"'], ["\'", '\"'], $this->json);
 		$this->db = json_decode($this->json, true) ?? [];
 
+		if(empty($this->db))
+		trigger_error(__METHOD__.": DB is empty from {$this->path}", E_USER_WARNING);
 	}
 
 	/**
