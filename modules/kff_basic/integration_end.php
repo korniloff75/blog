@@ -20,9 +20,13 @@ ob_start();
 <?php
 $Templater['coreHead']= ob_get_clean();
 
+// *{{Title}}
+ob_start();
+	$Page->get_title();
+$Templater['Title']= ob_get_clean();
+
 // *{{coreFooter}}
 ob_start();
-
 	$Page->get_endhtml();
 	echo Index_my_addon::profile('base');
 
@@ -30,9 +34,6 @@ $Templater['coreFooter']= ob_get_clean();
 
 
 $log->add("\$Templater = ",null,[$Templater]);
-
-// $log->add("Количество замен= ". $count,null,[$Page]);
-
 
 $log->add("Уровень буфера= ". ob_get_level());
 
@@ -62,14 +63,17 @@ if($kff::is_adm())
 
 } // *$kff::is_adm()
 
+
 // *Финишная замена кодов шаблона на HTML
 $buf = preg_replace(
-	array_map(function($i){
-		return "~\{\{$i\}\}~";
+	array_map(function(&$i){
+		return "~\{\{$i\}\}~i";
 	},array_keys($Templater)),
 	array_values($Templater),
 	$buf, 1, $count
 );
+
+// $log->add("Количество замен= ". $count,null,[$Page]);
 
 
 echo $buf;

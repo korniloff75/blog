@@ -10,7 +10,41 @@ class BlogKff_page extends BlogKff
 	 */
 	public function newsTape()
 	{
-		echo "<h2>Тут будет лента новостей</h2>";
+		$o= "<h2>Тут будет лента новостей</h2>";
+
+		$this->getArticleList(5);
+
+		return $o;
+	}
+
+	/**
+	 * *Получаем список статей
+	 * todo ...
+	 */
+	public function getArticleList($quantity)
+	{
+		$arr= [];
+		$storageIterator= new RecursiveDirectoryIterator(self::$storagePath, FilesystemIterator::SKIP_DOTS| FilesystemIterator::UNIX_PATHS);
+
+		/* $iterator = new RegexIterator(
+			$storageIterator->getChildren(),
+			'~\\' . self::$l_cfg['ext'] . '$~'
+		); */
+
+		foreach(new RecursiveIteratorIterator($storageIterator) as $c=>$FI){
+			if($FI->isDir() || $FI->getExtension() !== substr(self::$l_cfg['ext'], 1)) continue;
+
+			$arr[$FI->getMTime()]= $FI->getPathname();
+			echo $c . $FI . '<br>';
+		}
+
+		krsort($arr);
+
+		$arr= array_slice($arr, 0, $quantity, 1);
+
+		self::$log->add(__METHOD__,null,[$arr]);
+
+		return $o;
 	}
 
 
@@ -35,7 +69,7 @@ class BlogKff_page extends BlogKff
 
 		// *На стартовой - новостная лента
 		if(self::is_indexPage()) {
-			$this->newsTape();
+			echo $this->newsTape();
 			return;
 		}
 
@@ -45,7 +79,7 @@ class BlogKff_page extends BlogKff
 
 		if( !file_exists($path) ) return;
 
-		require_once $path;
+		include_once $path;
 	}
 
 

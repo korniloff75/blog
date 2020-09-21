@@ -245,19 +245,19 @@ class BlogKff_adm extends BlogKff
 					<input type="text" name="addArticle" placeholder="Название статьи">
 				</div><button>ADD</button>
 
-				<ul data-id=<?=$catData['id']?> class="listArticles uk-nav uk-nav-default uk-width-medium" uk-sortable="group: cat-items; handle: .uk-sortable-handle; cls-custom: uk-box-shadow-small uk-flex uk-flex-middle uk-background">
+				<ul data-id=<?=$catData['id']?> class="listArticles uk-nav uk-nav-default uk-width-medium" uk-sortable="group: cat-items; handle: .uk-sortable-handle; cls-custom: uk-box-shadow-small uk-flex uk-flex-expand uk-background">
 
 				<?php
 				if(is_array($catData['items'])) foreach($catData['items'] as &$art) {
-					echo "<li data-id={$art['id']} data-name=\"{$art['name']}\" data-oldCatId= {$catData['id']} class=\"uk-flex uk-flex-middle\">
+					echo "<li data-id={$art['id']} data-name=\"{$art['name']}\" data-oldCatId= {$catData['id']} class=\"uk-flex uk-flex-wrap uk-flex-middle\">
 					<div class=\"uk-sortable-handle uk-margin-small-right\" uk-icon=\"icon: table\"></div>
 					<a href=\"/Blog/$cat/{$art['id']}?edit \" target='_blank'>{$art['name']}</a>
 
-					<!-- <div style=\"display: inline-block;\">
-					<input type=\"hidden\" name=\"cat\" value=\"$cat\">
-					</div> -->
+					<input type='button' class='delArticle uk-button-secondary uk-margin-small-horizontal' value=DEL>
 
-					<input type='button' class='uk-button-secondary delArticle' value=DEL>
+					<input name=\"description\" type=\"text\" placeholder=\"description\">
+					<input name=\"keywords\" type=\"text\" placeholder=\"keywords\">
+
 					</li>";
 					// print_r($art);
 				}

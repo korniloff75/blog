@@ -11,10 +11,10 @@ class BlogKff_sidebar extends BlogKff
 		// uk-visible@m
 		// echo '<ul class="categories uk-nav uk-visible@m" uk-sticky="show-on-up:true; media:@m; " style="background: inherit;">';
 
-		$pageName= $Page->module === 'kff_blog'?
+		$pageId= $Page->module === 'kff_blog'?
 			$Page->id : 'index';
 
-		echo '<ul uk-nav="multiple: false" class="categories uk-nav-parent-icon " uk-sticky="show-on-up:true; media:@m; top: .sidebar; bottom: .sidebar; " style="background: inherit;">';
+		echo '<ul uk-nav="multiple: false" class="categories uk-nav-parent-icon uk-nav-primary uk-nav-center" uk-sticky="show-on-up:true; media:@m; top: .sidebar; bottom: .sidebar; " style="background: inherit;">';
 
 		foreach($this->getCategories() as &$cat) {
 
@@ -53,7 +53,7 @@ class BlogKff_sidebar extends BlogKff
 					foreach($catData['items'] as &$art) {
 
 						echo "<li data-id={$art['id']} data-cat=$cat>
-						<a href=\"/{$pageName}/$cat/{$art['id']} \">{$art['name']}</a>
+						<a href=\"/{$pageId}/$cat/{$art['id']} \">{$art['name']}</a>
 
 						</li>";
 					}
