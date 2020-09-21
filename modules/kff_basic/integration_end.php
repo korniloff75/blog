@@ -2,10 +2,37 @@
 $buf = ob_get_contents();
 ob_clean();
 
-$buf = preg_replace('~(<\/body>)~',
-	Index_my_addon::profile('base')
-	. "\n$1", $buf, 1
-);
+// *Собираем сюда все финишные замены
+$Templater = [];
+
+// *{{coreHead}}
+ob_start();
+?>
+
+	<meta charset="utf-8">
+	<?=$Page->get_headhtml()?>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<title><?php $Page->get_title();?></title>
+	<meta name="description" content="<?=$Page->get_description()?>">
+	<meta name="keywords" content="<?=$Page->get_keywords()?>">
+
+<?php
+$Templater['coreHead']= ob_get_clean();
+
+// *{{coreFooter}}
+ob_start();
+
+	$Page->get_endhtml();
+	echo Index_my_addon::profile('base');
+
+$Templater['coreFooter']= ob_get_clean();
+
+
+$log->add("\$Templater = ",null,[$Templater]);
+
+// $log->add("Количество замен= ". $count,null,[$Page]);
+
 
 $log->add("Уровень буфера= ". ob_get_level());
 
@@ -13,36 +40,37 @@ $log->add("Уровень буфера= ". ob_get_level());
 // *Admin
 if($kff::is_adm())
 {
+	// *{{coreFooter}}
 	ob_start();
-?>
+	?>
+		<div id='logWrapper'>
+			<?=$log->printCode()?>
+			<style>
+				pre.log{
+					background: #111;
+					color: #3f3;
+				}
+			</style>
 
-	<style>
-		pre.log{
-			background: #111;
-			color: #3f3;
-		}
-	</style>
-
-	<script>
-		window.kff && kff.highlight('.log');
-	</script>
-
+			<script>
+				window.kff && kff.highlight('.log');
+			</script>
+		</div>
 	<?php
-	$logHahdles = ob_get_clean();
 
+	$Templater['coreFooter'].= ob_get_clean();
 
-	// *Add to End HTML
+} // *$kff::is_adm()
 
-	$buf= preg_replace('~(<\/body>)~',
-		"<div id='logWrapper'>"
-		. $log->print()
-		. "\n</div>"
-		. $logHahdles
-		. "\n$1", $buf, 1
-	);
-
-}
+// *Финишная замена кодов шаблона на HTML
+$buf = preg_replace(
+	array_map(function($i){
+		return "~\{\{$i\}\}~";
+	},array_keys($Templater)),
+	array_values($Templater),
+	$buf, 1, $count
+);
 
 
 echo $buf;
-// -> to flush in index
+// *-> to flush in index

@@ -160,6 +160,28 @@ class Logger
 		return ob_get_clean();
 	}
 
+	public function printCode()
+	{
+		ob_start();
+		?>
+		<meta charset="UTF-8">
+		<style>
+		pre.log {
+			box-sizing: border-box;
+			white-space: pre-wrap;
+			border: inset 1px #eee;
+		}
+		</style>
+		<?php
+		print_r("<h3 class='logCaption' style='text-align:center;'>Log</h3><pre class='log'>\n");
+		foreach ($this->log as &$string) {
+			print_r(htmlspecialchars($string) . "\n");
+		}
+		echo "</pre>";
+		self::$printed = 1;
+		return ob_get_clean();
+	}
+
 	public function printTG()
 	{
 		ob_start();

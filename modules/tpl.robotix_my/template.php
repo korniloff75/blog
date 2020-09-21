@@ -1,14 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
-<meta charset="utf-8">
-<?php $Page->get_headhtml();?>
-<title><?php $Page->get_title();?></title>
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="<?php $Page->get_description();?>">
-<meta name="keywords" content="<?php $Page->get_keywords();?>">
-<!-- <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&family=Roboto+Condensed&display=swap" rel="stylesheet"> -->
+{{coreHead}}
+
 <style>
 <?= file_get_contents($kff::getPathFromRoot(__DIR__).'/style.min.css');?>
 <?= file_get_contents('admin/include/windows/windows.css');?>
@@ -19,10 +14,6 @@
 	background: #eee;
 }
 </style>
-<script>
-<?php #echo file_get_contents(DR.'/admin/include/windows/windows.js');?>
-// kff.checkLib('jQuery');
-</script>
 
 <script src="/admin/include/windows/windows.js"></script>
 
@@ -33,10 +24,6 @@
 <div class="bgheader">
 	<div class="container">
 		<header>
-			<!-- <div class="logo">
-				<a href="/"><img src="/<?=$kff::getPathFromRoot(__DIR__)?>/images/ЛОГО_min.jpg" alt="<?php $Page->get_header();?>"></a>
-			</div> -->
-
 			<div class="hbr_menu">
 				<a href="javascript:void(0);" id="menu"><svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
 					<path d="M0 0h24v24H0z" fill="none"/>
@@ -66,7 +53,7 @@
 			</nav>
 		</header>
 	</div>
-</div>
+</div><!-- .bgheader -->
 
 <div class="container bgcontent">
 
@@ -74,7 +61,7 @@
 
 		<main>
 			<article>
-				<?php if(!$Page->isIndexPage()):?><h1 class="name"><?php $Page->get_name();?></h1><?php endif;?>
+				<h1 class="name"><?php $Page->get_name();?></h1>
 				<?php $Page->get_content();?>
 			</article>
 		</main>
@@ -142,21 +129,56 @@
 
 	<?php endif; ?>
 
+</div><!-- .container.bgcontent -->
 
-	<footer>
+
+<footer>
+	<div>
 		<a href="/" class="logo"><?=$Page->get_header();?> - <?=date('Y');?></a>
-	</footer>
-
-</div>
-<div class="copiright">Сайт сделан на <a href="//my-engine.ru" rel="nofollow">My-Engine CMS</a></div>
+	</div>
+	<div class="copiright">
+		Сайт сделан на <a href="//my-engine.ru" rel="nofollow">My-Engine CMS</a>
+	</div>
+</footer>
 
 
 <script>
 'use strict';
 // *top padding
-$(()=>document.querySelector('.container.bgcontent').style.paddingTop= getComputedStyle(
-	$('.bgheader')[0]
-).height);
+$(()=>{
+	document.querySelector('.container.bgcontent').style.paddingTop= getComputedStyle(
+		$('.bgheader')[0]
+	).height;
+
+	// *AJAX nav
+	// uk-sticky
+	var targetSel = '.blog_content',
+		$sidebar = $('.aside_content>ul.categories');
+	// var blogNav = new kff.menu($('.categories'), targetSel);
+		// console.log(bm);
+
+	if($sidebar){
+		<?php
+		if($Page->module === 'kff_blog') {
+			echo 'var blogNav = new kff.menu($sidebar, targetSel)';
+		}
+		?>
+
+		var stiky= $sidebar.attr('uk-sticky') + 'offset:' + $sidebar.prop('offsetTop') + ';';
+		console.log('stiky=',stiky);
+		$sidebar.attr('uk-sticky', stiky);
+	}
+
+	/* // *AJAX history
+	window.onpopstate = function(e) {
+		if(!e.state || !e.state[targetSel]) return false;
+
+		// console.log('e=',e);
+		kff.render([targetSel], e.state[targetSel].html);
+
+		bm.setActive(e.state[targetSel].href);
+	} */
+});
 
 // *burger button
 $('#menu').on('click', function(){
@@ -165,12 +187,16 @@ $('#menu').on('click', function(){
 		? '0px'
 		: menu.scrollHeight + 'px';
 });
+
+// *
+$('#nav').on('click', function(e){
+	var $t= $(this);
+	if(parseInt($t.css('height')) > 100) {
+		$t.css('height',0);
+	}
+});
 </script>
 
-<?php
-// require_once $kff::$dir . '/contentEditable/init.php';
-
-$Page->get_endhtml();
-?>
+{{coreFooter}}
 
 </body></html>

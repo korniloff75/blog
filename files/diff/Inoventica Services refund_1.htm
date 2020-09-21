@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html class="hydrated" lang="ru"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8"><style data-styles="">{visibility:hidden}.hydrated{visibility:inherit}</style><style data-styles="">{visibility:hidden}.hydrated{visibility:inherit}</style><style data-styles="">{visibility:hidden}.hydrated{visibility:inherit}</style><style data-styles="">{visibility:hidden}.hydrated{visibility:inherit}</style><style data-styles="">{visibility:hidden}.hydrated{visibility:inherit}</style><style data-styles="">{visibility:hidden}.hydrated{visibility:inherit}</style><style data-styles="">{visibility:hidden}.hydrated{visibility:inherit}</style><style data-styles="">{visibility:hidden}.hydrated{visibility:inherit}</style><style data-styles="">{visibility:hidden}.hydrated{visibility:inherit}</style><style data-styles="">ispui-slider{visibility:hidden}.hydrated{visibility:inherit}</style>
+<meta http-equiv="x-ua-compatible" content="ie=edge, chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Inoventica Services</title>
+<!-- base href="https://bill.invs.ru/billmgr" -->
+<link id="favicon" rel="shortcut icon" href="https://bill.invs.ru/manimg/orion/local_064fb2b5722c/favicon.ico" type="image/x-icon">
+<link href="Inoventica%20Services_files/style.css" rel="stylesheet">
+<link href="Inoventica%20Services_files/theme.css" rel="stylesheet">
+<script type="text/javascript">
+            // for error report module
+            var reportData = {
+              version: "5.267.1-2020.09.11_16:02",
+              _product: "billmgr",
+              userLevel: "16",
+              user: "info@js-master.ru",
+            };
+
+            var auth = '';
+            var lang = 'ru';
+
+            if (auth !== '') {
+              localStorage.setItem('auth', auth); // social redirect
+            }
+            // урл манагера
+            window.billMgrUrl = 'https://bill.invs.ru/billmgr';
+            // хост манагера
+            window.mgrHost = 'https://bill.invs.ru';
+            window.billData = {
+              'conditionsLink': ''
+            };
+            window.brand = 'default';
+            window.LOGO_BRANDDIR = 'https://bill.invs.ru/manimg/orion/local_064fb2b5722c/logo.png';
+
+            window.socialLinks = null;
+
+            window.project = '';
+            window.yandexCounter = '';
+
+            window.socialError = {};
+            
+            // получаем адрес после хеша
+            var locationHash = location.hash.slice(1);
+            // получаем параметры из адресной строки
+            var locationSearch = location.search.slice(1);
+            // редирект, который пришел с backend
+            var docRedirect = '';
+            var redirect = docRedirect || locationHash || locationSearch;
+            if (redirect !== ''){
+              redirect = encodeURIComponent(redirect);
+              sessionStorage.setItem('redirect',redirect);
+              window.redirect = redirect;
+            }
+
+             if (window.CSS && window.CSS.supports && window.CSS.supports('(--isp: red)')) {
+                // this browser does support variables, abort
+                // console.log('your browser supports CSS variables, aborting and letting the native support handle things.');
+              } else {
+                // this browser doesn't support variables
+                // console.log("your browser doesn't supports CSS variables!");
+
+                var link = document.createElement( "link" );
+                link.href = "/manimg/client/themes/"+window.brand+"/ie.theme.059b7ed876a36f04d757.css";
+                link.type = "text/css";
+                link.rel = "stylesheet";
+                link.media = "screen,print";
+
+                document.getElementsByTagName( "head" )[0].appendChild( link );
+              }
+
+          </script>
+<script charset="utf-8" src="Inoventica%20Services_files/6.js"></script><script charset="utf-8" src="Inoventica%20Services_files/4.js"></script><script charset="utf-8" src="Inoventica%20Services_files/5.js"></script><script charset="utf-8" src="Inoventica%20Services_files/2.js"></script><script charset="utf-8" src="Inoventica%20Services_files/3.js"></script><script charset="utf-8" src="Inoventica%20Services_files/1.js"></script><script charset="utf-8" src="Inoventica%20Services_files/8.js"></script><script charset="utf-8" src="Inoventica%20Services_files/10.js"></script><script charset="utf-8" src="Inoventica%20Services_files/13.js"></script><script charset="utf-8" src="Inoventica%20Services_files/12.js"></script><script charset="utf-8" src="Inoventica%20Services_files/14.js"></script><script charset="utf-8" src="Inoventica%20Services_files/16.js"></script><script charset="utf-8" src="Inoventica%20Services_files/29.js"></script><script charset="utf-8" src="Inoventica%20Services_files/54.js"></script><script charset="utf-8" src="Inoventica%20Services_files/151.js"></script><style>.isp-widget-header[_ngcontent-eqp-c0] {
+  position: relative;
+  display: block;
+  padding: 5px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-color: var(--isp-color__head);
+  border-bottom: var(--isp-border__widget-head, none);
+}
+
+.isp-widget-header__title[_ngcontent-eqp-c0] {
+  font-size: var(--isp-font-size-big);
+  color: var(--isp-color__widget-head-title, #ffffff);
+  font-weight: var(--isp-font-weight-medium);
+  white-space: nowrap;
+  overflow: hidden;
+  line-height: normal;
+  text-overflow: ellipsis;
+  margin-bottom: 5px;
+  padding-right: 60px;
+}
+
+.isp-widget-header__title_group-item[_ngcontent-eqp-c0] {
+  max-width: 800px;
+}
+
+.isp-widget-header__info[_ngcontent-eqp-c0] {
+  line-height: 30px;
+  color: var(--isp-color__widget-head-text, #ffffff);
+}
+
+.isp-widget-header__navigation[_ngcontent-eqp-c0] {
+  line-height: 30px;
+  color: var(--isp-color__default-main);
+}
+
+.isp-widget-header_type_title[_ngcontent-eqp-c0] {
+  height: 80px;
+  padding: 24px 20px 0 20px;
+}
+
+.isp-widget-header_type_breadcrumbs[_ngcontent-eqp-c0] {
+  height: 90px;
+  padding: 12px 20px 0 20px;
+}
+
+.isp-widget-header_type_data[_ngcontent-eqp-c0] {
+  height: 100px;
+  padding: 24px 20px 0 20px;
+}
+
+.isp-widget-header_type_full[_ngcontent-eqp-c0] {
+  height: 120px;
+  padding: 12px 20px 0 20px;
+}</style><style>@charset "UTF-8";
+.isp-widget-header-breadcrumbs-item {
+  display: inline-block;
+  font-size: var(--isp-font-size-small);
+  color: var(--isp-color__additional-text);
+}
+.isp-widget-header-breadcrumbs-item:not(:last-child)::after {
+  content: "»";
+  display: inline-block;
+  margin: 0 var(--isp-word-spacing-size);
+}</style><style>.isp-widget-header-close[_ngcontent-eqp-c2] {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  z-index: 4;
+}
+.isp-widget-header-close[_ngcontent-eqp-c2]::before, .isp-widget-header-close[_ngcontent-eqp-c2]::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  right: 6px;
+  display: block;
+  width: 2px;
+  height: 19px;
+  border-radius: 3px;
+  background-color: var(--isp-color_close-icon, #d9d9d9);
+}
+.isp-widget-header-close[_ngcontent-eqp-c2]::before {
+  transform: rotate(45deg);
+}
+.isp-widget-header-close[_ngcontent-eqp-c2]::after {
+  transform: rotate(-45deg);
+}</style><style>.isp-widget-header-info-item[_ngcontent-eqp-c3] {
+  margin-right: 16px;
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+.isp-widget-header-info-item_ellipsis[_ngcontent-eqp-c3] {
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}</style><script charset="utf-8" src="Inoventica%20Services_files/9.js"></script><script charset="utf-8" src="Inoventica%20Services_files/11.js"></script><script charset="utf-8" src="Inoventica%20Services_files/15.js"></script><script charset="utf-8" src="Inoventica%20Services_files/18.js"></script><script charset="utf-8" src="Inoventica%20Services_files/17.js"></script><script charset="utf-8" src="Inoventica%20Services_files/19.js"></script><script charset="utf-8" src="Inoventica%20Services_files/25.js"></script><script charset="utf-8" src="Inoventica%20Services_files/42.js"></script><script charset="utf-8" src="Inoventica%20Services_files/53.js"></script><script charset="utf-8" src="Inoventica%20Services_files/122.js"></script><style>.isp-dedic-list__cost[_ngcontent-eqp-c4] {
+  width: 160px;
+  max-width: 160px;
+  padding-right: 40px;
+  text-align: right;
+}
+
+.isp-dedic-list__expiredate[_ngcontent-eqp-c4] {
+  width: 110px;
+  max-width: 110px;
+}
+
+.isp-dedic-list__status[_ngcontent-eqp-c4] {
+  width: 100px;
+  max-width: 100px;
+}
+
+.isp-dedic-list__menu[_ngcontent-eqp-c4] {
+  width: 40px;
+  max-width: 40px;
+}
+
+.isp-dedic-list__action[_ngcontent-eqp-c4] {
+  width: 40px;
+  max-width: 40px;
+}
+
+.isp-dedic-list__cost-head[_ngcontent-eqp-c4] {
+  width: 160px;
+  max-width: 160px;
+  padding-right: 40px;
+  text-align: right;
+}
+
+.isp-dedic-list__autoprolong[_ngcontent-eqp-c4] {
+  width: 50px;
+  max-width: 50px;
+}
+
+.isp-dedic-list__server[_ngcontent-eqp-c4] {
+  width: 300px;
+  max-width: 300px;
+  padding-right: 20px;
+}
+
+.isp-dedic-list__os[_ngcontent-eqp-c4] {
+  width: 140px;
+  max-width: 140px;
+  padding-right: 20px;
+}
+
+.isp-dedic-list__datacenter[_ngcontent-eqp-c4] {
+  width: 140px;
+  max-width: 140px;
+  padding-right: 20px;
+}
+
+.isp-dedic-list__ip[_ngcontent-eqp-c4] {
+  width: 120px;
+  max-width: 120px;
+  padding-right: 20px;
+}
+
+.isp-dedic-list__extend-filter[_ngcontent-eqp-c4] {
+  width: 40px;
+  max-width: 40px;
+}</style><script charset="utf-8" src="Inoventica%20Services_files/24.js"></script><script charset="utf-8" src="Inoventica%20Services_files/23.js"></script><script charset="utf-8" src="Inoventica%20Services_files/55.js"></script><script charset="utf-8" src="Inoventica%20Services_files/68.js"></script><script charset="utf-8" src="Inoventica%20Services_files/66.js"></script><script charset="utf-8" src="Inoventica%20Services_files/148.js"></script><script charset="utf-8" src="Inoventica%20Services_files/43.js"></script><script charset="utf-8" src="Inoventica%20Services_files/119.js"></script><style>.isp-vds-list[_ngcontent-eqp-c6] {
+  --ngispui-table-thead-background-color: var(--isp-color__head);
+}
+
+.isp-vds-list__content[_ngcontent-eqp-c6] {
+  background-color: var(--isp-color__default-main);
+  display: block;
+}
+
+.isp-vds-list__td[_ngcontent-eqp-c6] {
+  width: 100%;
+  padding-right: 20px;
+}
+
+.isp-vds-list__td_220[_ngcontent-eqp-c6] {
+  width: 220px;
+  max-width: 220px;
+}
+
+.isp-vds-list__td_60[_ngcontent-eqp-c6] {
+  width: 60px;
+  max-width: 60px;
+}
+
+.isp-vds-list__td_100[_ngcontent-eqp-c6] {
+  width: 100px;
+  max-width: 100px;
+}
+
+.isp-vds-list__td_120[_ngcontent-eqp-c6] {
+  width: 120px;
+  max-width: 120px;
+}
+
+.isp-vds-list__td_180[_ngcontent-eqp-c6] {
+  width: 180px;
+  max-width: 180px;
+}
+
+.isp-vds-list__td_140[_ngcontent-eqp-c6] {
+  width: 140px;
+  max-width: 140px;
+}
+
+.isp-vds-list__td_160[_ngcontent-eqp-c6] {
+  width: 160px;
+  max-width: 160px;
+}
+
+.isp-vds-list__td_40[_ngcontent-eqp-c6] {
+  width: 40px;
+  max-width: 40px;
+}
+
+.isp-vds-list__td_50[_ngcontent-eqp-c6] {
+  width: 50px;
+  max-width: 50px;
+}
+
+.isp-vds-list__td_110[_ngcontent-eqp-c6] {
+  width: 110px;
+  max-width: 110px;
+}
+
+.isp-vds-list__td_type_cost[_ngcontent-eqp-c6] {
+  padding-right: 40px;
+}
+
+.isp-vds-list__cell[_ngcontent-eqp-c6] {
+  display: table-cell;
+}
+
+.isp-vds-list__cell_type_right[_ngcontent-eqp-c6] {
+  text-align: right;
+}
+
+.isp-vds-list__cell_type_left[_ngcontent-eqp-c6] {
+  width: 50%;
+  text-align: left;
+}
+
+.isp-vds-list__td-control[_ngcontent-eqp-c6]   .isp-checkbox[_ngcontent-eqp-c6] {
+  margin: 0;
+}</style><style>.ngispui-table {
+  display: table;
+  border-collapse: collapse;
+  width: var(--ngispui-table-width, 100%);
+  line-height: var(--ngispui-table-line-height, 1em);
+}
+
+.ngispui-table__th {
+  display: table-cell;
+  height: var(--ngispui-table-th, 40px);
+  padding-right: var(--ngispui-table-th-padding-right, 20px);
+  padding-top: var(--ngispui-table-th-padding-top, 3px);
+  vertical-align: inherit;
+  font-size: var(--ngispui-table-th-font-size, 12px);
+  color: var(--ngispui-color__header-text);
+}
+.ngispui-table__th:first-child {
+  border-top-left-radius: var(--ngispui-table-header-border-radius, 5px);
+  padding-left: var(--ngispui-table-th-first-padding-left, 20px);
+}
+.ngispui-table__th:last-child {
+  border-top-right-radius: var(--ngispui-table-header-border-radius, 5px);
+}
+
+.ngispui-table__tr {
+  display: table-row;
+  vertical-align: inherit;
+  border-bottom: var(--ngispui-table-tr-border-bottom, 1px solid #d9d9d9);
+}
+
+.ngispui-table__tr_in_body:hover {
+  background-color: var(--ngispui-table-tr-hover-background-color, #fffcea);
+}
+
+.ngispui-table__tr_in_head {
+  background-color: var(--ngispui-table-thead-background-color, #344a5e);
+}
+
+.ngispui-table__td {
+  display: table-cell;
+  position: relative;
+  padding-top: var(--ngispui-table-td-padding-top, 21px);
+  padding-bottom: var(--ngispui-table-td-padding-bottom, 15px);
+  padding-right: var(--ngispui-table-td-padding-right, 20px);
+  height: var(--ngispui-table-td-height, 70px);
+}
+.ngispui-table__td:first-child {
+  padding-left: var(--ngispui-table-td-first-padding-left, 20px);
+}
+
+.ngispui-table__td_is_selected:before {
+  content: "";
+  position: absolute;
+  height: calc(100% + 1px);
+  top: 0;
+  left: 0;
+  border-left-width: 3px;
+  border-left-style: solid;
+  border-left-color: var(--ngispui-table-tr-selected-border, #d9d9d9);
+}
+
+.ngispui-table__td_is_last-row {
+  padding: var(--ngispui-table-td-last-row, 0 0 0 0);
+}
+
+.ngispui-table__thead {
+  display: table-header-group;
+  border: var(--ngispui-table-thead--border, 0 none);
+  color: var(--ngispui-table-thead-color, #f4f4f4);
+  background-color: var(--ngispui-table-thead-background-color, #344a5e);
+  vertical-align: var(--ngispui-table-thead-vertical-align, middle);
+  border-top-left-radius: var(--ngispui-table-header-border-radius, 5px);
+  border-top-right-radius: var(--ngispui-table-header-border-radius, 5px);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.ngispui-table__tbody {
+  display: table-row-group;
+  background-color: var(--isp-color__default-main);
+}
+
+.ngispui-table__footer-content {
+  height: var(--ngispui-table-footer-height, 50px);
+  width: var(--ngispui-table-footer-width, 100%);
+  padding-top: var(--ngispui-table-footer-padding-top, 15px);
+  padding-right: var(--ngispui-table-footer-padding-right, 20px);
+  padding-left: var(--ngispui-table-footer-padding-left, 20px);
+  padding-bottom: var(--ngispui-table-footer-padding-bottom, 15px);
+}
+
+.ngispui-table__footer-cell {
+  background-color: var(--ngispui-table-footer-cell-background-color, #FFFFFF);
+}</style><script charset="utf-8" src="Inoventica%20Services_files/22.js"></script><script charset="utf-8" src="Inoventica%20Services_files/26.js"></script><script charset="utf-8" src="Inoventica%20Services_files/33.js"></script><script charset="utf-8" src="Inoventica%20Services_files/52.js"></script><script charset="utf-8" src="Inoventica%20Services_files/62.js"></script><script charset="utf-8" src="Inoventica%20Services_files/59.js"></script><script charset="utf-8" src="Inoventica%20Services_files/77.js"></script><script charset="utf-8" src="Inoventica%20Services_files/153.js"></script><style>.isp-vds-item-info__table[_ngcontent-eqp-c10]   tr[_ngcontent-eqp-c10]   td[_ngcontent-eqp-c10] {
+  padding-right: 20px;
+}
+.isp-vds-item-info__table[_ngcontent-eqp-c10]   tr[_ngcontent-eqp-c10]:not(:first-child)   td[_ngcontent-eqp-c10] {
+  padding-top: 10px;
+}
+
+.isp-vds-item-info__table-cell_bolder[_ngcontent-eqp-c10] {
+  font-weight: bolder;
+}</style><style>.isp-widget-header-control-item[_ngcontent-eqp-c9] {
+  margin-left: 16px;
+}</style><script charset="utf-8" src="Inoventica%20Services_files/21.js"></script><script charset="utf-8" src="Inoventica%20Services_files/27.js"></script><script charset="utf-8" src="Inoventica%20Services_files/20.js"></script><script charset="utf-8" src="Inoventica%20Services_files/31.js"></script><script charset="utf-8" src="Inoventica%20Services_files/30.js"></script><script charset="utf-8" src="Inoventica%20Services_files/28.js"></script><script charset="utf-8" src="Inoventica%20Services_files/39.js"></script><script charset="utf-8" src="Inoventica%20Services_files/46.js"></script><script charset="utf-8" src="Inoventica%20Services_files/51.js"></script><script charset="utf-8" src="Inoventica%20Services_files/60.js"></script><script charset="utf-8" src="Inoventica%20Services_files/80.js"></script><script charset="utf-8" src="Inoventica%20Services_files/79.js"></script><script charset="utf-8" src="Inoventica%20Services_files/76.js"></script><script charset="utf-8" src="Inoventica%20Services_files/65.js"></script><script charset="utf-8" src="Inoventica%20Services_files/154.js"></script><script charset="utf-8" src="Inoventica%20Services_files/49.js"></script><script charset="utf-8" src="Inoventica%20Services_files/56.js"></script><script charset="utf-8" src="Inoventica%20Services_files/109.js"></script><script charset="utf-8" src="Inoventica%20Services_files/88.js"></script><script charset="utf-8" src="Inoventica%20Services_files/32.js"></script><script charset="utf-8" src="Inoventica%20Services_files/38.js"></script><script charset="utf-8" src="Inoventica%20Services_files/37.js"></script><script charset="utf-8" src="Inoventica%20Services_files/36.js"></script><script charset="utf-8" src="Inoventica%20Services_files/35.js"></script><script charset="utf-8" src="Inoventica%20Services_files/34.js"></script><script charset="utf-8" src="Inoventica%20Services_files/45.js"></script><script charset="utf-8" src="Inoventica%20Services_files/44.js"></script><script charset="utf-8" src="Inoventica%20Services_files/40.js"></script><script charset="utf-8" src="Inoventica%20Services_files/48.js"></script><script charset="utf-8" src="Inoventica%20Services_files/95.js"></script><style>.isp-dashboard-widget {
+  border-radius: 5px;
+  box-shadow: var(--isp-shadow-panel);
+}
+
+.isp-dashboard-widget__header {
+  height: 40px;
+  padding: 10px 20px 13px 20px;
+  align-items: baseline;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-color: var(--isp-color__head);
+  display: flex;
+  justify-content: space-between;
+  border: var(--isp-border__widget-head, none);
+}
+
+.isp-dashboard-widget__title {
+  font-size: var(--isp-font-size-medium);
+  font-weight: var(--isp-font-weight-medium);
+  color: var(--isp-color__widget-head-title, #ffffff);
+}
+
+.isp-dashboard-widget__content {
+  background-color: #FFF;
+  display: block;
+  border-radius: 0 0 5px 5px;
+}
+
+.isp-dashboard-widget__stat {
+  margin-right: 20px;
+  margin-left: 20px;
+}</style><style>.isp-vds-widget-list__domain[_ngcontent-eqp-c12] {
+  width: 190px;
+}
+
+.isp-vds-widget-list__datacenter[_ngcontent-eqp-c12] {
+  width: 140px;
+}</style><style>.isp-dashboard-widget-list__item {
+  display: block;
+}
+.isp-dashboard-widget-list__item:not(:last-child) {
+  border-bottom: 1px solid var(--isp-color__border);
+}
+
+.isp-dashboard-widget-list__row {
+  display: flex;
+  padding-top: 21px;
+  padding-bottom: 15px;
+}
+.isp-dashboard-widget-list__row:not(:last-of-type) {
+  border-bottom: 1px solid var(--isp-color__border);
+}
+.isp-dashboard-widget-list__row:last-of-type {
+  border-radius: 0 0 5px 5px;
+}
+.isp-dashboard-widget-list__row:hover {
+  background-color: var(--isp-color__hover-row-table);
+}
+
+.isp-dashboard-widget-list__col {
+  padding-right: 20px;
+}
+.isp-dashboard-widget-list__col:first-child {
+  padding-left: 20px;
+}
+
+.isp-dashboard-widget-list__name {
+  width: 330px;
+}
+
+.isp-dashboard-widget-list__detail-link {
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.isp-dashboard-widget-list__subtext {
+  font-size: var(--isp-font-size-small);
+  color: var(--isp-color__default-additional);
+  margin-top: 3px;
+}
+
+.isp-dashboard-widget-list__cost {
+  width: 160px;
+  text-align: right;
+}
+
+.isp-dashboard-widget-list__expiredate {
+  width: 150px;
+}
+
+.isp-dashboard-widget-list__prolong-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.isp-dashboard-widget-list__status {
+  width: 100px;
+  padding-right: 0 !important;
+}
+
+.isp-dashboard-widget-list__menu {
+  width: 40px;
+}</style><style></style><style>.isp-stats-widget[_ngcontent-eqp-c15] {
+  display: flex;
+  justify-content: space-between;
+}
+
+.isp-stats-widget__chart[_ngcontent-eqp-c15] {
+  margin-bottom: 20px;
+}
+
+.isp-stats-widget__item[_ngcontent-eqp-c15] {
+  width: 348px;
+}</style><style>.isp-chart__canvas[_ngcontent-eqp-c16] {
+  display: block;
+}</style><style type="text/css">/* Chart.js */
+/*
+ * DOM element rendering detection
+ * https://davidwalsh.name/detect-node-insertion
+ */
+@keyframes chartjs-render-animation {
+	from { opacity: 0.99; }
+	to { opacity: 1; }
+}
+
+.chartjs-render-monitor {
+	animation: chartjs-render-animation 0.001s;
+}
+
+/*
+ * DOM element resizing detection
+ * https://github.com/marcj/css-element-queries
+ */
+.chartjs-size-monitor,
+.chartjs-size-monitor-expand,
+.chartjs-size-monitor-shrink {
+	position: absolute;
+	direction: ltr;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	overflow: hidden;
+	pointer-events: none;
+	visibility: hidden;
+	z-index: -1;
+}
+
+.chartjs-size-monitor-expand > div {
+	position: absolute;
+	width: 1000000px;
+	height: 1000000px;
+	left: 0;
+	top: 0;
+}
+
+.chartjs-size-monitor-shrink > div {
+	position: absolute;
+	width: 200%;
+	height: 200%;
+	left: 0;
+	top: 0;
+}
+</style><style>.isp-meta-table[_ngcontent-eqp-c17] {
+  --ngispui-table-thead-background-color: var(--isp-meta-table__thead_bg-color, var(--isp-color__head));
+  --ngispui-table-header-border-radius: var(--isp-meta-table__header_border-radius);
+  --ngispui-table-thead-color: var(--isp-meta-table__thead_color);
+  --isp-filter__icon: var(--isp-meta-table__filter_icon);
+}
+
+.isp-meta-table__cell_align_right[_ngcontent-eqp-c17] {
+  text-align: right;
+}
+
+.isp-meta-table__cell_right-indent[_ngcontent-eqp-c17] {
+  padding-right: calc(var(--ngispui-table-td-padding-right, 20px) * 2);
+}
+
+.isp-meta-table__header-cell_align_right[_ngcontent-eqp-c17] {
+  text-align: right;
+}
+
+.isp-meta-table__header-cell_right-indent[_ngcontent-eqp-c17] {
+  padding-right: calc(var(--ngispui-table-td-padding-right, 20px) * 2);
+}</style><style>.isp-meta-table-multi__list[_ngcontent-eqp-c17] {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  line-height: var(--isp-line-height-default);
+}
+
+.isp-meta-table-multi__scrollbar[_ngcontent-eqp-c17] {
+  max-height: calc(var(--isp-line-height-default) * 10);
+}
+
+.isp-meta-table-multi__title[_ngcontent-eqp-c17] {
+  margin-bottom: 20px;
+  line-height: var(--isp-line-height-default);
+  font-size: var(--isp-font-size-medium);
+  font-weight: var(--isp-font-weight-bold);
+}</style></head>
+<body class="isp-body">
+<isp-bill-client-app ng-version="9.1.2"><router-outlet></router-outlet><isp-main><div class="isp-app" scroll-listener="">
+  <header class="isp-header">
+    <section class="isp-header__main">
+      <div class="isp-grid">
+        <div class="isp-layout">
+          <div class="isp-layout__block isp-layout__block_size_50 isp-layout isp-layout_justify_start">
+            <section class="isp-logo isp-header__logo">
+              <a class="isp-logo__link" routerlink="/dashboard" href="#/dashboard">
+                <img class="isp-logo__img" src="Inoventica%20Services_files/logo.png">
+              </a>
+            </section>
+            <!----><section class="isp-contact">
+              <p class="isp-contact__phone"></p>
+              <p class="isp-contact__text"></p>
+            </section>
+          </div>
+          <div class="isp-layout__block isp-layout__block_size_50 isp-layout isp-layout_justify_end">
+            
+            <!---->
+            <!---->
+            <!----><section class="isp-account-info isp-header__account-info">
+              <isp-dropdown><div style="position: relative; display: inline-block;">
+  <div style="display: inline-block;">
+    <!---->
+                  <div class="isp-layout" id="frontend_app_account-info">
+                    <div class="isp-account-info__content">
+                      <p class="isp-account-info__corner">
+                        <span class="isp-account-info__text isp-account-info__name" id="isp-account-info-username" isptooltip="">
+                          info@js-master.ru
+                        </span>
+                      </p>
+                      <!----><p class="isp-account-info__text">
+                        <isp-cost><span>518.81</span><!----><span>&nbsp;RUB</span></isp-cost>
+                      </p>
+                    </div>
+                    <img alt="" class="isp-account-info__avatar isp-account-info__avatar_default" src="Inoventica%20Services_files/default-avatar-icon.svg">
+                  </div>
+                
+  </div>
+  <!---->
+</div>
+</isp-dropdown>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <isp-main-menu><nav class="isp-header__navigation">
+  <div class="isp-grid">
+    <div class="isp-layout">
+      <isp-preloader><div class="isp-preloader">
+  <!----><div>
+    
+        <!----><div class="isp-layout__block">
+          <ul class="isp-menu isp-menu_theme_inline isp-header__menu">
+            <li class="isp-menu__item">
+              <a class="isp-menu__link isp-menu__link_front" routerlink="/dashboard" routerlinkactive="isp-menu__link_active" isp-translate-msg-name="COMMON:MAIN_MENU_HOME" href="#/dashboard">Главное</a>
+            </li>
+            <!----><li class="isp-menu__item">
+              <a class="isp-menu__link isp-menu__link_front" routerlinkactive="isp-menu__link_active" href="#/dedic">
+                Cерверы
+              </a>
+            </li><li class="isp-menu__item">
+              <a class="isp-menu__link isp-menu__link_front" routerlinkactive="isp-menu__link_active" href="#/vds">
+                VPS
+              </a>
+            </li>
+            <!----><li class="isp-menu__item" id="submenu1">
+              <isp-dropdown><div style="position: relative; display: inline-block;">
+  <div style="display: inline-block;">
+    <!---->
+                  <span class="isp-menu__link isp-menu__link_corner isp-menu__link_front" routerlinkactive="isp-menu__link_active" isp-translate-msg-name="COMMON:MAIN_MENU_SERVICES">Все услуги</span>
+                
+  </div>
+  <!---->
+</div>
+</isp-dropdown>
+            </li>
+            <li class="isp-menu__item">
+              <a class="isp-menu__link isp-menu__link_front" routerlink="/finance" routerlinkactive="isp-menu__link_active" isp-translate-msg-name="COMMON:MAIN_MENU_FINANCE" href="#/finance">Финансы и документы</a>
+            </li>
+          </ul>
+        </div>
+      
+  </div>
+  <!---->
+</div>
+</isp-preloader>
+      <div class="isp-layout__block">
+        <ul class="isp-menu isp-menu_theme_inline isp-header__menu">
+          <!---->
+          <!----><li class="isp-menu__item">
+            <a class="isp-link isp-link_place_header" href="https://bill.invs.ru/billmgr?theme=orion" isp-translate-msg-name="COMMON:GO_TO_ORION">старый интерфейс</a>
+          </li>
+          <li class="isp-menu__item">
+            <isp-dropdown><div style="position: relative; display: inline-block;">
+  <div style="display: inline-block;">
+    <!---->
+                <button class="isp-menu__link isp-menu__icon isp-menu__icon_type_lifebuoy isp-menu__link_front" id="isp-main-support-menu" type="button">
+                  Служба поддержки
+                  <!----><span class="isp-text isp-text_theme_alert">(1)</span>
+                </button>
+              
+  </div>
+  <!---->
+</div>
+</isp-dropdown>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+</isp-main-menu>
+  </header>
+  <main class="isp-app__main isp-layout isp-layout_expand_vertical">
+    <div class="isp-grid isp-layout isp-layout_expand_vertical isp-layout__block isp-layout__block_expand_vertical">
+      
+      <!---->
+      <div ispsigningdirective=""></div>
+      <div banner=""></div>
+      <div confirm-box=""></div>
+      <div modal-payment-add=""></div>
+      <div basket-notification-directive=""></div>
+      <div isp-mistake-directive=""></div>
+      <div ispmodule-directive=""></div>
+      <div license-directive=""></div>
+      <div extlicense-directive=""></div>
+      
+      <div notification-directive=""></div>
+      <div isp-filter-modal-directive=""></div>
+      <div support_ticket-new=""></div>
+      <div ispmodalwindow=""></div>
+      <router-outlet></router-outlet><isp-support class="isp-layout isp-layout_expand_vertical isp-layout__block isp-layout__block_expand_vertical"><section class="isp-support-page isp-widget isp-layout isp-layout_expand_vertical isp-layout__block">
+  <!---->
+  <div class="isp-layout isp-layout_expand_vertical isp-layout__block isp-layout__block_expand_vertical">
+    <!---->
+    <router-outlet></router-outlet><isp-ticket-edit class="isp-layout isp-layout_expand_vertical isp-layout__block isp-layout__block_expand_vertical"><isp-preloader><div class="isp-preloader">
+  <!----><div>
+    
+<!----><section class="isp-support-ticket isp-layout isp-layout_expand_vertical isp-layout__block isp-layout__block_expand_vertical">
+  
+  <isp-widget-header _nghost-eqp-c0=""><div _ngcontent-eqp-c0="" class="isp-widget-header isp-widget-header_type_full" ngispui-sticky-z-index="2" ngispuisticky="">
+
+  <!----><div _ngcontent-eqp-c0="" class="isp-widget-header__breadcrumbs">
+    <nav _ngcontent-eqp-c0="" class="isp-widget__breadcrumbs">
+      <isp-widget-header-breadcrumbs>
+        <isp-widget-header-breadcrumbs-item class="isp-widget-header-breadcrumbs-item"><!----><!---->
+    <a class="isp-breadcrumbs__link" href="#/support/list">
+        <!---->
+    
+          <span isp-translate-msg-name="SUPPORT:TITLE">Служба поддержки</span>
+        
+
+    </a>
+
+
+<!---->
+
+<!----></isp-widget-header-breadcrumbs-item>
+
+        <!----><isp-widget-header-breadcrumbs-item class="isp-widget-header-breadcrumbs-item"><!----><!---->
+    <a class="isp-breadcrumbs__link" href="#/support/list">
+        <!---->
+    
+          <span isp-translate-msg-name="SUPPORT:MENU_TICKET_ALL">Все запросы</span>
+        
+
+    </a>
+
+
+<!---->
+
+<!----></isp-widget-header-breadcrumbs-item>
+
+        <!---->
+
+        <isp-widget-header-breadcrumbs-item class="isp-widget-header-breadcrumbs-item"><!---->
+
+<!----><!---->
+    <!---->
+    
+          <span>#8210</span>
+        
+
+
+
+<!----></isp-widget-header-breadcrumbs-item>
+      </isp-widget-header-breadcrumbs>
+    </nav>
+  </div>
+
+
+  <!---->
+    <!----><div _ngcontent-eqp-c0="" class="isp-widget-header__title" isptooltip="">
+      <isp-widget-header-title>Сервер стал работать хуже. Постоянные разрывы соединения.</isp-widget-header-title>
+    </div><!---->
+  
+  <!---->
+
+
+  <!----><div _ngcontent-eqp-c0="" class="isp-widget-header__info">
+    <div _ngcontent-eqp-c0="" class="isp-layout isp-layout_align_baseline">
+      <!----><div _ngcontent-eqp-c0="" class="isp-layout__block">
+        <div _ngcontent-eqp-c0="" class="isp-list isp-list_theme_inline isp-list_spacing_none">
+          <isp-widget-header-info>
+
+        <isp-widget-header-info-item _nghost-eqp-c3=""><div _ngcontent-eqp-c3="" class="isp-list__item isp-widget-header-info-item">
+    
+          <span isp-translate-msg-name="SUPPORT:CREATED">создан</span>: <time class="isp-text">14 сентября 20:48</time>
+        
+</div></isp-widget-header-info-item>
+
+        <isp-widget-header-info-item _nghost-eqp-c3=""><div _ngcontent-eqp-c3="" class="isp-list__item isp-widget-header-info-item">
+    
+          <!----><span class="isp-text isp-text_theme_info" isp-translate-msg-name="SUPPORT:STATUS_PROCESSING">на рассмотрении</span>
+          <!---->
+          <!---->
+          <!---->
+        
+</div></isp-widget-header-info-item>
+
+        
+
+        <!---->
+
+        <!----><isp-widget-header-info-item _nghost-eqp-c3=""><div _ngcontent-eqp-c3="" class="isp-list__item isp-widget-header-info-item">
+    
+          <span isp-translate="SUPPORT:ASSOCIATED_WITH_SERVICE" isp-translate-msg-name="SUPPORT:ASSOCIATED_WITH_SERVICE">Связан с услугой</span>: MiniKVM-VMM5 #110781 (46.173.223.59, info6.example.com)
+        
+</div></isp-widget-header-info-item>
+
+      </isp-widget-header-info>
+        </div>
+      </div>
+      <!---->
+    </div>
+  </div>
+
+  <!---->
+
+  
+      
+      <isp-widget-header-close _nghost-eqp-c2=""><!----><div _ngcontent-eqp-c2="" class="isp-widget-header-close" isp-crossback=""></div>
+
+<!---->
+</isp-widget-header-close>
+      
+
+      
+  
+
+</div>
+</isp-widget-header>
+
+  
+  <div class="isp-widget__main isp-layout isp-layout_expand_vertical isp-layout__block isp-layout__block_expand_vertical">
+    <div class="isp-layout isp-layout__block isp-layout__block_expand_vertical isp-support-ticket__widget">
+      <div class="isp-widget__content isp-widget__content_type_sidebar isp-support-page__content">
+        
+        <button class="isp-button isp-button_theme_goto" style="visibility: hidden; left: 490.65px; top: 264.4px;">
+                К началу переписки
+        </button>
+        <button class="isp-button isp-button_theme_goto" style="visibility: visible; left: 493.533px; bottom: 92px;">
+                В конец переписки
+        </button>
+        
+        <div class="isp-dialog">
+          
+          <!---->
+            
+            <!---->
+              
+            <!---->
+              
+            <!---->
+          
+            
+            <!---->
+              
+            <!---->
+              
+            <!----><article class="isp-dialog__message isp-dialog__message_type_outcoming isp-message isp-message_type_outcoming">
+              <div class="isp-message__content">
+                <header class="isp-message__header">
+                  <div class="isp-layout isp-layout__block isp-layout__block_size_100">
+                    <p class="isp-message__name isp-text isp-text_ellipsis" isptooltip="">info@js-master.ru</p>
+                    <time class="isp-message__time">14 сентября 20:48</time>
+                  </div>
+                </header>
+                <div class="isp-message__message">
+                  <p class="isp-message__message-body">Сервер стал работать хуже. Постоянные разрывы соединения.</p>
+                  <!---->
+                </div>
+                <!---->
+              </div>
+              <img class="isp-message__avatar isp-message__avatar_outcoming" src="Inoventica%20Services_files/customer-6.svg" alt="info@js-master.ru">
+            </article>
+          
+            
+            <!---->
+              
+            <!----><article class="isp-dialog__message isp-dialog__message_type_incoming isp-message isp-message_type_incoming">
+              <img alt="" class="isp-message__avatar" src="Inoventica%20Services_files/provider-6.svg">
+              <div class="isp-message__content">
+                <header class="isp-message__header">
+                  <div class="isp-layout isp-layout__block isp-layout__block_size_100">
+                    <p class="isp-message__name isp-text isp-text_ellipsis" isptooltip="">Даниил З.</p>
+                    <time class="isp-message__time">14 сентября 21:18</time>
+                  </div>
+                  <p class="isp-message__position isp-text isp-text_ellipsis" isptooltip=""></p>
+                </header>
+                <div class="isp-message__message">
+                  <p class="isp-message__message-body">Здравствуйте, ваше обращение принято в работу.</p>
+                  <!---->
+                </div>
+                <!----><footer class="isp-message__footer">
+                  <isp-rate><section class="isp-rate">
+  <!---->
+  <!----><span>
+    <span class="isp-rate__text">Оцените ответ</span>
+    <span class="isp-rate__icon isp-icon isp-icon_like"></span>
+    <span class="isp-rate__icon isp-icon isp-icon_dislike"></span>
+  </span>
+</section>
+</isp-rate>
+                </footer>
+              </div>
+            </article>
+              
+            <!---->
+          
+            
+            <!---->
+              
+            <!----><article class="isp-dialog__message isp-dialog__message_type_incoming isp-message isp-message_type_incoming">
+              <img alt="" class="isp-message__avatar" src="Inoventica%20Services_files/provider-6.svg">
+              <div class="isp-message__content">
+                <header class="isp-message__header">
+                  <div class="isp-layout isp-layout__block isp-layout__block_size_100">
+                    <p class="isp-message__name isp-text isp-text_ellipsis" isptooltip="">Андрей Л.</p>
+                    <time class="isp-message__time">17 сентября 06:30</time>
+                  </div>
+                  <p class="isp-message__position isp-text isp-text_ellipsis" isptooltip=""></p>
+                </header>
+                <div class="isp-message__message">
+                  <p class="isp-message__message-body">Здравствуйте,  в данный момент фиксируем нагрузки на сервисы, этой проблемой уже занимаются наши специалисты, приносим извинения за доставленные неудобства.</p>
+                  <!---->
+                </div>
+                <!----><footer class="isp-message__footer">
+                  <isp-rate><section class="isp-rate">
+  <!---->
+  <!----><span>
+    <span class="isp-rate__text">Оцените ответ</span>
+    <span class="isp-rate__icon isp-icon isp-icon_like"></span>
+    <span class="isp-rate__icon isp-icon isp-icon_dislike"></span>
+  </span>
+</section>
+</isp-rate>
+                </footer>
+              </div>
+            </article>
+              
+            <!---->
+          
+            
+            <!---->
+              
+            <!---->
+              
+            <!----><article class="isp-dialog__message isp-dialog__message_type_outcoming isp-message isp-message_type_outcoming">
+              <div class="isp-message__content">
+                <header class="isp-message__header">
+                  <div class="isp-layout isp-layout__block isp-layout__block_size_100">
+                    <p class="isp-message__name isp-text isp-text_ellipsis" isptooltip="">info@js-master.ru</p>
+                    <time class="isp-message__time">17 сентября 12:47</time>
+                  </div>
+                </header>
+                <div class="isp-message__message">
+                  <p class="isp-message__message-body">Здравствуйте, Андрей! 
+Нагрузки на мой сервер я отслеживаю, и они настолько мизерные, что их спокойно потащил бы любой бесплатный хостинг. Ввиду специфики моих ботов, мне нужен именно сервер, поэтому я у вас. 
+Сегодня не могу соединиться даже по SFTP. Что же происходит? Когда вы уже наладите сервис? 
+Это не праздный вопрос.</p>
+                  <!---->
+                </div>
+                <!---->
+              </div>
+              <img class="isp-message__avatar isp-message__avatar_outcoming" src="Inoventica%20Services_files/customer-6.svg" alt="info@js-master.ru">
+            </article>
+          
+            
+            <!---->
+              
+            <!---->
+              
+            <!----><article class="isp-dialog__message isp-dialog__message_type_outcoming isp-message isp-message_type_outcoming">
+              <div class="isp-message__content">
+                <header class="isp-message__header">
+                  <div class="isp-layout isp-layout__block isp-layout__block_size_100">
+                    <p class="isp-message__name isp-text isp-text_ellipsis" isptooltip="">info@js-master.ru</p>
+                    <time class="isp-message__time">17 сентября 12:49</time>
+                  </div>
+                </header>
+                <div class="isp-message__message">
+                  <p class="isp-message__message-body">Скрин соединения через winSCP.</p>
+                  <!----><isp-file-view classmodifications="isp-file_theme_ticket"><!----><section class="isp-file isp-file_theme_ticket">
+  <div class="isp-layout isp-layout_justify_start">
+    <div class="isp-file__icon isp-icon isp-icon_file"></div>
+    <div class="isp-file__content">
+      <p class="isp-file__name isp-text isp-text_ellipsis">Image 002.png</p>
+      <p class="isp-file__size">30.07 KiB</p>
+    </div>
+  </div>
+</section>
+
+</isp-file-view>
+                </div>
+                <!---->
+              </div>
+              <img class="isp-message__avatar isp-message__avatar_outcoming" src="Inoventica%20Services_files/customer-6.svg" alt="info@js-master.ru">
+            </article>
+          
+            
+            <!---->
+              
+            <!----><article class="isp-dialog__message isp-dialog__message_type_incoming isp-message isp-message_type_incoming">
+              <img alt="" class="isp-message__avatar" src="Inoventica%20Services_files/provider-6.svg">
+              <div class="isp-message__content">
+                <header class="isp-message__header">
+                  <div class="isp-layout isp-layout__block isp-layout__block_size_100">
+                    <p class="isp-message__name isp-text isp-text_ellipsis" isptooltip="">Николай Ш.</p>
+                    <time class="isp-message__time">17 сентября 13:37</time>
+                  </div>
+                  <p class="isp-message__position isp-text isp-text_ellipsis" isptooltip=""></p>
+                </header>
+                <div class="isp-message__message">
+                  <p class="isp-message__message-body">Здравствуйте,К сожалению сейчас происходят работы по восстановлению панели управления 
+</p>
+                  <!---->
+                </div>
+                <!----><footer class="isp-message__footer">
+                  <isp-rate><section class="isp-rate">
+  <!---->
+  <!----><span>
+    <span class="isp-rate__text">Оцените ответ</span>
+    <span class="isp-rate__icon isp-icon isp-icon_like"></span>
+    <span class="isp-rate__icon isp-icon isp-icon_dislike"></span>
+  </span>
+</section>
+</isp-rate>
+                </footer>
+              </div>
+            </article>
+              
+            <!---->
+          
+            
+            <!---->
+              
+            <!---->
+              
+            <!----><article class="isp-dialog__message isp-dialog__message_type_outcoming isp-message isp-message_type_outcoming">
+              <div class="isp-message__content">
+                <header class="isp-message__header">
+                  <div class="isp-layout isp-layout__block isp-layout__block_size_100">
+                    <p class="isp-message__name isp-text isp-text_ellipsis" isptooltip="">info@js-master.ru</p>
+                    <time class="isp-message__time">18 сентября 08:53</time>
+                  </div>
+                </header>
+                <div class="isp-message__message">
+                  <p class="isp-message__message-body">Здравствуйте, Николай! 
+Пока по-прежнему сервер не работает. Яндекс уже начал выкидывать страницы из поиска. Вы понимаете, что наносите клиентам ущерб? 
+Когда сервер заработает???</p>
+                  <!---->
+                </div>
+                <!---->
+              </div>
+              <img class="isp-message__avatar isp-message__avatar_outcoming" src="Inoventica%20Services_files/customer-6.svg" alt="info@js-master.ru">
+            </article>
+          
+            
+            <!---->
+              
+            <!---->
+              
+            <!----><article class="isp-dialog__message isp-dialog__message_type_outcoming isp-message isp-message_type_outcoming">
+              <div class="isp-message__content">
+                <header class="isp-message__header">
+                  <div class="isp-layout isp-layout__block isp-layout__block_size_100">
+                    <p class="isp-message__name isp-text isp-text_ellipsis" isptooltip="">info@js-master.ru</p>
+                    <time class="isp-message__time">18 сентября 17:04</time>
+                  </div>
+                </header>
+                <div class="isp-message__message">
+                  <p class="isp-message__message-body">Ребята, КОГДА заработает мой сервер?</p>
+                  <!---->
+                </div>
+                <!---->
+              </div>
+              <img class="isp-message__avatar isp-message__avatar_outcoming" src="Inoventica%20Services_files/customer-6.svg" alt="info@js-master.ru">
+            </article>
+          
+            
+            <!---->
+              
+            <!----><article class="isp-dialog__message isp-dialog__message_type_incoming isp-message isp-message_type_incoming">
+              <img alt="" class="isp-message__avatar" src="Inoventica%20Services_files/provider-6.svg">
+              <div class="isp-message__content">
+                <header class="isp-message__header">
+                  <div class="isp-layout isp-layout__block isp-layout__block_size_100">
+                    <p class="isp-message__name isp-text isp-text_ellipsis" isptooltip="">Игорь У.</p>
+                    <time class="isp-message__time">18 сентября 17:14</time>
+                  </div>
+                  <p class="isp-message__position isp-text isp-text_ellipsis" isptooltip=""></p>
+                </header>
+                <div class="isp-message__message">
+                  <p class="isp-message__message-body">Точно сказать не можем, делаем все возможное чтоб в ближайшее время заработало</p>
+                  <!---->
+                </div>
+                <!----><footer class="isp-message__footer">
+                  <isp-rate><section class="isp-rate">
+  <!---->
+  <!----><span>
+    <span class="isp-rate__text">Оцените ответ</span>
+    <span class="isp-rate__icon isp-icon isp-icon_like"></span>
+    <span class="isp-rate__icon isp-icon isp-icon_dislike"></span>
+  </span>
+</section>
+</isp-rate>
+                </footer>
+              </div>
+            </article>
+              
+            <!---->
+          
+            
+            <!---->
+              
+            <!---->
+              
+            <!----><article class="isp-dialog__message isp-dialog__message_type_outcoming isp-message isp-message_type_outcoming">
+              <div class="isp-message__content">
+                <header class="isp-message__header">
+                  <div class="isp-layout isp-layout__block isp-layout__block_size_100">
+                    <p class="isp-message__name isp-text isp-text_ellipsis" isptooltip="">info@js-master.ru</p>
+                    <time class="isp-message__time">Сегодня 22:06</time>
+                  </div>
+                </header>
+                <div class="isp-message__message">
+                  <p class="isp-message__message-body">Я понял уровень ваших специалистов. Мне стало быстрее перевести свои проекты на другой хостинг. 
+Прошу вернуть оставшиеся на балансе средства по любому из реквизитов - https://js-master.ru/content/1000.Contacts/Rekvizity</p>
+                  <!---->
+                </div>
+                <!---->
+              </div>
+              <img class="isp-message__avatar isp-message__avatar_outcoming" src="Inoventica%20Services_files/customer-6.svg" alt="info@js-master.ru">
+            </article>
+          
+            
+            <!---->
+              
+            <!----><article class="isp-dialog__message isp-dialog__message_type_incoming isp-message isp-message_type_incoming">
+              <img alt="" class="isp-message__avatar" src="Inoventica%20Services_files/617ec76e88a13775.png">
+              <div class="isp-message__content">
+                <header class="isp-message__header">
+                  <div class="isp-layout isp-layout__block isp-layout__block_size_100">
+                    <p class="isp-message__name isp-text isp-text_ellipsis" isptooltip="">Игорь Ф.</p>
+                    <time class="isp-message__time">Сегодня 22:08</time>
+                  </div>
+                  <p class="isp-message__position isp-text isp-text_ellipsis" isptooltip=""></p>
+                </header>
+                <div class="isp-message__message">
+                  <p class="isp-message__message-body">Передаю ваш запрос в клиентский сервис.</p>
+                  <!---->
+                </div>
+                <!----><footer class="isp-message__footer">
+                  <isp-rate><section class="isp-rate">
+  <!---->
+  <!----><span>
+    <span class="isp-rate__text">Оцените ответ</span>
+    <span class="isp-rate__icon isp-icon isp-icon_like"></span>
+    <span class="isp-rate__icon isp-icon isp-icon_dislike"></span>
+  </span>
+</section>
+</isp-rate>
+                </footer>
+              </div>
+            </article>
+              
+            <!---->
+          
+            
+            <!----><article class="isp-dialog__message isp-dialog__message_type_incoming isp-message isp-message_type_incoming">
+              <span class="isp-message__avatar isp-icon isp-icon_bot"></span>
+              <div class="isp-message__content">
+                <header class="isp-message__header">
+                  <div class="isp-layout isp-layout__block isp-layout__block_size_100">
+                    <p class="isp-message__name isp-text isp-text_ellipsis" isptooltip="">System bot</p>
+                    <time class="isp-message__time"></time>
+                  </div>
+                  <p class="isp-message__position isp-text isp-text_ellipsis" isptooltip="">системное сообщение</p>
+                  </header>
+                  <div class="isp-message__message">
+                    <p class="isp-message__message-body">Запрос скопирован к "Клиентский сервис"</p>
+                    <!---->
+                  </div>
+                  <!---->
+                </div>
+            </article>
+              
+            <!---->
+              
+            <!---->
+          
+        </div>
+      </div>
+      
+      <aside class="isp-widget__sidebar isp-widget__sidebar_border_left isp-support isp-support-page__sidebar">
+        <faq-view-column group="support" location="rightpanel"><!----></faq-view-column>
+      </aside>
+    </div>
+      
+      <!----><section class="isp-widget__content isp-support-ticket__footer isp-support-ticket__footer_fixed">
+        
+        <form class="isp-form isp-support-ticket__form ng-untouched ng-pristine ng-invalid" novalidate="">
+          <div class="isp-layout isp-layout_justify_start isp-layout_align_end">
+            <textarea class="isp-form__control isp-form__textarea isp-support-ticket__textarea ng-untouched ng-pristine ng-invalid" keydown-event-ctrl-enter="" name="message" required="" textarea-autoresize="" placeholder="введите ваше сообщение"></textarea>
+            <ul class="isp-list isp-list_theme_inline isp-indent_mb_1">
+              <li class="isp-list__item" style="visibility: visible;">
+                <a class="isp-button isp-button_type_icon">
+                  <span class="isp-icon isp-icon_quotation isp-support-ticket__quote"></span>
+                </a>
+              </li>
+              <li class="isp-list__item">
+                <isp-file class="isp-support-ticket__add-file" filelimit="5" icon="" observer=""><a class="isp-button isp-button_type_icon">
+  <!----><span class="isp-icon isp-icon_clip"></span>
+  <!---->
+</a>
+
+<input style="display: none;" type="file">
+</isp-file>
+              </li>
+              <li class="isp-list__item">
+                <button class="isp-button_type_icon" type="submit">
+                  <span class="isp-icon isp-icon_send"></span>
+                </button>
+              </li>
+            </ul>
+          </div>
+          <isp-file-list><!---->
+</isp-file-list>
+        </form>
+      </section>
+    </div>
+  </section>
+
+  </div>
+  <!---->
+</div>
+</isp-preloader>
+</isp-ticket-edit>
+  </div>
+</section>
+</isp-support>
+    </div>
+  </main>
+  <footer class="isp-footer">
+    <!----><div class="isp-grid">
+      <a class="isp-link isp-link_type_normal isp-copyright" href="https://invs.ru/">© 1999 — 2019, Группа компаний INOVENTICA</a>
+    </div>
+  </footer>
+</div>
+</isp-main>
+</isp-bill-client-app><script type="text/javascript">
+      (function (w) {
+        var redirectToOrion = window.billMgrUrl + '?theme=orion';
+        var version = 0;
+        var agent = navigator.userAgent;
+        var isRedirect = false;
+
+        if (agent.match(/(MSIE)|(Trident\/[6-7]+)/ig)) {
+         isRedirect = true;
+        } else if (agent.match(/(Edge\/[0-9]+)/ig)) {
+          version = Number(agent.match(/Edge\/([0-9]+)/)[1]);
+
+          if (version < 13) {
+           isRedirect = true;
+          }
+        } else if (agent.match(/(Firefox\/[0-9]+)/ig)) {
+          version = Number(agent.match(/Firefox\/([0-9]+)/)[1]);
+
+          if (version < 47) {
+           isRedirect = true;
+          }
+        } else if (agent.match(/Chrome/ig) || agent.match(/(OPR)||(Opera)/ig) || agent.match(/Safari/ig)) {
+          var chrome = !!agent.match(/Chrome/ig);
+          var opera = !!agent.match(/(OPR)|(Opera)/ig);
+          var safari = !!agent.match(/Safari/ig);
+
+          if (chrome && safari) { safari = false; }
+          if (chrome && opera) { chrome = false; }
+
+          if (chrome) {
+            version = Number(agent.match(/Chrome\/([0-9]+)/)[1]);
+
+            if (version < 60) {
+             isRedirect = true;
+            }
+          } else if (opera) {
+            version = Number(agent.match(/(OPR|Opera)\/([0-9]+)/)[2]);
+
+            if (version < 34) {
+             isRedirect = true;
+            }
+          } else if (safari) {
+            version = Number(agent.match(/Safari\/([0-9]+)/)[1]);
+
+            if (version < 11) {
+             isRedirect = true;
+            }
+          }
+        }
+
+        if (isRedirect) { w.location.href = redirectToOrion; }
+
+      })(window);
+    </script><script type="text/javascript" src="Inoventica%20Services_files/polyfills.js"></script><script type="text/javascript" src="Inoventica%20Services_files/0.js"></script><script type="text/javascript" src="Inoventica%20Services_files/main.js"></script>
+
+
+</body></html>
