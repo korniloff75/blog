@@ -14,7 +14,7 @@ class BlogKff_sidebar extends BlogKff
 		$pageId= $Page->module === 'kff_blog'?
 			$Page->id : 'index';
 
-		echo '<ul uk-nav="multiple: false" class="categories uk-nav-parent-icon uk-nav-primary uk-nav-center" uk-sticky="show-on-up:true; media:@m; top: .sidebar; bottom: .sidebar; " style="background: inherit;">';
+		echo '<ul uk-nav="multiple: false" class="categories uk-nav-parent-icon uk-nav-primary uk-nav-center" uk-sticky="show-on-up:true; media:@m; bottom: .sidebar; " style="background: inherit;">';
 
 		foreach($this->getCategories() as &$cat) {
 
@@ -45,21 +45,30 @@ class BlogKff_sidebar extends BlogKff
 					</ul>
 				</div> -->
 
-					<!-- <ul data-cat=<?=$cat?>  class="uk-nav uk-dropdown-nav"> -->
-					<ul data-cat=<?=$cat?>  class="">
+				<!-- <ul data-cat=<?=$cat?>  class="uk-nav uk-dropdown-nav"> -->
+				<ul data-cat=<?=$cat?>  class="">
 
 					<?php
 
 					foreach($catData['items'] as &$art) {
+						// self::$log->add("/$cat/{$art['id']}");
 
-						echo "<li data-id={$art['id']} data-cat=$cat>
+						$li= "<li data-id={$art['id']} data-cat=$cat class=\"\">
 						<a href=\"/{$pageId}/$cat/{$art['id']} \">{$art['name']}</a>
 
 						</li>";
+
+						$artData= self::getArtDB(self::$storagePath . "/$cat/{$art['id']}" . self::$l_cfg['ext'])->get();
+
+						if(!empty($artData['not-public'])){
+							if(self::is_adm())
+							echo str_replace('class=""', 'class="not-public"', $li);
+						}
+						else echo $li;
 					}
 
 					?>
-					</ul>
+				</ul>
 
 			</li>
 		<?php

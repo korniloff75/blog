@@ -8,6 +8,9 @@ if(!defined('DR'))
 
 class Index_my_addon
 {
+	const
+		DATE_FORMAT = "Y-m-d H:i:s";
+
 	public static
 		// $log = false,
 		$tmp,

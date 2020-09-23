@@ -5,6 +5,16 @@ ob_clean();
 // *Собираем сюда все финишные замены
 $Templater = [];
 
+// *Подкладываем данные из Блога
+if(class_exists('BlogKff'))
+{
+	// $artDB= $Blog->getArtDB()->get();
+	foreach(['title','description','keywords'] as $prop){
+		// $Page->{$prop}= $artDB[$prop];
+		$Page->{$prop}= BlogKff::getArtDB()->get($prop);
+	}
+}
+
 // *{{coreHead}}
 ob_start();
 ?>
@@ -33,7 +43,7 @@ ob_start();
 $Templater['coreFooter']= ob_get_clean();
 
 
-$log->add("\$Templater = ",null,[$Templater]);
+// $log->add("\$Templater = ",null,[$Templater]);
 
 $log->add("Уровень буфера= ". ob_get_level());
 

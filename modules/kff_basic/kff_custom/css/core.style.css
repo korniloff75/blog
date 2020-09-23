@@ -6,6 +6,10 @@
 	padding: 3px 3px 3px 7px;
 }
 
+.info p {
+	margin: 0 0 5px !important;
+}
+
 .core.info{
 	color: #159;
 	background: #eef;
@@ -19,10 +23,16 @@
 	border: 2px dashed blue;
 }
 
+.not-public {
+	background: orange;
+	border: dotted 1px;
+	text-align: center;
+	font-weight: 600;
+}
+
 @media (max-width: 450px) {
 	div.content {
 		padding: 5px;
 		margin: 0;
 	}
 }
-

@@ -136,6 +136,19 @@ class BlogKff_adm extends BlogKff
 	}
 
 	/**
+	 * !Удаляем категорию
+	 */
+	public function c_removeCategory($removeId)
+	{
+		self::$log->add("Удаление категории $removeId");
+		require_once DR.'/'. self::$dir ."/cpDir.class.php";
+		cpDir::RemoveDir(self::$storagePath. "/$removeId");
+		$num= array_search($removeId, $this->catsDB->get());
+		$this->catsDB->remove($num);
+	}
+
+
+	/**
 	 * *Добавляем категорию
 	 */
 	public function c_addCategory($new_cat)
@@ -163,7 +176,11 @@ class BlogKff_adm extends BlogKff
 		}
 		// $this->updateCategories();
 
-		$this->catsDB->append([$new_cat]);
+		// *Переписываем список категорий
+		foreach($this->catsDB->append([basename($catPath)])->get() as $num=>&$cat){
+			if(!is_dir(self::$storagePath."/$cat"))
+			$this->catsDB->remove($num);
+		}
 
 		return $success;
 	}
@@ -177,8 +194,9 @@ class BlogKff_adm extends BlogKff
 		$new_article = Index_my_addon::translit($new_article);
 		$cfg['id'] = $new_article;
 
-		$cat = $this->opts['cat'] ?? 'default';
-		$catPath = self::$storagePath."/$cat";
+		$catId = $cfg['catId']= $this->opts['catId'] ?? 'default';
+		$catName = $cfg['catName']= $this->opts['catName'];
+		$catPath = self::$storagePath."/$catId";
 		$cfg['path'] = Index_my_addon::getPathFromRoot($catPath);
 		$artPath = "{$cfg['path']}/{$new_article}" . self::$l_cfg['ext'];
 
@@ -223,7 +241,7 @@ class BlogKff_adm extends BlogKff
 
 			<h3>Категории</h3>
 
-			<input type="text" name="addCategory" placeholder="Название категории"><button>Новая</button>
+			<input type="text" name="addCategory" placeholder="Название категории"><button class="addNew">Новая</button>
 
 			<ul id="categories" class="uk-nav uk-nav-default" uk-sortable="group: cats; handle: .uk-sortable-handle;">
 
@@ -237,13 +255,14 @@ class BlogKff_adm extends BlogKff
 				<div class="uk-flex uk-flex-middle uk-margin-top">
 					<div class="uk-sortable-handle uk-margin-small-right" uk-icon="icon: table; ratio: 1.5"></div>
 					<!-- Category name -->
-					<h4 class="uk-margin-remove"><?=$catData['name']?></h4>
+					<h4 class="uk-margin-remove"><?=$catData['name']?> <div class="delCat" uk-icon="icon: trash; ratio: 1.5" data-del="<?=$catData['id']?>"></div></h4>
 				</div>
 
 				<div style="display: inline-block;">
-					<input type="hidden" name="cat" value="<?=$catData['id']?>">
+					<input type="hidden" name="catId" value="<?=$catData['id']?>">
+					<input type="hidden" name="catName" value="<?=$catData['name']?>">
 					<input type="text" name="addArticle" placeholder="Название статьи">
-				</div><button>ADD</button>
+				</div><button class="addNew">ADD</button>
 
 				<ul data-id=<?=$catData['id']?> class="listArticles uk-nav uk-nav-default uk-width-medium" uk-sortable="group: cat-items; handle: .uk-sortable-handle; cls-custom: uk-box-shadow-small uk-flex uk-flex-expand uk-background">
 
@@ -251,12 +270,14 @@ class BlogKff_adm extends BlogKff
 				if(is_array($catData['items'])) foreach($catData['items'] as &$art) {
 					echo "<li data-id={$art['id']} data-name=\"{$art['name']}\" data-oldCatId= {$catData['id']} class=\"uk-flex uk-flex-wrap uk-flex-middle\">
 					<div class=\"uk-sortable-handle uk-margin-small-right\" uk-icon=\"icon: table\"></div>
+
+					<!-- Link to edit article -->
 					<a href=\"/Blog/$cat/{$art['id']}?edit \" target='_blank'>{$art['name']}</a>
 
-					<input type='button' class='delArticle uk-button-secondary uk-margin-small-horizontal' value=DEL>
+					<!-- Remove article -->
+					<span uk-icon=\"trash\" class='delArticle'></span>
 
-					<input name=\"description\" type=\"text\" placeholder=\"description\">
-					<input name=\"keywords\" type=\"text\" placeholder=\"keywords\">
+
 
 					</li>";
 					// print_r($art);

@@ -257,6 +257,7 @@ var kff = {
 			console.log(e.state, 'e.state[mainSelector].html=', e.state[mainSelector].html);
 
 			kff.render([mainSelector], e.state[mainSelector].html);
+			kff.render(['h1#title'], e.state[mainSelector].title);
 			self.setActive(e.state[mainSelector].href);
 		});
 	},
@@ -302,6 +303,8 @@ var kff = {
 			});
 			// *Подсвечиваем лог
 			sels.includes('.log') && this.highlight('.log');
+			// *title
+			// sels.includes('h1#title') && (document.title= $sourceNode);
 			return out;
 		});
 
@@ -333,7 +336,7 @@ kff.menu.prototype.clickHahdler = function ($e) {
 	this.setActive(t.href);
 
 	// todo
-	kff.request(t.href,null,[mainSelector,'.core.info','.log'])
+	kff.request(t.href,null,[mainSelector,'h1#title','.core.info','.log'])
 	.then(r=>{
 		if(!r[mainSelector]){
 			console.warn(r)
@@ -343,12 +346,14 @@ kff.menu.prototype.clickHahdler = function ($e) {
 		var state={};
 		state[mainSelector]= {
 			href: t.href,
+			title: $('h1#title').html(),
 			html: r[mainSelector]
 		};
 		console.log('ps=',state);
 
 		history.pushState(state, '', t.href);
 		self.$loader.hide();
+		document.title= state[mainSelector].title;
 
 		// *Close uk-dropdown
 		if(t.closest('.uk-dropdown')){
@@ -376,3 +381,4 @@ kff.menu.prototype.setActive = function setActive (href) {
 		this.$nav.css('height',0);
 	} */
 }
+

@@ -11,7 +11,8 @@ class BlogKff extends Index_my_addon
 		// *Локальный конфиг
 		$l_cfg,
 		$storagePath = \DR.'/kff_blog_data',
-		$catPath = __DIR__.'/categories.json';
+		$catPath = __DIR__.'/categories.json',
+		$artBase= [];
 
 
 	public function __construct()
@@ -58,13 +59,20 @@ class BlogKff extends Index_my_addon
 
 
 	/**
-	 * *Сохраняем редактирование
+	 * @param artPathname - путь к файлу статьи
+	 * если не передан - вычисляем текущую из URI
 	 */
-	public function c_saveEdit($html)
-
+	public static function getArtDB($artPathname=null)
 	{
-		self::$log->add('$this->opts=',null,[$this->opts]);
-		return file_put_contents(self::$storagePath . "/{$this->opts['cat']}/{$this->opts['art']}" . self::$l_cfg['ext'], $html);
+		global $Page;
+		$artPathname= $artPathname ?? str_replace($Page->id, basename(self::$storagePath), DR.explode('?',REQUEST_URI)[0]) . self::$l_cfg['ext'];
+		$catId= basename(dirname($artPathname));
+		$artId= basename($artPathname, self::$l_cfg['ext']);
+		// self::$log->add(__METHOD__,null,[$artPathname, $artId]);
+
+		$dbPath= dirname($artPathname) ."/$artId.json";
+
+		return self::$artBase[$catId][$artId]= self::$artBase[$catId][$artId] ?? new DbJSON($dbPath);
 	}
 
 

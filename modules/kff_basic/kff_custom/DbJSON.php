@@ -103,6 +103,14 @@ class DbJSON {
 	}
 
 
+	public function remove($key)
+	{
+		unset($this->db[$key]);
+		$this->db['change']= 1;
+		return $this;
+	}
+
+
 	# Плоский массив из многомерного
 	public function getFlat()
 	{

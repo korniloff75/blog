@@ -62,7 +62,7 @@
 		<main>
 			<article>
 				<!-- <h1 class="name"><?php $Page->get_name();?></h1> -->
-				<h1 class="name">{{Title}}</h1>
+				<!-- <h1 class="name">{{Title}}</h1> -->
 				<?php $Page->get_content();?>
 			</article>
 		</main>

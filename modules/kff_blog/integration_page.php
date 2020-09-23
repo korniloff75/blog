@@ -4,24 +4,85 @@ if (!class_exists('System')) exit; // Запрет прямого доступа
 // *Очищаем основную систему от лишнего кода
 class BlogKff_page extends BlogKff
 {
+	// public ;
 	/**
 	 * *Лента новостей
-	 * todo ...
+	 * @param quantity - кол-во элементов
 	 */
-	public function newsTape()
+	public function newsTape($quantity=5)
 	{
-		$o= "<h2>Тут будет лента новостей</h2>";
+		global $Page;
+		$o= "";
 
-		$this->getArticleList(5);
+
+		foreach($this->getArticleList($quantity) as $ts=>&$artPathname){
+			$db= self::getArtDB($artPathname)->get();
+
+			// *Черновики видны только админу
+			if(!empty($db['not-public'])){
+				if(self::is_adm()){
+					$o.= "<p class='not-public'>Черновик</p>";
+				}
+				else{
+					continue;
+				}
+			}
+
+			$doc = new DOMDocument('1.0','utf-8');
+			@$doc->loadHTMLFile($artPathname);
+
+			$catId= $db['catId'] ?? basename(dirname($artPathname));
+			$catName= $db['catName'];
+			$artId= basename($artPathname, self::$l_cfg['ext']);
+
+			$xpath = new DOMXpath($doc);
+			$imgs = $xpath->query("//img[1]");
+			$fragm = $xpath->query("//p");
+			// self::$log->add(__METHOD__,null,[$img, $fragm]);
+
+			// echo "$artId<br>";
+			// echo addcslashes($artId, "'")."<br>";
+			$artHref= "/{$Page->id}/$catId/$artId";
+			$o.="<a href=\"$artHref\"><h3>{$db['name']}</h3></a>";
+
+			// *Первое изображение
+			if(!empty($img= $imgs->item(0)))
+			{
+				$o.= "<img src=".$img->getAttribute("src").">" ;
+				self::$log->add('$imgs->item(0)->getAttribute("src")',null,[$img->getAttribute("src")]);
+			}
+
+			// *Первые параграфы
+			if(!empty($fragm))
+			{
+				$c=0;
+
+				while ($c < 5) {
+					if(!empty($p= $fragm->item($c++))){
+						$o.= "<p>".utf8_decode($p->nodeValue)."</p>" ;
+						// $o.= "<p>" . $p->nodeValue . "</p>" ;
+					}
+				}
+			}
+
+			$o.="<div class='info'>
+			<p class='uk-margin-small-bottom'>Категория: <b>$catName</b></p>
+			<p class='uk-margin-remove'>Дата: " . date(self::DATE_FORMAT, $ts) . "</p>
+			</div>
+			<p style='text-align:right;'><a href=\"$artHref\"><button>Читать</button></a></p>
+			<hr class=\"uk-divider-icon\">";
+		} // foreach
 
 		return $o;
 	}
 
 	/**
 	 * *Получаем список статей
-	 * todo ...
+	 * note Перебираем  все файлы со статьями из всех категорий.
+	 * @param quantity - длина возвращаемого массива
+	 * @return {Array} - quantity последних статей
 	 */
-	public function getArticleList($quantity)
+	public function getArticleList($quantity=null)
 	{
 		$arr= [];
 		$storageIterator= new RecursiveDirectoryIterator(self::$storagePath, FilesystemIterator::SKIP_DOTS| FilesystemIterator::UNIX_PATHS);
@@ -35,16 +96,17 @@ class BlogKff_page extends BlogKff
 			if($FI->isDir() || $FI->getExtension() !== substr(self::$l_cfg['ext'], 1)) continue;
 
 			$arr[$FI->getMTime()]= $FI->getPathname();
-			echo $c . $FI . '<br>';
+			// echo $c . $FI . '<br>';
 		}
 
 		krsort($arr);
 
-		$arr= array_slice($arr, 0, $quantity, 1);
+		if(is_numeric($quantity) && $quantity != 0)
+			$arr= array_slice($arr, 0, $quantity, 1);
 
-		self::$log->add(__METHOD__,null,[$arr]);
+		// self::$log->add(__METHOD__,null,[$arr]);
 
-		return $o;
+		return $arr;
 	}
 
 
@@ -57,9 +119,42 @@ class BlogKff_page extends BlogKff
 
 
 	/**
+	 * *Сохраняем редактирование
+	 */
+	protected function c_saveEdit($html)
+
+	{
+		$db= self::getArtDB();
+		self::$log->add('$this->opts=',null,[$this->opts]);
+
+		array_walk($this->opts['artOpts'], function(&$v, $k){
+			switch ($k) {
+				case 'keywords':
+					$v= preg_replace('~\s*(,)\s*~u', '$1', $v);
+					break;
+				case 'not-public':
+					$v= (bool)$v;
+					break;
+			}
+		});
+
+		/* $data= [
+			'title'=> $this->opts['title'],
+			'description'=> $this->opts['description'],
+			'keywords'=> preg_replace('~\s*(,)\s*~u', '$1', $this->opts['keywords']),
+			'not-public'=> (bool)$this->opts['not-public'],
+		]; */
+		$db->set($this->opts['artOpts']);
+
+		return file_put_contents(self::$storagePath . "/{$this->opts['cat']}/{$this->opts['art']}" . self::$l_cfg['ext'], $html);
+	}
+
+
+
+	/**
 	 * *Вывод контента по /$Page->id/catName/artName
 	 */
-	private function _addArticle()
+	private function _printArticle()
 	{
 		global $URI, $Page;
 		// *вырубаем в админке
@@ -75,7 +170,7 @@ class BlogKff_page extends BlogKff
 
 		$path = str_replace($Page->id, basename(self::$storagePath), DR.explode('?',REQUEST_URI)[0]) . self::$l_cfg['ext'];
 
-		self::$log->add('$path=',null,[$path, file_exists($path), $URI]);
+		self::$log->add('$path, file_exists($path), $URI=',null,[$path, file_exists($path), $URI]);
 
 		if( !file_exists($path) ) return;
 
@@ -127,12 +222,45 @@ class BlogKff_page extends BlogKff
 	{
 		global $Page;
 		$edit= isset($_GET['edit']);
+
+		$artDB= self::getArtDB();
+
+		echo '<h1 id="title">' . ($artDB->get('title') ?? $artDB->get('name')) . '</h1>';
 	?>
 
 		<script src="/<?=self::$modDir?>/js/blogHelper.js"></script>
 
+		<?php
+		// *Редактирование
+		if($edit)
+		{
+		?>
+		<div id="artOpts" class="uk-flex uk-flex-wrap uk-flex-middle">
+			<span class="uk-width-1-3"><b>name</b></span> <input name="name" class="uk-width-expand" type="text" placeholder="name" value="<?=$artDB->get('name')?>"><p class="uk-width-1 uk-margin-remove"></p>
+
+			<span class="uk-width-1-3"><b>title</b></span> <input name="title" class="uk-width-expand" type="text" placeholder="title" value="<?=$artDB->get('title')?>"><p class="uk-width-1 uk-margin-remove"></p>
+
+			<span class="uk-width-1-3"><b>description</b></span><textarea name="description" class="uk-width-expand" type="text" placeholder="description"><?=$artDB->get('description')?></textarea><p class="uk-width-1 uk-margin-remove"></p>
+
+			<span class="uk-width-1-3"><b>keywords</b></span><input name="keywords" class="uk-width-expand" type="text" placeholder="keywords" value="<?=$artDB->get('keywords')?>"><p class="uk-width-1 uk-margin-remove"></p>
+
+			<span class="uk-width-1-3"><b>Черновик</b></span><!-- <input name="not-public" class="uk-width-expand" type="text" placeholder="bool" value="<?=$artDB->get('not-public')?>"> -->
+			<select name="not-public" value="<?=!empty($artDB->get('not-public'))? 1: 0 ?>">
+				<option value="0">Опубликовано</option>
+				<option value="1" <?=!empty($artDB->get('not-public'))? 'selected': '' ?>>Черновик</option>
+			</select>
+
+		</div>
+
+		<?php
+		}
+		?>
+
 		<div id='editor1' class="blog_content" <?=$edit?'contenteditable=true':''?>>
-			<?php $this->_addArticle()?>
+
+		<?php
+			$this->_printArticle();
+		?>
 		</div><!-- .blog_content -->
 
 		<?php
@@ -147,7 +275,7 @@ class BlogKff_page extends BlogKff
 
 		<script>
 			document.querySelector('#saveEdit')
-			.addEventListener('click', BH.editRequest.bind(null, '.blog_content'));
+			.addEventListener('click', BH.editRequest.bind(null));
 
 			CKEDITOR.replace( 'editor1');
 
@@ -159,6 +287,10 @@ class BlogKff_page extends BlogKff
 		</script>
 
 		<?php
+		}
+		elseif(self::is_adm() && !self::is_indexPage())
+		{
+			echo '<a href="?edit"><button>EDIT</button></a>';
 		}
 	}
 

@@ -7,18 +7,27 @@ var BH = {
 			article: uri[3],
 		}
 	},
+
 	// *Save edit article
-	editRequest: function(selector, e) {
+	editRequest: function(opts, e) {
 		console.log(location, kff.URI, BH.pageInfo);
 		// return;
+
+		opts= Object.assign({
+			cat: BH.pageInfo.category,
+			art: BH.pageInfo.article,
+			artOpts: {}
+		}, opts || {});
+
+		$('#artOpts').find('input,textarea,select').each((ind,i)=>{
+			opts.artOpts[i.name]= i.value;
+		});
+
 		return kff.request('',{
 			act: 'save',
 			name: 'saveEdit',
 			value: CKEDITOR.instances.editor1.getData(),
-			opts: JSON.stringify({
-				cat: BH.pageInfo.category,
-				art: BH.pageInfo.article,
-			}),
+			opts: JSON.stringify(opts),
 		}, ['.blog_content','.log']);
 	}
 }
@@ -26,13 +35,52 @@ var BH = {
 // ?
 var U = U || window.UIkit&&UIkit.util;
 
-// *Отсылаем на сервер имя и значение элемента перед каждой кнопкой
-$('.content').on('click', 'button:not([id])', $e=>{
+
+// *Events
+// *Удаление категории
+$('.content').on('click', '.delCat', $e=>{
+	var $t= $($e.target);
+	UIkit.modal.confirm("Подтверждаете удаление категории " + $t.data('del') + '?')
+	.then(success=>{
+		kff.request('',{
+			name: 'removeCategory',
+			value: $t.data('del'),
+		},['.content','.log']);
+	});
+});
+
+
+// *.delArticle
+// todo ...
+$('.content').on('click', '.delArticle', $e=>{
+	var $t= $($e.target);
+
 	$e.stopPropagation();
-	$e.preventDefault();
+
+	UIkit.modal.confirm("Подтверждаете удаление статьи " + $t.data('del') + '?')
+	.then(success=>{
+		kff.request('',{
+			name: 'removeArticle',
+			value: $t.data('del'),
+		},['.content','.log']);
+	});
+
+	console.log($t);
+});
+
+
+// *Создание новых категорий и статей
+$('.content').on('click', 'button.addNew', $e=>{
 	var $t = $($e.target).prev(),
 		$inners = $t.find('input'),
 		data = {opts:{}};
+
+	console.log($t);
+
+	if(!$t[0]) return;
+
+	$e.stopPropagation();
+	$e.preventDefault();
 
 	// *Если несколько input
 	if($inners.length) {
@@ -54,29 +102,20 @@ $('.content').on('click', 'button:not([id])', $e=>{
 });
 
 
-// *.delArticle
-// todo ...
-$('.content').on('click', '.delArticle', $e=>{
-	$e.stopPropagation();
-	$e.preventDefault();
-	var
-		out={},
-		$t = $($e.target).parent();
-
-	console.log($t);
-});
-
-
 // *Сохраняем сортировку страниц
 $('.content').on('click', '#save_sts', $e=>{
-	$e.stopPropagation();
-	$e.preventDefault();
 	var
 		out={},
 		err=[],
-		$t = $($e.target).parent();
+		$t = $($e.target).parent(),
+		$list= $('.listArticles');
 
-	$('.listArticles').each((ind,i)=>{
+	if(!$list.length) return;
+
+	$e.stopPropagation();
+	$e.preventDefault();
+
+	$list.each((ind,i)=>{
 		var $i=$(i);
 		out[$i.data('id')]= [];
 		$i.find('[data-id]').each((ind,i)=>{
@@ -96,7 +135,7 @@ $('.content').on('click', '#save_sts', $e=>{
 	})
 
 	if(err.length) {
-		alert(err.join("\n\n"));
+		UIkit.modal.alert(err.join("\n\n"));
 		location.reload();
 		// setTimeout(()=>{location.reload()}, 2000);
 	} else {
