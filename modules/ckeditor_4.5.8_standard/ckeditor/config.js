@@ -9,15 +9,15 @@ CKEDITOR.editorConfig = function( config ) {
 	// http://docs.ckeditor.com/#!/api/CKEDITOR.config
 
 	// Common config injected by examples building script.
-	config.uploadUrl = kff.URI.join('/');
-	// config.filebrowserBrowseUrl = '/apps/ckfinder/3.4.5/ckfinder.html';
+	// config.uploadUrl = kff.URI.join('/');
+	// config.filebrowserBrowseUrl = '/modules/ckeditor_4.5.8_standard/kff.Explorer/index.php';
 	// config.filebrowserImageBrowseUrl = '/apps/ckfinder/3.4.5/ckfinder.html?type=Images';
 
 	// config.filebrowserUploadUrl = '/apps/ckfinder/3.4.5/core/connector/php/connector.php?command=QuickUpload&type=Files';
-	config.filebrowserUploadUrl = kff.URI.join('/');
+	// config.filebrowserUploadUrl = kff.URI.join('/');
 	// console.log('config.filebrowserUploadUrl=',config.filebrowserUploadUrl);
 
-	config.filebrowserImageUploadUrl = kff.URI.join('/');
+	// config.filebrowserImageUploadUrl = kff.URI.join('/');
 	// config.baseFloatZIndex = 10005;
 
 	// *Allow use tags & scripts

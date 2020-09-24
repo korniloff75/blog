@@ -43,7 +43,7 @@ class BlogKff_page extends BlogKff
 			// echo "$artId<br>";
 			// echo addcslashes($artId, "'")."<br>";
 			$artHref= "/{$Page->id}/$catId/$artId";
-			$o.="<a href=\"$artHref\"><h3>{$db['name']}</h3></a>";
+			$o.="<a href=\"$artHref\"><h3>" . ($db['title'] ?? $db['name']) . "</h3></a>";
 
 			// *Первое изображение
 			if(!empty($img= $imgs->item(0)))
@@ -178,40 +178,33 @@ class BlogKff_page extends BlogKff
 	}
 
 
+
 	/**
-	 * *Upload images
+	 * Выводим файловый менеджер для загрузки изображений в CKEditor
+	 *
 	 */
-	// private function _Upload()
-	public function Upload()
+	protected function c_createCKEditorBrowser($upload=null)
 	{
-		// *inputs handler
 		global $Page, $URI;
-		if(
-			!count($_FILES)
-		) return;
+		require_once DR.'/'.self::$dir.'/CKEditorUploads.class.php';
+		$pathToFiles = "/CKeditor";
+		CKEditorUploads::$pathname .= $pathToFiles;
+		self::$log->add('CKEditorUploads::$pathname= ' . CKEditorUploads::$pathname);
 
-		if(!self::is_adm())
-			die('Access denied!');
+		CKEditorUploads::RenderBrowser();
+		if(self::is_adm() && !empty($upload))
+			new CKEditorUploads;
 
-		require_once DR.'/'.self::$dir.'/Uploads.class.php';
-		$pathInFiles = "/{$Page->id}/{$URI[2]}";
-		Uploads::$input_name = "upload";
-		Uploads::$pathname .= $pathInFiles;
-		Uploads::$allow = ['jpg','jpeg','png','gif'];
+		die;
+	}
 
-		$Upload = new Uploads;
-
-		if(!$Upload->checkSuccess()) foreach($Upload->getResult() as &$str){
-			echo $str;
-		}
-		else {
-			$out= '';
-			foreach($Upload->fileNames as $name){
-				$out.= "/files$pathInFiles/$name<br>";
-			}
-			echo $out;
-		}
-
+	/**
+	 * Загружаем файлы
+	 */
+	protected function c_CKEditorUpload()
+	{
+		// *Upload
+		$this->c_createCKEditorBrowser('upload');
 	}
 
 
@@ -277,7 +270,12 @@ class BlogKff_page extends BlogKff
 			document.querySelector('#saveEdit')
 			.addEventListener('click', BH.editRequest.bind(null));
 
-			CKEDITOR.replace( 'editor1');
+			// *Запускаем редактор с файловым браузером
+			CKEDITOR.replace( 'editor1', {
+				filebrowserBrowseUrl: '?name=createCKEditorBrowser',
+				disallowedContent : 'img{width,height}',
+				image_removeLinkByEmptyURL: true,
+			});
 
 			CKEDITOR.disableAutoInline = true;
 			/* CKEDITOR.inline( 'editor1', {
@@ -300,8 +298,7 @@ ob_start();
 
 $Blog = new BlogKff_page;
 
-if(!$Blog->Upload())
-	$Blog->Render();
+$Blog->Render();
 
 ?>
 

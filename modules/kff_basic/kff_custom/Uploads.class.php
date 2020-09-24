@@ -44,6 +44,8 @@ class Uploads
 	public function __construct($pathname=null, $input_name=null)
 	{
 		self::$log = Index_my_addon::get_log();
+		if(!Index_my_addon::is_adm())
+			die('Access denied to ' . __FILE__);
 
 		self::$pathname = $pathname ?? static::$pathname;
 		self::$input_name = $input_name ?? static::$input_name;
@@ -170,11 +172,11 @@ class Uploads
 			{
 				$this->error []= 'Недопустимый тип файла';
 			}
-			elseif (!empty($allow) && !in_array(strtolower($parts['extension']), $allow))
+			elseif (!empty(static::$allow) && !in_array(strtolower($parts['extension']), static::$allow))
 			{
 				$this->error []= 'Недопустимый тип файла';
 			}
-			elseif (!empty($deny) && in_array(strtolower($parts['extension']), $deny))
+			elseif (!empty(static::$deny) && in_array(strtolower($parts['extension']), static::$deny))
 			{
 				$this->error []= 'Недопустимый тип файла';
 			}

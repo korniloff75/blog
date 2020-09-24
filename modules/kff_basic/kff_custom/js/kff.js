@@ -321,7 +321,7 @@ kff.menu.prototype.clickHahdler = function ($e) {
 	var t= $e.target.closest('a'),
 		self= this;
 
-	if(!t || !t.href) return;
+	if(!t || !t.href || location.search.includes('?edit')) return;
 
 	$e.preventDefault();
 	$e.stopPropagation();

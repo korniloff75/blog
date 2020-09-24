@@ -68,7 +68,11 @@ class BlogKff extends Index_my_addon
 		$artPathname= $artPathname ?? str_replace($Page->id, basename(self::$storagePath), DR.explode('?',REQUEST_URI)[0]) . self::$l_cfg['ext'];
 		$catId= basename(dirname($artPathname));
 		$artId= basename($artPathname, self::$l_cfg['ext']);
-		// self::$log->add(__METHOD__,null,[$artPathname, $artId]);
+
+		if(empty(trim($catId))){
+			self::$log->add(__METHOD__ . "\$catId is EMPTY! \$artPathname= $artPathname; \$artId= $artId" ,E_USER_WARNING,[$artPathname, $artId]);
+			return;
+		}
 
 		$dbPath= dirname($artPathname) ."/$artId.json";
 

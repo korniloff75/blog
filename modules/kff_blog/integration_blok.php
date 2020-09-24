@@ -52,13 +52,13 @@ class BlogKff_sidebar extends BlogKff
 
 					foreach($catData['items'] as &$art) {
 						// self::$log->add("/$cat/{$art['id']}");
+						// todo Оптимизировать
+						$artData= self::getArtDB(self::$storagePath . "/$cat/{$art['id']}" . self::$l_cfg['ext'])->get();
 
 						$li= "<li data-id={$art['id']} data-cat=$cat class=\"\">
-						<a href=\"/{$pageId}/$cat/{$art['id']} \">{$art['name']}</a>
+						<a href=\"/{$pageId}/$cat/{$art['id']}\" title=\"{$artData['title']}\" uk-tooltip>{$art['name']}</a>
 
 						</li>";
-
-						$artData= self::getArtDB(self::$storagePath . "/$cat/{$art['id']}" . self::$l_cfg['ext'])->get();
 
 						if(!empty($artData['not-public'])){
 							if(self::is_adm())
