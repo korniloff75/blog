@@ -1,6 +1,0 @@
-<?php
-$module_news="module.news4";
-$id_cat="news4";
-$name_cat="Debug my-engine CMS";
-$url_cat="Debug_my-engine_CMS";
-?>

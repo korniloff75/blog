@@ -117,14 +117,14 @@ ob_clean();
 		mainSelector = '<?=$cfg['main_selector']?>' || 'main';
 	var km = new kff.menu($(navSelector), mainSelector);
 
-	// *AJAX history
+	/* // *AJAX history
 	window.onpopstate = function(e) {
 		if(!e.state) return false;
 		// console.log('e.state[mainSelector].html=', e.state[mainSelector].html);
 
 		kff.render([mainSelector], e.state[mainSelector].html);
 		km.setActive(e.state[mainSelector].href);
-	}
+	} */
 	console.log('km=',km);
 </script>
 

@@ -23,7 +23,7 @@ class Pack
 
 	public static
 		$dest = DR . '/files/zip',
-		$excludes = ['\.log$', '__$', 'cfg\.', 'token'],
+		$excludes = ['\.log$', '__$', 'cfg\.', 'token', 'categories\.json'],
 		$my_engine_format = false;
 
 	public
