@@ -1,11 +1,12 @@
 <?php
+// *Собираем весь буфер в $buf и очищаем его (не закрываем)
 $buf = ob_get_contents();
 ob_clean();
 
 // *Собираем сюда все финишные замены
 $Templater = [];
 
-// *Подкладываем данные из Блога
+/* // *Подкладываем данные из Блога
 if(class_exists('BlogKff'))
 {
 	// $artDB= $Blog->getArtDB()->get();
@@ -13,7 +14,7 @@ if(class_exists('BlogKff'))
 		// $Page->{$prop}= $artDB[$prop];
 		$Page->{$prop}= BlogKff::getArtDB()->get($prop);
 	}
-}
+} */
 
 // *{{coreHead}}
 ob_start();
@@ -23,12 +24,18 @@ ob_start();
 	<?=$Page->get_headhtml()?>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<title><?php $Page->get_title();?></title>
+	<title>{{Title}}</title>
 	<meta name="description" content="<?=$Page->get_description()?>">
 	<meta name="keywords" content="<?=$Page->get_keywords()?>">
 
 <?php
 $Templater['coreHead']= ob_get_clean();
+
+// *если нет {{coreHead}} - вставляем в head
+if(!strpos($buf,'{{coreHead}}')){
+	$buf= str_replace('</head>', "<!-- coreHead -->\n{{coreHead}}\n</head>", $buf, $cb);
+	$log->add("{{coreHead}} is EMPTY! ",null,[$cb]);
+}
 
 // *{{Title}}
 ob_start();
@@ -41,6 +48,13 @@ ob_start();
 	echo Index_my_addon::profile('base');
 
 $Templater['coreFooter']= ob_get_clean();
+
+// *если нет {{coreFooter}} - вставляем в конце
+if(!strpos($buf,'{{coreFooter}}')){
+	$buf= str_replace('</body>', "<!-- coreFooter -->\n{{coreFooter}}\n</body>", $buf, $cb);
+	$log->add("{{coreFooter}} is EMPTY! ",null,[$cb]);
+}
+
 
 
 // $log->add("\$Templater = ",null,[$Templater]);

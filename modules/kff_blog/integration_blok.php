@@ -19,7 +19,7 @@ class BlogKff_sidebar extends BlogKff
 		foreach($this->getCategories() as &$cat) {
 
 			$catData = $this->getCategory($cat);
-			if(!count($catData['items']))
+			if(empty($catData['items']))
 				continue;
 			// print_r ($catData);
 		?>

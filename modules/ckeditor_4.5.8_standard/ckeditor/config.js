@@ -3,7 +3,7 @@
  * For licensing, see LICENSE.md or http://ckeditor.com/license
  */
 
-CKEDITOR.editorConfig = function( config ) {
+CKEDITOR.editorConfig = function (config) {
 	// Define changes to default configuration here.
 	// For complete reference see:
 	// http://docs.ckeditor.com/#!/api/CKEDITOR.config
@@ -26,38 +26,38 @@ CKEDITOR.editorConfig = function( config ) {
 	config.protectedSource.push(/<\?[\s\S]*?\?>/g);// разрешить php-код
 
 	config.toolbarGroups = [
-		{ name: 'clipboard',   groups: [ 'clipboard' ] },
+		{ name: 'clipboard', groups: ['clipboard'] },
 		{ name: 'links' },
 		{ name: 'insert' },
 		{ name: 'forms' },
 		{ name: 'tools' },
-		{ name: 'document',	   groups: [ 'mode', 'document', 'doctools' ] },
+		{ name: 'document', groups: ['mode', 'document', 'doctools'] },
 		{ name: 'others' },
 		'/',
-		{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-		{ name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ] },
+		{ name: 'basicstyles', groups: ['basicstyles', 'cleanup'] },
+		{ name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'] },
 		{ name: 'styles' },
 		{ name: 'colors' },
 	];
 
 	// The toolbar groups arrangement, optimized for two toolbar rows.
-/* 	config.toolbarGroups = [
-		// { name: 'document',	   groups: [ 'mode', 'document', 'doctools' ]},
-		{ name: 'document',	   groups: [ 'mode' ]},
-		{ name: 'clipboard',   groups: [ 'clipboard', 'undo' ] },
-		{ name: 'editing',     groups: [ 'find', 'selection', 'spellchecker' ] },
-		{ name: 'links' },
-		{ name: 'insert' },
-		{ name: 'forms' },
-		{ name: 'tools' },
-		{ name: 'others' },
-		'/',
-		{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-		{ name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ] },
-		{ name: 'styles' },
-		{ name: 'colors' },
-		// { name: 'about' }
-	]; */
+	/* 	config.toolbarGroups = [
+			// { name: 'document',	   groups: [ 'mode', 'document', 'doctools' ]},
+			{ name: 'document',	   groups: [ 'mode' ]},
+			{ name: 'clipboard',   groups: [ 'clipboard', 'undo' ] },
+			{ name: 'editing',     groups: [ 'find', 'selection', 'spellchecker' ] },
+			{ name: 'links' },
+			{ name: 'insert' },
+			{ name: 'forms' },
+			{ name: 'tools' },
+			{ name: 'others' },
+			'/',
+			{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+			{ name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ] },
+			{ name: 'styles' },
+			{ name: 'colors' },
+			// { name: 'about' }
+		]; */
 
 
 	// Remove some buttons provided by the standard plugins, which are
@@ -71,3 +71,24 @@ CKEDITOR.editorConfig = function( config ) {
 	config.removeDialogTabs = 'image:advanced;link:advanced';
 
 };
+
+// *Пытаюсь добавить свою кнопку
+CKEDITOR.plugins.add('insertvar',
+	{
+		init(editor) {
+			const style = new CKEDITOR.style({ element: 'var' });
+			const styleCommand = new CKEDITOR.styleCommand(style);
+			const command = editor.addCommand('insertvar', styleCommand);
+			editor.attachStyleStateChange(style, state => {
+				if (!editor.readOnly)
+					command.setState(state);
+			});
+
+			editor.ui.addButton('InsertVar', {
+				label: 'Insert Variable',
+				icon: 'about',
+				command: 'insertvar',
+				toolbar: 'insert,99'
+			});
+		}
+	});

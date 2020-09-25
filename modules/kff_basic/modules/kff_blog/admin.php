@@ -38,14 +38,28 @@ class BlogKff_adm extends BlogKff
 		$catDB->clear('items');
 		// $catDB->append(['name'=>$catFilename]);
 
-		foreach(glob($catPathname . "/*" . self::$l_cfg['ext']) as &$i) {
+		foreach(glob($catPathname . "/*" . self::$l_cfg['ext']) as $n=>&$artPathname) {
 			// *без расширения
-			$artName = pathinfo($i, PATHINFO_FILENAME);
+			$artId = pathinfo($artPathname, PATHINFO_FILENAME);
+			$artDB = self::getArtDB($artPathname);
 
-			$catDB->append(['items'=>[[
-				'id'=> $artName,
-				'name'=> (new DbJSON("$catPathname/$artName.json"))->get('name') ?? $humName,
-			]]]);
+			// if(empty($artDB->get('title')))
+			// 	$artDB->set(['title'=>$artDB->get('name')]);
+
+			$catDB->append([
+				'items'=>[[
+					'id'=> $artId,
+					'name'=> $artDB->get('name') ?? $humName,
+					'title'=> $artDB->get('title'),
+				]]
+			]);
+
+			if(!$n){
+				// *Берем имя категории из первой статьи
+				if(empty($catDB->get('name')))
+					$catDB->append(['name'=>$artDB->get('catName')]);
+			}
+
 		}
 	}
 
@@ -113,17 +127,26 @@ class BlogKff_adm extends BlogKff
 
 			// *Перебираем элементы
 			foreach($items as &$item) {
+				$artPathname= "$catPathname/{$item['id']}" . self::$l_cfg['ext'];
+
 				// *Элемент перемещён в другую категорию
 				if($item['oldCatId'] !== $cat)
 				{
 					$oldCatPath = self::$storagePath . "/{$item['oldCatId']}";
-					rename("{$oldCatPath}/{$item['id']}" . self::$l_cfg['ext'], "$catPathname/{$item['id']}" . self::$l_cfg['ext']);
+					rename("{$oldCatPath}/{$item['id']}" . self::$l_cfg['ext'], $artPathname);
 					rename("{$oldCatPath}/{$item['id']}.json", "$catPathname/{$item['id']}.json");
+
+					// *Перезаписываем данные в базе статьи
+					// $artDB = new DbJSON("$catPathname/{$item['id']}.json");
+					$artDB = self::getArtDB($artPathname);
+					$artDB->set(['catId'=>$cat, 'catName'=>$catDB->get('name')]);
+
+					unset($item['oldCatId']);
 				}
-				$catDB->append(['items'=>[[
-					'id'=>$item['id'],
-					'name'=>$item['name'],
-				]]]);
+
+				// *Обновляем базу элементов категории
+				$catDB->append(['items'=>[$item]]);
+
 			}
 
 			if(!empty($oldCatPath))
@@ -156,6 +179,9 @@ class BlogKff_adm extends BlogKff
 	 */
 	public function c_removeCategory($removeId)
 	{
+		if(empty($removeId))
+			die(__METHOD__.": Попытка удаления неизвестной категории");
+
 		self::$log->add("Удаление категории $removeId");
 		require_once DR.'/'. self::$dir ."/cpDir.class.php";
 		cpDir::RemoveDir(self::$storagePath. "/$removeId");
@@ -169,31 +195,36 @@ class BlogKff_adm extends BlogKff
 	 */
 	public function c_addCategory($new_cat)
 	{
-		if(is_numeric($new_cat))
+		if(empty($new_cat) || is_numeric($new_cat))
 		{
 			die("<div class=content>Категория <b>$new_cat</b> не может быть создана с таким именем!</div>");
 		}
 		$data = ['name'=>$new_cat];
-		$new_cat = Index_my_addon::translit($new_cat);
-		$data ['id']= $new_cat;
-		$catPath = self::$storagePath."/$new_cat";
-		$catDB = new DbJSON("$catPath/data.json");
-		$catDB->set($data);
+		$catId = Index_my_addon::translit($new_cat);
+		$data ['id']= $catId;
+		$catPath = self::$storagePath."/$catId";
 
-		// echo "<div class=content><b>$new_cat</b></div>";
+		// echo "<div class=content><b>$catId</b></div>";
 
 		if(is_dir($catPath))
 		{
-			die("<div class=content>Категория <b>$new_cat</b> уже существует!</div>");
+			die("<div class=content>Категория <b>$catId</b> уже существует!</div>");
 		}
 		elseif(!$success = mkdir($catPath,0755,1))
 		{
-			die("<div class=content>Категория <b>$new_cat</b> не создана!</div>");
+			die("<div class=content>Категория <b>$catId</b> не создана!</div>");
 		}
+
+		$catDB = new DbJSON("$catPath/data.json");
+		$catDB->set($data);
+
 		// $this->updateCategories();
 
 		// *Переписываем список категорий
-		foreach($this->catsDB->append([basename($catPath)])->get() as $num=>&$cat){
+		if(!in_array($catId, $this->catsDB->get()))
+			$this->catsDB->append([$catId]);
+
+		foreach($this->catsDB->get() as $num=>&$cat){
 			if(!is_dir(self::$storagePath."/$cat"))
 			$this->catsDB->remove($num);
 		}
@@ -251,13 +282,13 @@ class BlogKff_adm extends BlogKff
 
 		<div class="header"><h1><a href="#" onclick="location.reload(); return false;">Настройки</a> <?=$MODULE?></h1></div>
 
-		<div class="content">
+		<script src="/<?=self::$modDir?>/js/blogHelper.js" defer></script>
 
-			<script src="/<?=self::$modDir?>/js/blogHelper.js"></script>
+		<div class="content">
 
 			<h3>Категории</h3>
 
-			<input type="text" name="addCategory" placeholder="Название категории"><button class="addNew">Новая</button>
+			<input type="text" name="addCategory" placeholder="Название категории"><button class="addCategory">ADD</button>
 
 			<ul id="categories" class="uk-nav uk-nav-default" uk-sortable="group: cats; handle: .uk-sortable-handle;">
 
@@ -271,23 +302,23 @@ class BlogKff_adm extends BlogKff
 				<div class="uk-flex uk-flex-middle uk-margin-top">
 					<div class="uk-sortable-handle uk-margin-small-right" uk-icon="icon: table; ratio: 1.5"></div>
 					<!-- Category name -->
-					<h4 class="uk-margin-remove"><?=$catData['name']?> <div class="delCat" uk-icon="icon: trash; ratio: 1.5" data-del="<?=$catData['id']?>"></div></h4>
+					<h4 class="uk-margin-remove"><?=$catData['name']?> <div class="removeCategory" uk-icon="icon: trash; ratio: 1.5" data-del="<?=$catData['id']?>"></div></h4>
 				</div>
 
 				<div style="display: inline-block;">
 					<input type="hidden" name="catId" value="<?=$catData['id']?>">
 					<input type="hidden" name="catName" value="<?=$catData['name']?>">
 					<input type="text" name="addArticle" placeholder="Название статьи">
-				</div><button class="addNew">ADD</button>
+				</div><button class="addArticle">ADD</button>
 
-				<ul data-id=<?=$catData['id']?> class="listArticles uk-nav uk-nav-default uk-width-medium" uk-sortable="group: cat-items; handle: .uk-sortable-handle; cls-custom: uk-box-shadow-small uk-flex uk-flex-expand uk-background">
+				<ul data-id=<?=$catData['id']?> class="listArticles uk-nav uk-nav-default uk-width-auto" uk-sortable="group: cat-items; handle: .uk-sortable-handle; cls-custom: uk-box-shadow-small uk-flex uk-flex-expand uk-background">
 
 				<?php
 				if(is_array($catData['items'])) foreach($catData['items'] as &$art) {
-					echo "<li data-id={$art['id']} data-name=\"{$art['name']}\" data-oldCatId= {$catData['id']} class=\"uk-flex uk-flex-wrap uk-flex-middle\">
+					echo "<li data-id={$art['id']} data-name=\"{$art['name']}\" data-oldCatId= {$catData['id']} uk-tooltip title=\"{$art['title']}\" class=\"uk-flex uk-flex-wrap uk-flex-middle\">
 					<div class=\"uk-sortable-handle uk-margin-small-right\" uk-icon=\"icon: table\"></div>
 
-					<!-- Link to edit article -->
+					<!-- artName -->
 					{$art['name']}
 
 					<!-- Remove article -->

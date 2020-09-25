@@ -22,6 +22,8 @@ if(!empty($Module = filter_var($_GET['module'])))
 <?php
 require_once DR.'/'.$kff::$dir.'/cpDir.class.php';
 
+// $log->add('$kff::is_adm()= ',null,[$kff::is_adm()]);
+
 if($kff::is_adm())
 {
 	echo '<h2>Modules kff_</h2>

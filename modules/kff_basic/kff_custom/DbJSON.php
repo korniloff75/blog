@@ -53,8 +53,16 @@ class DbJSON {
 	{
 		if(!empty($id))
 			unset($this->db[$id]);
-		else $this->db = ['change'=>1];
+		else $this->db = [];
+		$this->db['change']= 1;
+		return $this;
 	}
+
+	public function remove($id=null)
+	{
+		return $this->clear($id);
+	}
+
 
 	/**
 	 * @id optional <string|int>
@@ -69,9 +77,9 @@ class DbJSON {
 	}
 
 	/**
-	 * @param data {&array} - ссылка на массив
+	 * @param data {array}
 	 */
-	public function set(array &$data, $append = false)
+	public function set(array $data, $append = false)
 	{
 		$handler = $append ? 'array_merge_recursive' : 'array_replace_recursive';
 
@@ -99,14 +107,6 @@ class DbJSON {
 		$this->db = $data;
 		$this->db['change']= 1;
 
-		return $this;
-	}
-
-
-	public function remove($key)
-	{
-		unset($this->db[$key]);
-		$this->db['change']= 1;
 		return $this;
 	}
 

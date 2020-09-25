@@ -28,7 +28,11 @@ var BH = {
 			name: 'saveEdit',
 			value: CKEDITOR.instances.editor1.getData(),
 			opts: JSON.stringify(opts),
-		}, ['.blog_content','.log']);
+		}, ['.blog_content','.log']
+		).then(()=>{
+			// UIkit.modal.alert( "Статья успешно отредактирована");
+			UIkit.notification("<span uk-icon='icon: check'></span> Статья успешно отредактирована", 'success')
+		});
 	}
 }
 
@@ -38,14 +42,19 @@ var U = U || window.UIkit&&UIkit.util;
 
 // *Events
 // *Удаление категории
-$('.content').on('click', '.delCat', $e=>{
-	var $t= $($e.target);
-	UIkit.modal.confirm("Подтверждаете удаление категории " + $t.data('del') + '?')
-	.then(success=>{
-		kff.request('',{
+$('.content').on('click', '.removeCategory', $e=>{
+	var $t= $($e.currentTarget);
+	$e.stopPropagation();
+
+	console.log($t, $t.data('del'));
+
+	UIkit.modal.confirm("Подтверждаете удаление категории " + $t.data('del') + '?',{bgClose:1})
+	.then(success=> kff.request('',{
 			name: 'removeCategory',
 			value: $t.data('del'),
-		},['.content','.log']);
+		},['.content','.log'])
+	).then(()=>{
+		UIkit.notification( "Категория "+ $t.data('del') + " успешно удалена",'success');
 	});
 });
 
@@ -59,19 +68,21 @@ $('.content').on('click', '.delArticle', $e=>{
 
 	console.log($t, $t.data('del'));
 	// return;
-	UIkit.modal.confirm("Подтверждаете удаление статьи " + $t.data('del') + '?')
+	UIkit.modal.confirm("Подтверждаете удаление статьи " + $t.data('del') + '?',{bgClose:1})
 	.then(success=>{
 		kff.request('',{
 			name: 'removeArticle',
 			value: $t.data('del'),
 		},['.content','.log']);
+	}).then(()=>{
+		UIkit.notification( "Статья "+ $t.data('del') + " успешно удалена",'success');
 	});
 
 });
 
 
 // *Создание новых категорий и статей
-$('.content').on('click', 'button.addNew', $e=>{
+$('.content').on('click', 'button.addCategory, button.addArticle', $e=>{
 	var $t = $($e.target).prev(),
 		$inners = $t.find('input'),
 		data = {opts:{}};
@@ -99,7 +110,13 @@ $('.content').on('click', 'button.addNew', $e=>{
 	}
 	console.log($t);
 
-	kff.request('',data,['.content','.log']);
+	if(!data.value.trim()){
+		UIkit.notification( "Заполните название элемента!",'warning');
+	}
+	else kff.request('',data,['.content','.log'])
+	.then(()=>{
+		UIkit.notification( "Новый элемент успешно добавлен",'success');
+	});
 });
 
 
@@ -123,24 +140,33 @@ $('.content').on('click', '#save_sts', $e=>{
 			var
 				id = i.getAttribute('data-id'),
 				name = i.getAttribute('data-name'),
+				title = i.getAttribute('title'),
 				oldCatId = i.getAttribute('data-oldCatId');
 
 			if(out[$i.data('id')].filter(function(i){return i.id === id}).length) {
 				err.push('Элемент ' + id + ' не может дублироваться в одной категории!');
 			}
 			out[$i.data('id')].push({
-				id: id, name: name, oldCatId: oldCatId
+				id: id, name: name, oldCatId: oldCatId,
 			});
+
+			if(title.trim()){
+				out[$i.data('id')].title= title;
+			}
 			// out[$i.data('id')].push(id);
 		})
 	})
 
 	if(err.length) {
-		UIkit.modal.alert(err.join("\n\n"));
-		location.reload();
+		UIkit.modal.alert(err.join("\n\n"))
+		.then(location.reload);
+
 		// setTimeout(()=>{location.reload()}, 2000);
 	} else {
-		kff.request('',{name:'sortCategories', value: JSON.stringify(out)},['.content','.log']);
+		kff.request('',{name:'sortCategories', value: JSON.stringify(out)},['.content','.log'])
+		.then(()=>{
+			UIkit.notification( "Порядок элементов успешно сохранён",'success');
+		});
 	}
 
 	console.log(out);

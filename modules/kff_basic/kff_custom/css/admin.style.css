@@ -55,6 +55,18 @@ a.exit{
 
 }
 
+div.content {
+	overflow: auto;
+}
+
+label{
+	cursor: pointer;
+}
+
+.uk-tab li.uk-active>button{
+	border-bottom: 3px solid #147;
+}
+
 
 @media (max-width: 450px) {
 	div.content {

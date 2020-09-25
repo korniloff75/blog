@@ -11,13 +11,15 @@ class BlogKff extends Index_my_addon
 		// *Локальный конфиг
 		$l_cfg,
 		$storagePath = \DR.'/kff_blog_data',
-		$catPath = __DIR__.'/categories.json',
+		$catPath,
 		$artBase= [];
 
 
 	public function __construct()
 	{
 		global $kff;
+
+		self::$catPath = self::$storagePath.'/categories.json';
 
 		// *Директория модуля от DR
 		self::$modDir = $kff::getPathFromRoot(__DIR__);
@@ -74,6 +76,7 @@ class BlogKff extends Index_my_addon
 	public static function getArtDB($artPathname=null)
 	{
 		global $Page;
+		// self::$log->add(__METHOD__." \$artPathname= $artPathname");
 		$artPathname= $artPathname ?? str_replace($Page->id, basename(self::$storagePath), DR.explode('?',REQUEST_URI)[0]) . self::$l_cfg['ext'];
 		$catId= basename(dirname($artPathname));
 		$artId= basename($artPathname, self::$l_cfg['ext']);
@@ -83,9 +86,20 @@ class BlogKff extends Index_my_addon
 			return;
 		}
 
+		if(!file_exists($artPathname)){
+			self::$log->add(__METHOD__.' $artPathname is not EXIST!  $Page->id, $artPathname, $catId',null,[$Page->id,$artPathname,$catId]);
+			// !
+			// return;
+		}
+
 		$dbPath= dirname($artPathname) ."/$artId.json";
 
-		return self::$artBase[$catId][$artId]= self::$artBase[$catId][$artId] ?? new DbJSON($dbPath);
+		$db= self::$artBase[$catId][$artId]= self::$artBase[$catId][$artId] ?? new DbJSON($dbPath);
+
+		if(empty($db->get('title')))
+			$db->set(['title'=>$db->get('name')]);
+
+		return $db;
 	}
 
 

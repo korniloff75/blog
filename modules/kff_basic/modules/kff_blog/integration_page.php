@@ -65,12 +65,14 @@ class BlogKff_page extends BlogKff
 				}
 			}
 
-			$o.="<div class='info'>
+			$o.="<div class='info uk-float-left'>
 			<p class='uk-margin-small-bottom'>Категория: <b>$catName</b></p>
 			<p class='uk-margin-remove'>Дата: " . date(self::DATE_FORMAT, $ts) . "</p>
 			</div>
-			<p style='text-align:right;'><a href=\"$artHref\"><button>Читать</button></a></p>
-			<hr class=\"uk-divider-icon\">";
+			<p style='text-align:right;' class='uk-float-right'><a href=\"$artHref\"><button>Читать</button></a></p>
+			<p class='uk-clearfix'></p>
+
+			<hr class=\"uk-divider-icon \">";
 		} // foreach
 
 		return $o;
@@ -133,18 +135,15 @@ class BlogKff_page extends BlogKff
 				case 'keywords':
 					$v= preg_replace('~\s*(,)\s*~u', '$1', $v);
 					break;
+				case 'title':
+					if(empty(trim($v))) $v= $this->opts['artOpts']['name'];
+					break;
 				case 'not-public':
 					$v= (bool)$v;
 					break;
 			}
 		});
 
-		/* $data= [
-			'title'=> $this->opts['title'],
-			'description'=> $this->opts['description'],
-			'keywords'=> preg_replace('~\s*(,)\s*~u', '$1', $this->opts['keywords']),
-			'not-public'=> (bool)$this->opts['not-public'],
-		]; */
 		$db->set($this->opts['artOpts']);
 
 		return file_put_contents(self::$storagePath . "/{$this->opts['cat']}/{$this->opts['art']}" . self::$l_cfg['ext'], $html);

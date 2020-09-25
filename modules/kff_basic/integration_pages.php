@@ -2,7 +2,16 @@
 
 $kff::headHtml();
 
+// *Подкладываем данные из Блога
+if(class_exists('BlogKff'))
+{
+	foreach(['title','description','keywords'] as $prop){
+		$Page->{$prop}= BlogKff::getArtDB()->get($prop);
+	}
+}
+
 $Page->endhtml.= '<link rel="stylesheet" href="/'.$kff::$dir.'/css/core.style.css" />';
+
 
 // *UIKit
 if(!empty($kff::$cfg['uk']['use_styles_input']))

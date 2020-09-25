@@ -77,7 +77,9 @@ class AdmPanel extends Index_my_addon
 		}
 
 		// *Изменение файлов
-		foreach(self::$cfgDB->get('fixSystem') as $fp) {
+		$fixSystem = self::$cfgDB->get('fixSystem');
+
+		if(!empty($fixSystem)) foreach($fixSystem as $fp) {
 			if(file_exists(DR."$fp.bak"))
 			{
 				self::$log->add("Файл $fp уже был обработан ранее. Для его повторной обработки переименуйте файл {$fp}.bak -> $fp");
@@ -95,7 +97,9 @@ class AdmPanel extends Index_my_addon
 	 */
 	static function restoreSystem()
 	{
-		foreach(self::$cfg['fixSystem'] as $fp) {
+		$fixSystem = self::$cfgDB->get('fixSystem');
+
+		if(!empty($fixSystem)) foreach($fixSystem as $fp) {
 			rename(DR."$fp.bak", DR.$fp);
 		}
 		self::$cfgDB->replace(['fixSystem' => 'disable']);

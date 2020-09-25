@@ -64,7 +64,7 @@ U.ready(()=>{
 		var group= i.closest('[data-group]');
 		i.group= group && group.getAttribute('data-group');
 		i.checked= i.group? cfg[i.group]&&cfg[i.group][i.name]: cfg[i.name];
-		// *fix 4 unchecked
+		// *fix 4 force-unchecked
 		if(i.hasAttribute('data-unchecked')) i.checked= false;
 		// console.log(i, i.checked);
 	});
@@ -86,6 +86,7 @@ U.ready(()=>{
 				val: val,
 			};
 
+		// *Если UIkit глобально отключён
 		if(
 			send_data.group === 'uk'
 			&& !$include_uikit.prop('checked')
@@ -118,7 +119,13 @@ U.ready(()=>{
 	function saveSTS (send_data) {
 		$.post('', send_data)
 		.then((response, status)=>{
-			// console.log(document.documentElement);
+			// console.log(status, typeof status, status === 'success');
+			UIkit.modal.alert( "Настройки" +
+				(status === 'success'?
+				" успешно сохранены"
+				:" не были сохранены")
+			);
+
 			ajaxRender(response);
 		});
 	}

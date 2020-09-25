@@ -332,19 +332,20 @@ class Basic
 	static function installModules(array &$info)
 	{
 		// self::$log->add('$info',null,[$info]);
-		echo '
-			<h2>Установить модули:</h2>
-			<div class="comment">
-				<p>Данная настройка позволяет подключить в систему дополнительный функционал. Каждый выбранный модуль будет установлен в общую папку модулей.</p>
-				<p>При снятии выбора модуль будет тут же удалён. Настройки сохранены не будут при последующей установке.</p>
-			</div>
-			<ul id="installModules" class="uk-list uk-list-striped uk-list-medium" data-group="mds">
-			<li><h4><label>Подключить все внутренние модули <input name="installAll" type="checkbox" ' .
-			(!empty(Basic::$cfg['mds']['installAll'])?'checked':'')
-			.'></label></h4>
+		?>
+		<h2>Установить модули:</h2>
+		<div class="comment">
+			<p>Данная настройка позволяет подключить в систему дополнительный функционал. Каждый выбранный модуль будет установлен в общую папку модулей.</p>
+			<p>При снятии выбора модуль будет тут же удалён. Настройки сохранены не будут при последующей установке.</p>
+		</div>
+		<ul id="installModules" class="uk-list uk-list-striped uk-list-medium" data-group="mds">
+			<li>
+				<h4><label>Подключить все внутренние модули <input name="installAll" type="checkbox" <?=!empty(Basic::$cfg['mds']['installAll'])?'checked':''?>
+			></label></h4>
 			<p class="comment">Поставленный флажок внедряет и инициализирует все внутренние модули <b>kff</b>.</p>
-			</li>';
+			</li>
 
+		<?php
 		foreach (new FilesystemIterator(__DIR__.'/modules', FilesystemIterator::SKIP_DOTS) as $fileInfo) {
 			$name= $fileInfo->getFilename();
 			// self::$log->add('$name=',null,[$name]);
@@ -358,11 +359,13 @@ class Basic
 
 			$icon = file_exists($fileInfo->getPathname().'/icon.png')? '<img src="/'.Index_my_addon::getPathFromRoot($fileInfo->getPathname().'/icon.png').'" style="height:70px">': '';
 
-			echo "<li><label><h5><input name='installed_$name' type=checkbox "
+			echo "<li><h5><label><input name='installed_$name' type=checkbox "
 			. (self::checkModule($name) ? 'checked' : 'data-unchecked')
-			."> $icon $name v.{$info[$name]['version']}</h5>"
+			."> $icon</label> $name v.{$info[$name]['version']}</h5>
+			<p><a href='/admin/module.php?module=$name' class='uk-button uk-button-primary uk-button-small'>Настройки</a></p>"
 			. "<div class=comment>".($info[$name]['description'] ?? '')."</div>
-			</label></li>\n";
+
+			</li>\n";
 		}
 		echo '</ul>';
 
