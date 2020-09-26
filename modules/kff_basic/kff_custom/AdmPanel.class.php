@@ -94,6 +94,22 @@ class AdmPanel extends Index_my_addon
 				self::$cfgDB->append(['fixSystem' => [$sourcePath]]);
 		}
 
+		// *Успокаиваем autoloader
+		$sourcePath = '/system/global.dat';
+
+		if(!file_exists(DR."$sourcePath.bak"))
+		{
+			$start = file_get_contents(DR.$sourcePath);
+			$fixes[$sourcePath] = str_replace([
+				'require DR.\'/system/classes/\' . $class . \'.dat\'',
+			],[
+				'if(file_exists($inc= DR.\'/system/classes/\' . $class . \'.dat\')) include_once $inc',
+			], $start);
+
+			if(!in_array($sourcePath, self::$cfg['fixSystem']))
+				self::$cfgDB->append(['fixSystem' => [$sourcePath]]);
+		}
+
 		// *Изменение файлов
 		$fixSystem = self::$cfgDB->get('fixSystem');
 

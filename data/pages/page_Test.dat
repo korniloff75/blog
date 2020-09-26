@@ -1,11 +1,9 @@
 <?php
 // BlogKff::createBlogMap();
-BlogKff::getBlogMap();
+ BlogKff::getBlogMap();
 ?>
 <pre>
 <code>
-
-<?=htmlspecialchars(file_get_contents('modules/kff_blog/admin.php'))?>
 
 </code>
 </pre>

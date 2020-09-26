@@ -38,12 +38,13 @@ class Index_my_addon
 
 		self::$dir = self::getPathFromRoot(__DIR__) . '/kff_custom';
 
+		spl_autoload_register([__CLASS__,'_autoloader']);
+
+		// require_once __DIR__.'/kff_custom/Logger.php' ;
 		// *Logger
-		require_once __DIR__.'/kff_custom/Logger.php' ;
 		self::$log = new Logger('kff.log', DR);
 
-		require_once DR .'/'. self::$dir.'/DbJSON.php';
-
+		// require_once DR .'/'. self::$dir.'/DbJSON.php';
 		self::$cfgDB = new DbJSON(__DIR__.'/cfg.json');
 
 		self::$cfg = self::$cfgDB->get();
@@ -57,7 +58,7 @@ class Index_my_addon
 		// *Подключаем класс для админки
 		if(self::is_admPanel())
 		{
-			require_once __DIR__.'/kff_custom/AdmPanel.class.php';
+			// require_once __DIR__.'/kff_custom/AdmPanel.class.php';
 			// AdmPanel::$cfg = &self::$cfg;
 			// AdmPanel::$cfgDB = &self::$cfgDB;
 
@@ -68,8 +69,13 @@ class Index_my_addon
 		}
 
 		self::$log->add('REQUEST_URI=',null, [$_SERVER['REQUEST_URI']]);
-		self::$log->add(__CLASS__.'::$cfg=',null, [self::$cfg]);
+		self::$log->add(__METHOD__,null, [__CLASS__.'::$cfg'=>self::$cfg]);
 
+	}
+
+	// *Автозагрузка классов
+	private function _autoloader($class) {
+		require_once DR.'/'. self::$dir . "/$class.class.php";
 	}
 
 
@@ -86,7 +92,6 @@ class Index_my_addon
 			return false;
 		}
 
-		require_once DR.'/' . self::$dir.'/Pack.php';
 		Pack::$dest = DR . '/files/zip';
 		Pack::$excludes[] = '\.zip$';
 		// *Пакуем с добавлением корневой папки
@@ -247,6 +252,28 @@ class Index_my_addon
 	{
 		// return file_exists('./newpassword.php');
 		return explode('/', \REQUEST_URI)[1] === 'admin';
+	}
+
+
+	public static function is(string $prop)
+	{
+		$prop = strtolower($prop);
+
+		$defines = [
+			'ajax' => function() {
+				return isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+				&& !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
+				&& strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+			},
+			'https' => function() {
+				return !empty($_SERVER['HTTPS']) && ('off' !== strtolower($_SERVER['HTTPS']));
+			},
+		];
+
+		$defines['http']= function(){return !$defines['https']();};
+
+		if (!array_key_exists($prop, $defines)) return null;
+		return $defines[$prop]();
 	}
 
 

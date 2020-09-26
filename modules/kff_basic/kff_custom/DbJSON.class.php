@@ -42,10 +42,23 @@ class DbJSON {
 			// $this->json = str_replace(["'", '"'], ["\'", '\"'], $this->json);
 			$this->db = json_decode($json, true) ?? [];
 
-			if(empty($this->db))
-			trigger_error(__METHOD__.": DB is empty from {$this->path}", E_USER_WARNING);
+			if(empty($this->db)){
+				global $log;
+				if(is_object($log)){
+					$log->add(__METHOD__.": DB is EMPTY!", $log::BACKTRACE);
+				}
+				else{
+					trigger_error(__METHOD__.": DB is empty from {$this->path}", E_USER_WARNING);
+				}
+			}
+
 		}
 
+	} // __construct
+
+	public function count($mode=null)
+	{
+		return count($this->db, $mode);
 	}
 
 	/**
@@ -90,6 +103,7 @@ class DbJSON {
 	/**
 	 * @param sequence - массив с последовательностью ключей
 	 * ???
+	 * todo ...
 	 */
 	public function getSequence(array $sequence)
 	{
@@ -99,6 +113,7 @@ class DbJSON {
 		}
 
 		foreach($sequence as $i){
+			if(empty($this->db[$i])) continue;
 			$db[$i]= &$this->db[$i];
 		}
 		return $db;
@@ -128,6 +143,18 @@ class DbJSON {
 		return $this->set($data, true);
 	}
 
+	public function push($item, $key=null)
+	{
+		if($key){
+			$this->db[$key]= $item;
+		}
+		else{
+			$this->db[]= $item;
+		}
+		$this->db['change']= 1;
+		return $this;
+	}
+
 
 	/**
 	 * Меняем местами элементы
@@ -142,7 +169,7 @@ class DbJSON {
 	/**
 	 * @param data {array}
 	 */
-	public function replace(array &$data)
+	public function replace($data)
 	{
 		$this->db = $data;
 		$this->db['change']= 1;
@@ -152,6 +179,7 @@ class DbJSON {
 
 
 	# Плоский массив из многомерного
+	// ?
 	public function getFlat()
 	{
 		return array_values(iterator_to_array(
@@ -175,7 +203,7 @@ class DbJSON {
 		// $this->db['change']= 1;
 		if(!empty($this->db['test'])){
 			global $log;
-			$log->add(__METHOD__,E_USER_WARNING,[$this->db]);
+			$log->add(__METHOD__.': База перед записью',E_USER_WARNING,[$this->db]);
 		}
 
 		// *check changes

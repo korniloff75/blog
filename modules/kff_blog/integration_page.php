@@ -30,6 +30,7 @@ class BlogKff_page extends BlogKff
 
 			$doc = new DOMDocument('1.0','utf-8');
 			@$doc->loadHTMLFile($artPathname);
+			$doc->normalizeDocument();
 
 			$catId= $db['catId'] ?? basename(dirname($artPathname));
 			$catName= $db['catName'];
@@ -127,7 +128,10 @@ class BlogKff_page extends BlogKff
 	protected function c_saveEdit($html)
 
 	{
-		$db= self::getArtDB();
+		if(!self::is_adm())
+			return false;
+
+		$artDB= self::getArtDB();
 		self::$log->add('$this->opts=',null,[$this->opts]);
 
 		array_walk($this->opts['artOpts'], function(&$v, $k){
@@ -144,7 +148,7 @@ class BlogKff_page extends BlogKff
 			}
 		});
 
-		$db->set($this->opts['artOpts']);
+		$artDB->set($this->opts['artOpts']);
 
 		return file_put_contents(self::$storagePath . "/{$this->opts['cat']}/{$this->opts['art']}" . self::$l_cfg['ext'], $html);
 	}
@@ -170,7 +174,7 @@ class BlogKff_page extends BlogKff
 
 		$path = str_replace($Page->id, basename(self::$storagePath), DR.explode('?',REQUEST_URI)[0]) . self::$l_cfg['ext'];
 
-		self::$log->add('$path, file_exists($path), $URI=',null,[$path, file_exists($path), $URI]);
+		self::$log->add(__METHOD__,null,['$path'=>$path,'file_exists($path)'=> file_exists($path), '$URI'=>$URI]);
 
 		if( !file_exists($path) ) return;
 

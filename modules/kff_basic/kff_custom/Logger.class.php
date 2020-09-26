@@ -16,6 +16,7 @@ class Logger
 {
 	const
 		FATALS = [E_ERROR, E_PARSE, E_COMPILE_ERROR],
+		BACKTRACE = 'BACKTRACE',
 		// * STR_LEN = 0 - infinity
 		STR_LEN = 250;
 
@@ -57,18 +58,25 @@ class Logger
 		// $fileName = basename($caller['file']);
 		$fileName = $this->_getFileName($caller['file']);
 
-		$log = $this->_formatLog($fileName, $caller['line'], $message, $level);
-
 		if(!is_array($dump)) $dump = [$dump];
-		if(count($dump))
-		{
-			foreach ($dump as $d) {
-				$d = $this->_CutLength($d, $message);
-				ob_start();
-				echo PHP_EOL;
-				var_dump($d);
-				$log .= ob_get_clean();
-			}
+
+		if($level === self::BACKTRACE){
+			$dump[self::BACKTRACE]= array_shift($bt);;
+			$log = $this->_formatLog($fileName, $caller['line'], $message, $level);
+		}
+		else{
+			$log = $this->_formatLog($fileName, $caller['line'], $message, $level);
+		}
+		$log .= PHP_EOL;
+
+
+		if(count($dump)) foreach ($dump as $n=>&$d) {
+			$d = $this->_CutLength($d, $message);
+			ob_start();
+			echo PHP_EOL;
+			if(!is_numeric($n)) echo "$n = ";
+			var_dump($d);
+			$log .= ob_get_clean();
 		}
 
 		$this->log[]= $log . PHP_EOL . PHP_EOL;
@@ -126,6 +134,9 @@ class Logger
 			case E_ERROR:
 			case E_USER_ERROR:
 				$errorLevel = "$errorLevel ERROR";
+				break;
+			case self::BACKTRACE:
+				$errorLevel = "WARNING $level:";
 				break;
 			default:
 			case E_USER_NOTICE:

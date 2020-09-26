@@ -16,7 +16,7 @@ class BlogKff_sidebar extends BlogKff
 
 		echo '<ul uk-nav="multiple: false" class="categories uk-nav-parent-icon uk-nav-primary uk-nav-center" uk-sticky="show-on-up:true; media:@m; bottom: .sidebar; " style="background: inherit;">';
 
-		foreach($this->getCategories() as &$cat) {
+		foreach((new DbJSON(self::$catPath))->get() as &$cat) {
 
 			$catData = $this->getCategory($cat);
 			if(empty($catData['items']))

@@ -51,13 +51,14 @@ class BlogKff_adm extends BlogKff
 					'id'=> $artId,
 					'name'=> $artDB->get('name') ?? $humName,
 					'title'=> $artDB->get('title'),
+					'not-public'=> $artDB->get('not-public') ?? 0,
 				]]
 			]);
 
+			// *Берем данные из первой статьи категории
 			if(!$n){
-				// *Берем имя категории из первой статьи
 				if(!is_string($catDB->get('name')))
-					$catDB->set(['name'=>$artDB->get('catName')]);
+					$catDB->push($artDB->get('catName'), 'name');
 			}
 
 		}
@@ -247,8 +248,6 @@ class BlogKff_adm extends BlogKff
 		$cfg['path'] = Index_my_addon::getPathFromRoot($catPath);
 		$artPathname = "{$catPath}/{$new_article}" . self::$l_cfg['ext'];
 
-		// $artDB = new DbJSON("$catPath/{$new_article}.json");
-		// !
 		$artDB = self::getArtDB($artPathname);
 
 		if(!is_dir($catPath))

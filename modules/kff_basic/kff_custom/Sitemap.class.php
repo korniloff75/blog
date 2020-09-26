@@ -2,121 +2,105 @@
 
 class Sitemap extends BlogKff
 {
-	public
-		$path= \DR.'sitemap.xml',
-		$RSSpath= \DR.'rss.xml',
-		$sitemap = '<?xml version="1.0" encoding="UTF-8"?>
-		<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n",
+	private
+		$path= \DR.'/sitemap.xml',
+		$RSSpath= \DR.'/rss.xml',
+
+		$sitemap = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n",
+
 		$rss = '<?xml version="1.0" encoding="UTF-8"?>
 		<rss
     xmlns:yandex="http://news.yandex.ru"
     xmlns:media="http://search.yahoo.com/mrss/"
     xmlns:turbo="http://turbo.yandex.ru"
 		version="2.0">
-		<channel>
-		<title>' . \SITENAME . '</title>
-		<link>' . \BASE_URL . '</link>
-		<description>' . \DESCRIPTION . '</description>
-		<language>' . \LANG . '</language>
-		<turbo:analytics type="LiveInternet"></turbo:analytics>' . "\n";
+		<channel>' . "\n";
 
 
-	public function __construct()
+	public function __construct(DbJSON &$map)
 	{
+		parent::__construct();
 		// $this->path = \SITEMAP['path'] ?? 'sitemap.xml';
 		// $this->RSSpath = \SITEMAP['RSSpath'] ?? 'rss.xml';
 
+		$this->rss.= '<title>' . '{{SITENAME}}' . '</title>
+		<link>' . (self::is('https')?'https':'http') . '://' . \HOST . '</link>
+		<description>' . '{{DESCRIPTION}}' . '</description>
+		<language>' . 'ru' . '</language>
+		<turbo:analytics type="LiveInternet"></turbo:analytics>';
+
 		if(
-			!\AJAX && (
+			self::is_adm() && (
 				!file_exists($this->path)
 				|| !file_exists($this->RSSpath)
-				|| empty(\SITEMAP['expires'])
-				|| (ceil(time() - filemtime($this->path))/3600/24 > \SITEMAP['expires'])
+				// || (ceil(time() - filemtime($this->path))/3600/24 > \SITEMAP['expires'])
 			)
 		){
-			$this->build();
+			$this->build($map);
 		}
 	} // __construct
 
 
-	public function build()
-
+	public function build(DbJSON &$map)
 	{
-		foreach($Nav->map_flat as &$page) {
-			// var_dump(filemtime($page));
-			$data = \H::json($page . '/data.json');
-			// var_dump($page . '/data.json', $data);
 
-			if(!empty($data['hidden'])) continue;
+		echo '<pre>';
 
-			// $page = \Path::fromRootStat($page);
-			$this->sitemap .= "<url>\n"
-			. "<loc>" . \BASE_URL . $page . "</loc>\n"
-			. "<lastmod>" . date ('Y-m-d', filemtime($page)) . "</lastmod>\n"
-			. "<changefreq>weekly</changefreq>\n"
-			. "<priority>0.7</priority>\n"
-			. "</url>\n";
+		foreach($map->get() as $num=>&$catDB) {
+		// foreach($map as $num=>&$catDB) {
+			$catId= $catDB['id'];
+			$catName= $catDB['name'];
 
-			# RSS
-			# Собираем контент
-			$itemContent = php\classes\Render::contentCollect($page);
-			# Удаляем скрипты и коды
-			// $itemContent = preg_replace("#<(script|pre)[\s\S]+?</\\1>#ui", "\n", $itemContent); // |&[\S]+?;
+			echo "<h3>[$num] - $catId - $catName</h3>";
+			// echo "<p>".\HOST."</p>";
+			// var_dump($catDB);
 
-			# Чистка
-			$itemContent = str_replace(['/>'], ['>'], $itemContent);
-			// $itemContent = str_replace(['&', '/>'], ['&amp;amp;', '>'], $itemContent);
+			// *Перебор статей в категории
+			if(count($catDB['items'])) foreach($catDB['items'] as $artDB){
+				$artPath= self::getPathFromRoot(self::$storagePath."/$catId/{$artDB['id']}");
+				echo "$artPath<br>";
 
-			$itemContent = preg_replace([
-				# Удаляем скрипты и коды
-				'#<(script|pre)[\s\S]+?</\1>#ui',
-				# Оборачиваем значения атрибутов в кавычки
-				"#\s(id|class|rel)=\s*([^\"\'\d][^\s\b>]*)#ui",
-				"#\s(value|data-[^\s=]+|title|name|border)=\s*([^\"\'\s\b>]+)#ui",
-				"#\s+(hidden|checked|required)\s*(?!=)#ui"
-			], [
-				"\n",
-				" $1=\"$2\"",
-				" $1=\"$2\"",
-				" $1=\"\" "
-			], $itemContent);
+				// *Удаляем черновики
+				if(!empty($artDB['not-public'])) continue;
 
-			$itemContent = preg_replace_callback_array([
-				"#<(=|\s*\d+)#ui" => function($matches) {
-				return htmlspecialchars($matches[0]);
-				},
-				# FIX html in title
-				"#(title)=\"(.*?)\"#ui" => function($matches) {
-				return "{$matches[1]}=\"" . htmlspecialchars($matches[2]) . '"';
-				},
-				# FIX html in code
-				'#<(code)>(.+?)</\1>#ui' => function($matches) {
-				return "<{$matches[1]}>" . htmlspecialchars($matches[2]) . "</{$matches[1]}>";
-				},
-				# Закрываем одиночные теги
-				/* "#(<(?:img|input|br|hr|link|source)[^>]*?)\s*>#ui" => function($matches) {
-					// "$1 />",
-				return "{$matches[1]} />";
-				}, */
-			], $itemContent);
+				$this->sitemap .= "<url>\n"
+				. "<loc>" . (self::is('https')?'https':'http') . '://' . \HOST . "/$artPath</loc>\n"
+				. "<lastmod>" . date ('Y-m-d', filemtime(\DR."/$artPath" . self::$l_cfg['ext'])) . "</lastmod>\n"
+				. "<changefreq>weekly</changefreq>\n"
+				. "<priority>0.7</priority>\n"
+				. "</url>\n";
 
-			# Закрываем одиночные теги
-			$itemContent = preg_replace("#(<(?:img|input|br|hr|link|source|stop|path)[^>]*?)\s*>#ui", "$1 />", $itemContent);
+				// *RSS
+				$itemContent = ($this->_addToRss(\DR."/$artPath" . self::$l_cfg['ext']));
 
+				// echo "<hr>". htmlspecialchars($itemContent);
 
-			$this->rss .= '<item turbo="true">'
-			. "\n<link>" . \BASE_URL . $page . "</link>\n"
-			. "\n<turbo:content>
-				<![CDATA[\n"
-			. $itemContent
-			. "\n]]>
-				</turbo:content>\n"
-			. "</item>\n\n";
+				$itemContent = '<item turbo="true">'
+				. "\n<link>" . (self::is('https')?'https':'http') . '://' . \HOST . "/$artPath</link>\n"
+				. "\n<turbo:content>\n<![CDATA[\n"
+				. $itemContent
+				. "\n]]>\n</turbo:content>\n"
+				. "</item>\n\n";
 
-		} // foreach($Nav->map_flat as &$page)
+				// echo "<hr>". htmlspecialchars($itemContent);
+
+				$this->rss .= $itemContent;
+			}
+
+		} // foreach
+
 
 		$this->sitemap .= "\n</urlset> ";
 		$this->rss .= "\n</channel>\n</rss>";
+
+
+		echo "<hr><h3>Sitemap</h3>". htmlspecialchars($this->sitemap) . "<hr>";
+		echo "<hr><h3>RSS</h3>". htmlspecialchars($this->rss);
+		echo '</pre>';
+
+		file_put_contents($this->path, $this->sitemap);
+		// !
+		return;
 
 		# Compress
 		if( \SITEMAP['gzip'])
@@ -124,11 +108,39 @@ class Sitemap extends BlogKff
 			file_put_contents($this->path . '.gz', gzencode($this->sitemap,  \SITEMAP['gzip']));
 		}
 
-		file_put_contents($this->path, $this->sitemap);
+
 		file_put_contents($this->RSSpath, $this->rss);
 
 		return $this->sitemap;
 	} // build
+
+
+	/**
+	 * *Добавляем элемент в RSS
+	 */
+	private function _addToRss($artPathname)
+	{
+		$doc = new DOMDocument('1.0','utf-8');
+		@$doc->loadHTMLFile($artPathname);
+
+		$doc->normalizeDocument();
+
+		$xpath= new \DOMXPath($doc);
+
+		// $body= $xpath->query('//body/descendant::*');
+		$scripts= $xpath->query('//body/descendant::script');
+
+		foreach($scripts as $s){
+			$s->parentNode->removeChild($s);
+		}
+
+		$body= $xpath->query('//body')->item(0);
+
+		$xml= utf8_decode($doc->saveXML($body));
+
+		return preg_replace('~<body>([\s\S]+)</body>~u', '$1', $xml, 1);
+		// return utf8_decode($xml);
+	}
 
 } // SiteMap_RSS
 
