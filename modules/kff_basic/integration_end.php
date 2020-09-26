@@ -59,8 +59,6 @@ if(!strpos($buf,'{{coreFooter}}')){
 
 // $log->add("\$Templater = ",null,[$Templater]);
 
-$log->add("Уровень буфера= ". ob_get_level());
-
 
 // *Admin
 if($kff::is_adm())
@@ -98,6 +96,7 @@ $buf = preg_replace(
 );
 
 // $log->add("Количество замен= ". $count,null,[$Page]);
+$log->add("Уровень буфера= ". ob_get_level() . ' -> flush to index');
 
 
 echo $buf;

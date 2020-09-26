@@ -262,6 +262,7 @@ class BlogKff_page extends BlogKff
 		?>
 		<div>
 			<button id="saveEdit" class="uk-button-primary">SAVE</button>
+			<button id="resetEdit" class="uk-button-default uk-float-right" onclick="location.replace(location.pathname)">Reset</button>
 		</div>
 
 		<script type="text/javascript" src="/modules/ckeditor_4.5.8_standard/ckeditor/ckeditor.js"></script>

@@ -19,6 +19,8 @@ token*
 # Удалил модуль от Denis
 modules/admin_pages_category
 
+/files/zip
+
 # local env files
 .env.local
 .env.*.local

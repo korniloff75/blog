@@ -8,10 +8,11 @@ class DbJSON {
 		$json; # String
 
 	public
+		$sequence = [],
 		$db = [];# DataBase # Array
 
 
-	public function __construct(string $path)
+	public function __construct(?string $path=null)
 	{
 		if(self::$convertPath)
 		{
@@ -35,14 +36,16 @@ class DbJSON {
 			$this->path= $path;
 		}
 
+		if(!empty($path)){
+			$json = @file_get_contents($this->path);
+			// trigger_error(__METHOD__.' ./'.$path." \$this->path= " . $this->path);
+			// $this->json = str_replace(["'", '"'], ["\'", '\"'], $this->json);
+			$this->db = json_decode($json, true) ?? [];
 
-		$this->json = @file_get_contents($this->path);
-		// trigger_error(__METHOD__.' ./'.$path." \$this->path= " . $this->path);
-		// $this->json = str_replace(["'", '"'], ["\'", '\"'], $this->json);
-		$this->db = json_decode($this->json, true) ?? [];
+			if(empty($this->db))
+			trigger_error(__METHOD__.": DB is empty from {$this->path}", E_USER_WARNING);
+		}
 
-		if(empty($this->db))
-		trigger_error(__METHOD__.": DB is empty from {$this->path}", E_USER_WARNING);
 	}
 
 	/**
@@ -77,6 +80,32 @@ class DbJSON {
 	}
 
 	/**
+	 * Получаем ключи базы
+	 */
+	public function getKeys($id=null)
+	{
+		return array_keys($this->get());
+	}
+
+	/**
+	 * @param sequence - массив с последовательностью ключей
+	 * ???
+	 */
+	public function getSequence(array $sequence)
+	{
+		$db=[];
+		if(count($sequence) !== count($this->get())){
+			// return false;
+		}
+
+		foreach($sequence as $i){
+			$db[$i]= &$this->db[$i];
+		}
+		return $db;
+	}
+
+
+	/**
 	 * @param data {array}
 	 */
 	public function set(array $data, $append = false)
@@ -97,6 +126,17 @@ class DbJSON {
 	public function append(array $data)
 	{
 		return $this->set($data, true);
+	}
+
+
+	/**
+	 * Меняем местами элементы
+	 */
+	public function swap($firstId, $secondId)
+	{
+		list($this->db[$secondId], $this->db[$firstId]) = [$this->db[$firstId], $this->db[$secondId]];
+		$this->db['change']= 1;
+		return $this;
 	}
 
 	/**
@@ -133,6 +173,10 @@ class DbJSON {
 	{
 		// note test
 		// $this->db['change']= 1;
+		if(!empty($this->db['test'])){
+			global $log;
+			$log->add(__METHOD__,E_USER_WARNING,[$this->db]);
+		}
 
 		// *check changes
 		if(empty($this->db['change'])) return;

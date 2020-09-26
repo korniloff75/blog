@@ -56,8 +56,8 @@ class BlogKff_adm extends BlogKff
 
 			if(!$n){
 				// *Берем имя категории из первой статьи
-				if(empty($catDB->get('name')))
-					$catDB->append(['name'=>$artDB->get('catName')]);
+				if(!is_string($catDB->get('name')))
+					$catDB->set(['name'=>$artDB->get('catName')]);
 			}
 
 		}
@@ -245,9 +245,11 @@ class BlogKff_adm extends BlogKff
 		$catName = $cfg['catName']= $this->opts['catName'];
 		$catPath = self::$storagePath."/$catId";
 		$cfg['path'] = Index_my_addon::getPathFromRoot($catPath);
-		$artPath = "{$cfg['path']}/{$new_article}" . self::$l_cfg['ext'];
+		$artPathname = "{$catPath}/{$new_article}" . self::$l_cfg['ext'];
 
-		$artDB = new DbJSON("$catPath/{$new_article}.json");
+		// $artDB = new DbJSON("$catPath/{$new_article}.json");
+		// !
+		$artDB = self::getArtDB($artPathname);
 
 		if(!is_dir($catPath))
 		{
@@ -255,20 +257,21 @@ class BlogKff_adm extends BlogKff
 		}
 
 		// *Already exists
-		if(file_exists($artPath)) {
-			self::$log->add(__METHOD__." Файл $artPath уже существует!",E_USER_WARNING);
+		// self::$log->add(__METHOD__." Файл $artPathname уже существует???",E_USER_WARNING,[file_exists($artPathname)]);
+
+		if(file_exists($artPathname)) {
+			self::$log->add(__METHOD__." Файл $artPathname уже существует!",E_USER_WARNING);
 			return false;
 		}
 
 		if (
-			file_put_contents(DR."/$artPath","<p>New Article - <b>$new_article</b>!</p>")
+			file_put_contents($artPathname,"<p>New Article - <b>$new_article</b>!</p>")
 		) {
 			$artDB->set($cfg);
 			$this->_updateCatData(new SplFileInfo($catPath), $cfg['name']);
 		}
-		else
-		{
-			self::$log->add(__METHOD__,E_USER_WARNING, [$artPath, file_exists($artPath)]);
+		else {
+			self::$log->add(__METHOD__.' Не получается добавить статью '.$artPathname,E_USER_WARNING);
 		}
 	}
 

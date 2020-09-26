@@ -275,7 +275,7 @@ class Logger
 
 		$this->add("INFO: $txt",null,$dump);
 
-		$this->log = array_map(function($i) {
+		$this->log = array_map(function(&$i) {
 			return strip_tags($i);
 		}, $this->log );
 		// echo __METHOD__ . " {$this->file} " . realpath($this->file);

@@ -94,10 +94,16 @@ class BlogKff extends Index_my_addon
 
 		$dbPath= dirname($artPathname) ."/$artId.json";
 
-		$db= self::$artBase[$catId][$artId]= self::$artBase[$catId][$artId] ?? new DbJSON($dbPath);
+		// self::$artBase[$catId][$artId]= self::$artBase[$catId][$artId] ?? new DbJSON($dbPath);
 
-		if(empty($db->get('title')))
-			$db->set(['title'=>$db->get('name')]);
+		$db= &self::$artBase[$catId][$artId];
+
+		if(empty($db)){
+			$db= new DbJSON($dbPath);
+		}
+
+		// if(empty($db->get('title'))) $db->set(['title'=>$db->get('name'), 'test'=>1]);
+		if(empty($db->get('title'))) $db->set(['title'=>$db->get('name')]);
 
 		return $db;
 	}
@@ -149,6 +155,7 @@ class BlogKff extends Index_my_addon
 
 	public function __destruct()
 	{
+		// unset(self::$artBase);
 		return false;
 	}
 

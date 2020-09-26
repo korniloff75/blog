@@ -110,6 +110,7 @@ ob_clean();
 // *2 вариант:
 ?>
 
+<!-- AJAX menu -->
 <script>
 	'use strict';
 	var

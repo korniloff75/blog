@@ -102,7 +102,6 @@ foreach($RunModules->end as $value){
 	}
 }
 
-$log->add("Уровень буфера= ". ob_get_level());
 
 ob_end_flush();
 ?>

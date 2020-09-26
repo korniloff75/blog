@@ -329,7 +329,7 @@ kff.menu.prototype.clickHahdler = function ($e) {
 	if(t.href === location.href+'#') return;
 
 	// console.log('t.href=', t.href, location.href+'#', t.href === location.href+'#');
-	mainSelector= this.mainSelector;
+	var mainSelector= this.mainSelector;
 	// $= this.mainSelector;
 	// console.log('this.mainSelector=', this.mainSelector);
 	this.$loader.show();
@@ -349,11 +349,13 @@ kff.menu.prototype.clickHahdler = function ($e) {
 			title: $('h1#title').html(),
 			html: r[mainSelector]
 		};
-		console.log('ps=',state);
+		console.info('state=',state);
 
 		history.pushState(state, '', t.href);
 		self.$loader.hide();
-		document.title= state[mainSelector].title;
+
+		if(state[mainSelector].title)
+			document.title= state[mainSelector].title;
 
 		// *Close uk-dropdown
 		if(t.closest('.uk-dropdown')){

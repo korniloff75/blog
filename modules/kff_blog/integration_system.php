@@ -94,10 +94,16 @@ class BlogKff extends Index_my_addon
 
 		$dbPath= dirname($artPathname) ."/$artId.json";
 
-		$db= self::$artBase[$catId][$artId]= self::$artBase[$catId][$artId] ?? new DbJSON($dbPath);
+		// self::$artBase[$catId][$artId]= self::$artBase[$catId][$artId] ?? new DbJSON($dbPath);
 
-		if(empty($db->get('title')))
-			$db->set(['title'=>$db->get('name')]);
+		$db= &self::$artBase[$catId][$artId];
+
+		if(empty($db)){
+			$db= new DbJSON($dbPath);
+		}
+
+		// if(empty($db->get('title'))) $db->set(['title'=>$db->get('name'), 'test'=>1]);
+		if(empty($db->get('title'))) $db->set(['title'=>$db->get('name')]);
 
 		return $db;
 	}
@@ -107,7 +113,7 @@ class BlogKff extends Index_my_addon
 	 * *Получаем категории из базы
 	 */
 	public function getCategories()
-
+	:array
 	{
 		return $this->catsDB->get();
 	}
@@ -115,11 +121,52 @@ class BlogKff extends Index_my_addon
 
 	/**
 	 * *Получаем категорию по id
+	 * @return Array
 	 */
 	public function getCategory($id)
 	:array
 	{
 		return (new DbJSON(self::$storagePath . "/$id/data.json"))->get();
+	}
+
+
+	/**
+	 * *Создаём карту блога
+	 * @return Array with objects DbJSON
+	 */
+	public static function createBlogMap()
+	:DbJSON
+	{
+		// $map= [];
+		$map= new DbJSON(self::$storagePath.'/map.json');
+
+		foreach(new FilesystemIterator(self::$storagePath, FilesystemIterator::SKIP_DOTS| FilesystemIterator::UNIX_PATHS) as $pathname=>$catFI){
+			if(!$catFI->isDir()) continue;
+
+			// $map[$catFI->getFilename()]= new DbJSON("$pathname/data.json");
+			$map->set([$catFI->getFilename()=>(new DbJSON("$pathname/data.json"))->get()]) ;
+		}
+
+		// self::$log->add(__METHOD__.' BlogMap',null,[$map]);
+		return $map;
+	}
+
+	public static function getBlogMap()
+	// :array
+	{
+		$mapPath= self::$storagePath.'/map.json';
+
+		if(!file_exists($mapPath)){
+			$map= self::createBlogMap();
+		}
+		else{
+			$map= new DbJSON($mapPath);
+		}
+
+		self::$log->add(__METHOD__.' BlogMap',null,[$map->get(), /* $map->get('Novaya') */]);
+		return $map->getSequence(
+			(new DbJSON(self::$catPath))->get()
+		);
 	}
 
 
@@ -149,6 +196,7 @@ class BlogKff extends Index_my_addon
 
 	public function __destruct()
 	{
+		// unset(self::$artBase);
 		return false;
 	}
 

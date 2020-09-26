@@ -6,7 +6,9 @@ $kff::headHtml();
 if(class_exists('BlogKff'))
 {
 	foreach(['title','description','keywords'] as $prop){
-		$Page->{$prop}= BlogKff::getArtDB()->get($prop);
+		if(!empty($prop= trim(BlogKff::getArtDB()->get($prop)))){
+			$Page->{$prop}= $prop;
+		}
 	}
 }
 

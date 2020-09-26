@@ -21,10 +21,28 @@ class AdmPanel extends Index_my_addon
 		?>
 		<link rel="stylesheet" href="/<?=Index_my_addon::getPathFromRoot(__DIR__)?>/css/admin.style.css">
 		<script>
-			$("#bar").addClass("uk-offcanvas-bar")
+			'use strict';
+			var $sidebar= $("#bar");
+
+			// *Добавляем пункт Basic
+			$sidebar.find('#menu').append('<a href="/admin/module.php?module=kff_basic" class="mdls activ"><button>Basic</button></a>');
+
+			// *Скрываем меню на маленьких мониторах
+			if($(window).width() < 1100){
+				$sidebar.addClass("uk-offcanvas-bar")
 			.wrap("<div id='navbar' uk-offcanvas='overlay: true'/>");
 
-			$("#main>.header").prepend("<button class='uk-offcanvas-close' uk-toggle='target: #navbar' style='position:static;'>Menu</button>", $("a.exit"));
+				$("#main>.header").prepend("<button class='uk-offcanvas-close' uk-toggle='target: #navbar' style='position:static;'>Menu</button>", $("a.exit"));
+			}
+			else{
+				$sidebar.css({
+					// position: 'sticky',
+					// float: 'left',
+				}).addClass('uk-width-1-4');
+
+				$('div#main').addClass('uk-width-3-4 uk-float-right');
+			}
+
 		</script>
 
 		<?php
