@@ -12,15 +12,15 @@ class BlogKff extends Index_my_addon
 		$l_cfg,
 		$storagePath = \DR.'/kff_blog_data',
 		$catPath,
+		$catsDB,
 		$catDataKeys = ['name','id','items'],
-		$artBase= [];
+		$artBase= [],
+		$mapCreated= false;
 
 
 	public function __construct()
 	{
 		global $kff;
-
-		self::$catPath = self::$storagePath.'/categories.json';
 
 		// *Директория модуля от DR
 		self::$modDir = $kff::getPathFromRoot(__DIR__);
@@ -39,10 +39,8 @@ class BlogKff extends Index_my_addon
 		if(empty(self::$l_cfg))
 			$this->blogDB->replace(self::$def_cfg);
 
-		// * DbJSON с категориями
-		$this->catsDB = new DbJSON(self::$catPath);
-		if(!$this->catsDB->count())
-			self::createBlogMap();
+		// * self::$catsDB с категориями
+		self::_defineCatsDB();
 
 		if(!$this->_InputController())
 			self::addUIkit();
@@ -72,6 +70,22 @@ class BlogKff extends Index_my_addon
 	}
 
 
+	protected static function _defineCatsDB()
+	{
+		self::$catPath = self::$storagePath.'/categories.json';
+		$catsDB= &self::$catsDB;
+		$catsDB= $catsDB ?? new DbJSON(self::$catPath);
+
+		// *Перезаписываем список категорий
+		// note Последовательность теряется
+		if(!$catsDB->count()) foreach(new FilesystemIterator(self::$storagePath, FilesystemIterator::SKIP_DOTS|FilesystemIterator::KEY_AS_FILENAME| FilesystemIterator::UNIX_PATHS) as $filename=>$catFI){
+			if(!$catFI->isDir()) continue;
+			$catsDB->push ($filename);
+		}
+		self::$log->add(__METHOD__,null,['$filename'=>$filename, '$catsDB'=>$catsDB]);
+	}
+
+
 	/**
 	 * @param artPathname - путь к файлу статьи
 	 * если не передан - вычисляем текущую из URI
@@ -95,7 +109,7 @@ class BlogKff extends Index_my_addon
 			|| $artPathname === self::$storagePath */
 			$catPathname === \DR
 		){
-			self::$log->add(__METHOD__.' $artPathname is not EXIST!',Logger::BACKTRACE,['$Page->id'=>$Page->id,'$artPathname'=>$artPathname,'$catId'=>$catId]);
+			self::$log->add(__METHOD__.': $catPathname is not VALID!',Logger::BACKTRACE,['$Page->id'=>$Page->id,'$artPathname'=>$artPathname,'$catId'=>$catId]);
 			// note Устранение конфликтов
 			return new DbJSON;
 		}
@@ -121,10 +135,16 @@ class BlogKff extends Index_my_addon
 	 * *Получаем категорию по id
 	 * @return Array
 	 */
-	public function getCategory($id)
-	:array
+	public static function getCategoryDB($catId)
+	:DbJSON
 	{
-		return (new DbJSON(self::$storagePath . "/$id/data.json"))->get();
+		$db= &self::$artBase[$catId]['self'];
+
+		if(empty($db)){
+			$db= new DbJSON(self::$storagePath . "/$catId/data.json");
+		}
+
+		return $db;
 	}
 
 
@@ -133,31 +153,23 @@ class BlogKff extends Index_my_addon
 	 * @return Array with objects DbJSON
 	 *
 	 */
-	public static function createBlogMap()
+	private static function _createBlogMap()
 	:DbJSON
 	{
-		// $map= [];
 		$map= new DbJSON(self::$storagePath.'/map.json');
+		if(self::$mapCreated && $map->count())
+			return $map;
+
 		$map->clear();
 
-		$catsDB= new DbJSON(self::$catPath);
-
-		// *Перезаписываем список категорий
-		// note Последовательность теряется
-		if(!$catsDB->count()){
-			foreach(new FilesystemIterator(self::$storagePath, FilesystemIterator::SKIP_DOTS|FilesystemIterator::KEY_AS_FILENAME| FilesystemIterator::UNIX_PATHS) as $filename=>$catFI){
-				if(!$catFI->isDir()) continue;
-				$catsDB->push ($filename);
-			}
-		}
+		self::_defineCatsDB();
 
 		// *Перебираем категории
-		foreach($catsDB->get() as $catNum=>$catId){
-			$catPathname= self::$storagePath."/$catId";
+		foreach(self::$catsDB->get() as $catNum=>$catId){
 
-			// $map[$catFI->getFilename()]= new DbJSON("$pathname/data.json");
 			// *Собираем элемент и добавляем в нумерованный массив
-			$catDB= new DbJSON("$catPathname/data.json");
+			$catDB= self::getCategoryDB($catId);
+			// $catDB= new DbJSON("$catPathname/data.json");
 
 			// *Проверяем ключи - очистка карты от рудиментов
 			/* foreach($catDB->getKeys() as $key){
@@ -176,28 +188,30 @@ class BlogKff extends Index_my_addon
 
 			// *Массив с базой категории добавляем в карту
 			$map->push($catDB->get()) ;
+
 		} // foreach
 
 		// self::$log->add(__METHOD__.' BlogMap',null,[$map]);
 		new Sitemap($map);
+		// *Защита от повторных вызовов
+		self::$mapCreated = 1;
+		// die;
 		return $map;
 	}
 
 
 	public static function getBlogMap()
-	// :array
 	:DbJSON
 	{
 		$mapPath= self::$storagePath.'/map.json';
 
 		// !test
-		return self::createBlogMap();
+		// return self::_createBlogMap();
 
-		if(!file_exists($mapPath)){
-			$map= self::createBlogMap();
-		}
-		else{
-			$map= new DbJSON($mapPath);
+		$map= new DbJSON($mapPath);
+
+		if(!$map->count()){
+			$map= self::_createBlogMap();
 		}
 
 		// self::$log->add(__METHOD__.' BlogMap',null,[$map->get(), /* $map->get('Novaya') */]);

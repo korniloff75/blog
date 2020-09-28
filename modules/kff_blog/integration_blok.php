@@ -16,9 +16,10 @@ class BlogKff_sidebar extends BlogKff
 
 		echo '<ul uk-nav="multiple: false" class="categories uk-nav-parent-icon uk-nav-primary uk-nav-center" uk-sticky="show-on-up:true; media:@m; bottom: .sidebar; " style="background: inherit;">';
 
-		foreach((new DbJSON(self::$catPath))->get() as &$cat) {
+		// foreach(self::$catsDB->get() as &$catId) {
+			// $catData = $this->getCategoryDB($catId)->get();
+		foreach(self::getBlogMap()->get() as $num=>&$catData){
 
-			$catData = $this->getCategory($cat);
 			if(empty($catData['items']))
 				continue;
 			// print_r ($catData);
@@ -29,14 +30,14 @@ class BlogKff_sidebar extends BlogKff
 				<a href="#" style="text-decoration:underline; font-size: 1.2em;"><?=$catData['name']?></a>
 				<!-- <div uk-dropdown="mode: hover; delay-hide: 100; pos: left-top@m;">
 
-					<ul data-cat=<?=$cat?>  class="uk-nav uk-dropdown-nav">
+					<ul data-cat=<?=$catId?>  class="uk-nav uk-dropdown-nav">
 
 					<?php
 
 					foreach($catData['items'] as &$art) {
 
-						echo "<li data-id={$art['id']} data-cat=$cat>
-						<a href=\"/{$Page->id}/$cat/{$art['id']} \">{$art['name']}</a>
+						echo "<li data-id={$art['id']} data-cat=$catId>
+						<a href=\"/{$Page->id}/$catId/{$art['id']} \">{$art['name']}</a>
 
 						</li>";
 					}
@@ -45,18 +46,18 @@ class BlogKff_sidebar extends BlogKff
 					</ul>
 				</div> -->
 
-				<!-- <ul data-cat=<?=$cat?>  class="uk-nav uk-dropdown-nav"> -->
-				<ul data-cat=<?=$cat?>  class="">
+				<!-- <ul data-cat=<?=$catId?>  class="uk-nav uk-dropdown-nav"> -->
+				<ul data-cat=<?=$catId?>  class="">
 
 					<?php
 
 					foreach($catData['items'] as &$art) {
-						// self::$log->add("/$cat/{$art['id']}");
+						// self::$log->add("/$catId/{$art['id']}");
 						// todo Оптимизировать
-						$artData= self::getArtDB(self::$storagePath . "/$cat/{$art['id']}" . self::$l_cfg['ext'])->get();
+						$artData= self::getArtDB(self::$storagePath . "/$catId/{$art['id']}" . self::$l_cfg['ext'])->get();
 
-						$li= "<li data-id={$art['id']} data-cat=$cat class=\"\">
-						<a href=\"/{$pageId}/$cat/{$art['id']}\" title=\"" . ($artData['title'] ?? $artData['name']) . "\" uk-tooltip>{$art['name']}</a>
+						$li= "<li data-id={$art['id']} data-cat=$catId class=\"\">
+						<a href=\"/{$pageId}/$catId/{$art['id']}\" title=\"" . ($artData['title'] ?? $artData['name']) . "\" uk-tooltip>{$art['name']}</a>
 
 						</li>";
 

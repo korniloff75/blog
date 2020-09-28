@@ -4,8 +4,7 @@ class DbJSON {
 		$convertPath = false;
 
 	private
-		$path,
-		$json; # String
+		$path;
 
 	public
 		$sequence = [],
@@ -199,10 +198,10 @@ class DbJSON {
 
 	public function __destruct()
 	{
+		global $log;
 		// note test
 		// $this->db['change']= 1;
 		if(!empty($this->db['test'])){
-			global $log;
 			$log->add(__METHOD__.': База перед записью',E_USER_WARNING,[$this->db]);
 		}
 
@@ -211,10 +210,13 @@ class DbJSON {
 
 		unset($this->db['change']);
 
-		file_put_contents(
-			$this->path,
-			self::toJSON($this->db), LOCK_EX
-		);
+		if(empty($this->path))
+			$log->add(__METHOD__.': Не указан путь записи базы',$log::BACKTRACE,['$this->path'=>$this->path]);
+		else
+			file_put_contents(
+				$this->path,
+				self::toJSON($this->db), LOCK_EX
+			);
 
 		/* if(!file_put_contents(
 			$this->path,

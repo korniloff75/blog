@@ -30,6 +30,7 @@ class BlogKff_page extends BlogKff
 
 			$doc = new DOMDocument('1.0','utf-8');
 			@$doc->loadHTMLFile($artPathname);
+			$doc->normalizeDocument();
 
 			$catId= $db['catId'] ?? basename(dirname($artPathname));
 			$catName= $db['catName'];

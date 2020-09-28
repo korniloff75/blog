@@ -51,6 +51,7 @@ class BlogKff_adm extends BlogKff
 					'id'=> $artId,
 					'name'=> $artDB->get('name') ?? $humName,
 					'title'=> $artDB->get('title'),
+					// 'title'=> $artDB->get('title') ? $artDB->get('title'): $artDB->get('name'),
 					'not-public'=> $artDB->get('not-public') ?? 0,
 				]]
 			]);
@@ -62,43 +63,6 @@ class BlogKff_adm extends BlogKff
 			}
 
 		}
-	}
-
-	/**
-	 * *Перезаписываем категории из ФС
-	 * note сортировка статей сбрасывается
-	 */
-	function updateCategories()
-	{
-		$cats = [];
-		foreach(
-			new FilesystemIterator(self::$storagePath, FilesystemIterator::SKIP_DOTS|FilesystemIterator::UNIX_PATHS) as $catFI
-		) {
-			if(!$catFI->isDir()) continue;
-			// echo $catFI->getFilename() . '<br>';
-
-			$catFilename = $catFI->getFilename();
-
-			$this->_updateCatData($catFI);
-
-			$cats []= $catFilename;
-
-		} // foreach
-
-		$this->catsDB->replace($cats);
-
-		return $cats;
-	}
-
-
-	/**
-	 * *Получаем категории из базы
-	 */
-	public function getCategories()
-	{
-		return empty($cats = $this->catsDB->get()) ?
-			$this->updateCategories()
-			: $cats;
 	}
 
 
@@ -114,7 +78,7 @@ class BlogKff_adm extends BlogKff
 
 		self::$log->add(__METHOD__.' $catsAll',null,[$catsAll]);
 
-		$this->catsDB->replace($cats);
+		self::$catsDB->replace($cats);
 
 		// *Перебираем категории
 		foreach($cats as $cat) {
@@ -186,8 +150,8 @@ class BlogKff_adm extends BlogKff
 		self::$log->add("Удаление категории $removeId");
 		require_once DR.'/'. self::$dir ."/cpDir.class.php";
 		cpDir::RemoveDir(self::$storagePath. "/$removeId");
-		$num= array_search($removeId, $this->catsDB->get());
-		$this->catsDB->remove($num);
+		$num= array_search($removeId, self::$catsDB->get());
+		self::$catsDB->remove($num);
 	}
 
 
@@ -219,15 +183,14 @@ class BlogKff_adm extends BlogKff
 		$catDB = new DbJSON("$catPath/data.json");
 		$catDB->set($data);
 
-		// $this->updateCategories();
 
 		// *Переписываем список категорий
-		if(!in_array($catId, $this->catsDB->get()))
-			$this->catsDB->append([$catId]);
+		if(!in_array($catId, self::$catsDB->get()))
+			self::$catsDB->append([$catId]);
 
-		foreach($this->catsDB->get() as $num=>&$cat){
+		foreach(self::$catsDB->get() as $num=>&$cat){
 			if(!is_dir(self::$storagePath."/$cat"))
-			$this->catsDB->remove($num);
+			self::$catsDB->remove($num);
 		}
 
 		return $success;
@@ -295,11 +258,11 @@ class BlogKff_adm extends BlogKff
 			<ul id="categories" class="uk-nav uk-nav-default" uk-sortable="group: cats; handle: .uk-sortable-handle;">
 
 			<?php
-			foreach($this->getCategories() as &$cat) {
-				$catData = $this->getCategory($cat);
-				$catData['id'] = $catData['id'] ?? $cat;
-				// self::$log->add(__METHOD__,null,[$cat, $catData]);
-			?>
+			foreach(self::$catsDB->get() as &$catId) {
+				$catData = self::getCategoryDB($catId)->get();
+				$catData['id'] = $catData['id'] ?? $catId;
+				self::$log->add(__METHOD__,null,['$catId'=>$catId, '$catData'=>$catData]);
+				?>
 				<li>
 				<div class="uk-flex uk-flex-middle uk-margin-top">
 					<div class="uk-sortable-handle uk-margin-small-right" uk-icon="icon: table; ratio: 1.5"></div>
@@ -324,7 +287,7 @@ class BlogKff_adm extends BlogKff
 					{$art['name']}
 
 					<!-- Remove article -->
-					<span uk-icon=\"trash\" data-del=\"$cat/{$art['id']}\" class='delArticle'></span>
+					<span uk-icon=\"trash\" data-del=\"$catId/{$art['id']}\" class='delArticle'></span>
 
 
 
@@ -351,4 +314,3 @@ $Blog = new BlogKff_adm;
 
 
 // *Tests
-// print_r($Blog->getCategories());

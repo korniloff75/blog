@@ -95,7 +95,7 @@ class BlogKff extends Index_my_addon
 			|| $artPathname === self::$storagePath */
 			$catPathname === \DR
 		){
-			self::$log->add(__METHOD__.' $artPathname is not EXIST!',Logger::BACKTRACE,['$Page->id'=>$Page->id,'$artPathname'=>$artPathname,'$catId'=>$catId]);
+			self::$log->add(__METHOD__.': $catPathname is not VALID!',Logger::BACKTRACE,['$Page->id'=>$Page->id,'$artPathname'=>$artPathname,'$catId'=>$catId]);
 			// note Устранение конфликтов
 			return new DbJSON;
 		}
@@ -170,16 +170,19 @@ class BlogKff extends Index_my_addon
 			// ???
 			// self::$log->add(__METHOD__.' excess '. $catDB->get('name'),null,[self::$catDataKeys, $catDB->getKeys(), array_diff(self::$catDataKeys, $catDB->getKeys())]);
 
-			$catDB->push($catId, 'id');
+			// *fix to olders
+			if(!$catDB->get('id')) $catDB->push($catId, 'id');
 			// var_dump($cat);
 
 			// *Массив с базой категории добавляем в карту
 			$map->push($catDB->get()) ;
-		}
+		} // foreach
 
 		// self::$log->add(__METHOD__.' BlogMap',null,[$map]);
+		new Sitemap($map);
 		return $map;
 	}
+
 
 	public static function getBlogMap()
 	// :array
@@ -188,7 +191,7 @@ class BlogKff extends Index_my_addon
 		$mapPath= self::$storagePath.'/map.json';
 
 		// !test
-		// return self::createBlogMap();
+		return self::createBlogMap();
 
 		if(!file_exists($mapPath)){
 			$map= self::createBlogMap();

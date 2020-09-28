@@ -46,17 +46,18 @@ class Sitemap extends BlogKff
 
 		echo '<pre>';
 
-		foreach($map->get() as $num=>&$catDB) {
-		// foreach($map as $num=>&$catDB) {
-			$catId= $catDB['id'];
-			$catName= $catDB['name'];
+		foreach($map->get() as $num=>&$catData) {
+		// foreach($map as $num=>&$catData) {
+			$catId= &$catData['id'];
+			$catName= &$catData['name'];
 
 			echo "<h3>[$num] - $catId - $catName</h3>";
 			// echo "<p>".\HOST."</p>";
-			// var_dump($catDB);
+			// var_dump($catData);
 
 			// *Перебор статей в категории
-			if(count($catDB['items'])) foreach($catDB['items'] as $artDB){
+			if(count($catData['items'])) foreach($catData['items'] as $artDB)
+			{
 				$artPath= self::getPathFromRoot(self::$storagePath."/$catId/{$artDB['id']}");
 				echo "$artPath<br>";
 
@@ -74,10 +75,12 @@ class Sitemap extends BlogKff
 				$itemContent = ($this->_addToRss(\DR."/$artPath" . self::$l_cfg['ext']));
 
 				// echo "<hr>". htmlspecialchars($itemContent);
+				var_dump($artDB);
 
 				$itemContent = '<item turbo="true">'
 				. "\n<link>" . (self::is('https')?'https':'http') . '://' . \HOST . "/$artPath</link>\n"
 				. "\n<turbo:content>\n<![CDATA[\n"
+				. "<header>{$artDB['title']}</header>\n"
 				. $itemContent
 				. "\n]]>\n</turbo:content>\n"
 				. "</item>\n\n";
@@ -128,7 +131,7 @@ class Sitemap extends BlogKff
 		$xpath= new \DOMXPath($doc);
 
 		// $body= $xpath->query('//body/descendant::*');
-		$scripts= $xpath->query('//body/descendant::script');
+		$scripts= $xpath->query('//script');
 
 		foreach($scripts as $s){
 			$s->parentNode->removeChild($s);
