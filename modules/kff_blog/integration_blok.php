@@ -23,6 +23,8 @@ class BlogKff_sidebar extends BlogKff
 			if(empty($catData['items']))
 				continue;
 			// print_r ($catData);
+
+			$catId= &$catData['id'];
 		?>
 
 			<li class="uk-parent">

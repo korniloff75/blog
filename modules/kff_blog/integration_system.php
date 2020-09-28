@@ -144,6 +144,8 @@ class BlogKff extends Index_my_addon
 			$db= new DbJSON(self::$storagePath . "/$catId/data.json");
 		}
 
+		if(!$db->count())
+
 		return $db;
 	}
 

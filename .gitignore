@@ -16,6 +16,7 @@ js/db/*.*
 *.key
 */tg/*/*.trigger
 token*
+cfg.*
 # Удалил модуль от Denis
 modules/admin_pages_category
 

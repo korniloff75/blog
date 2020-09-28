@@ -120,11 +120,16 @@ U.ready(()=>{
 		$.post('', send_data)
 		.then((response, status)=>{
 			// console.log(status, typeof status, status === 'success');
-			UIkit.modal.alert( "Настройки" +
+			if(status === 'success')
+				UIkit.notification("<span uk-icon='icon: check'></span> Настройки успешно сохранены", 'success');
+			else
+			if(status === 'success')
+				UIkit.notification("<span uk-icon='icon: check'></span> Настройки не были сохранены", 'danger');
+			/* UIkit.modal.alert( "Настройки" +
 				(status === 'success'?
 				" успешно сохранены"
 				:" не были сохранены")
-			);
+			); */
 
 			ajaxRender(response);
 		});

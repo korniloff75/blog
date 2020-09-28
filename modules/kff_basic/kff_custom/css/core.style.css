@@ -30,6 +30,11 @@
 	font-weight: 600;
 }
 
+#response{
+	background:#def;
+	color: #333;
+}
+
 @media (max-width: 450px) {
 	div.content {
 		padding: 5px;

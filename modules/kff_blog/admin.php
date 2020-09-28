@@ -28,7 +28,7 @@ class BlogKff_adm extends BlogKff
 	 * *Перезаписываем catName/data.json
 	 *
 	 */
-	protected function _updateCatData(SplFileInfo $catFI, $humName=null)
+	protected function _updateCatDB(SplFileInfo $catFI, $humName=null)
 	{
 		$catPathname = $catFI->getPathname();
 
@@ -115,7 +115,7 @@ class BlogKff_adm extends BlogKff
 			}
 
 			if(!empty($oldCatPath))
-				$this->_updateCatData(new SplFileInfo($oldCatPath));
+				$this->_updateCatDB(new SplFileInfo($oldCatPath));
 
 		}
 
@@ -136,7 +136,7 @@ class BlogKff_adm extends BlogKff
 		unlink("$removePath.json");
 		unlink("$removePath" . self::$l_cfg['ext']);
 
-		$this->_updateCatData(new SplFileInfo($catPath));
+		$this->_updateCatDB(new SplFileInfo($catPath));
 	}
 
 	/**
@@ -230,7 +230,7 @@ class BlogKff_adm extends BlogKff
 			file_put_contents($artPathname,"<p>New Article - <b>$new_article</b>!</p>")
 		) {
 			$artDB->set($cfg);
-			$this->_updateCatData(new SplFileInfo($catPath), $cfg['name']);
+			$this->_updateCatDB(new SplFileInfo($catPath), $cfg['name']);
 		}
 		else {
 			self::$log->add(__METHOD__.' Не получается добавить статью '.$artPathname,E_USER_WARNING);

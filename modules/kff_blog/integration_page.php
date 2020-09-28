@@ -16,10 +16,10 @@ class BlogKff_page extends BlogKff
 
 
 		foreach($this->getArticleList($quantity) as $ts=>&$artPathname){
-			$db= self::getArtDB($artPathname)->get();
+			$artData= self::getArtDB($artPathname)->get();
 
 			// *Черновики видны только админу
-			if(!empty($db['not-public'])){
+			if(!empty($artData['not-public'])){
 				if(self::is_adm()){
 					$o.= "<p class='not-public'>Черновик</p>";
 				}
@@ -32,8 +32,8 @@ class BlogKff_page extends BlogKff
 			@$doc->loadHTMLFile($artPathname);
 			$doc->normalizeDocument();
 
-			$catId= $db['catId'] ?? basename(dirname($artPathname));
-			$catName= $db['catName'];
+			$catId= $artData['catId'] ?? basename(dirname($artPathname));
+			$catName= $artData['catName'];
 			$artId= basename($artPathname, self::$l_cfg['ext']);
 
 			$xpath = new DOMXpath($doc);
@@ -44,7 +44,7 @@ class BlogKff_page extends BlogKff
 			// echo "$artId<br>";
 			// echo addcslashes($artId, "'")."<br>";
 			$artHref= "/{$Page->id}/$catId/$artId";
-			$o.="<a href=\"$artHref\"><h3>" . ($db['title'] ?? $db['name']) . "</h3></a>";
+			$o.="<a href=\"$artHref\"><h3>" . ($artData['title'] ?? $artData['name']) . "</h3></a>";
 
 			// *Первое изображение
 			if(!empty($img= $imgs->item(0)))
@@ -240,6 +240,8 @@ class BlogKff_page extends BlogKff
 			<span class="uk-width-1-3"><b>description</b></span><textarea name="description" class="uk-width-expand" type="text" placeholder="description"><?=$artDB->get('description')?></textarea><p class="uk-width-1 uk-margin-remove"></p>
 
 			<span class="uk-width-1-3"><b>keywords</b></span><input name="keywords" class="uk-width-expand" type="text" placeholder="keywords" value="<?=$artDB->get('keywords')?>"><p class="uk-width-1 uk-margin-remove"></p>
+
+			<span class="uk-width-1-3"><b>Метки</b></span><input name="tag" class="uk-width-expand" type="text" placeholder="метки" value="<?=$artDB->get('tag')?>"><p class="uk-width-1 uk-margin-remove"></p>
 
 			<span class="uk-width-1-3"><b>Черновик</b></span><!-- <input name="not-public" class="uk-width-expand" type="text" placeholder="bool" value="<?=$artDB->get('not-public')?>"> -->
 			<select name="not-public" value="<?=!empty($artDB->get('not-public'))? 1: 0 ?>">
