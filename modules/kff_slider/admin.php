@@ -12,18 +12,10 @@ echo '<pre>';
 	// get_class_vars('System'),
 	// $Page
 ); */
-
+// *pathname to imgs folder
 $Imgpath = DR."/files/slider";
 
 require_once __DIR__.'/fns.php';
-
-// getStorage("$Imgpath/cfg.json");
-
-// DbJSON::$convertPath = false;
-// $Storage = new DbJSON(__DIR__."/cfg.json");
-// *pathname to imgs folder
-// $Folder = $Storage->get($Page->id) ?? __DIR__;
-// $cfg = $Storage->get();
 
 
 $log->add('$_FILES',null,[

@@ -377,10 +377,5 @@ kff.menu.prototype.setActive = function setActive (href) {
 	this.$nav.find('a').filter((ind,i)=> i.href === href).addClass('active');
 	// console.log($nav.css('height'));
 
-	// *Hide nav
-	// todo убивает высоту в сайдбаре
-	/* if(parseInt(this.$nav.css('height')) > 100) {
-		this.$nav.css('height',0);
-	} */
 }
 

@@ -89,12 +89,9 @@
 	?>
 
 	<div class="contact">
-		<!-- <div class="map">
-			<script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3Ac0f6d89d5c475219392d254f4b1b2e8ed0a6f81ec72355edc8454bf43615a01a&amp;width=100%25&amp;height=400&amp;lang=ru_RU&amp;scroll=true"></script>
-		</div> -->
 
+		<!-- Карта -->
 		<div id="my_map" class="map" style="min-height:300px;">
-			<!-- Карта -->
 			<!-- <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU"></script> -->
 			<script>
 			'use strict';
@@ -181,19 +178,25 @@ $(()=>{
 	} */
 });
 
+var $nav= $('#nav');
+
 // *burger button
 $('#menu').on('click', function(){
-	var menu = document.getElementById('nav');
-	menu.style.height = menu.style.height === menu.scrollHeight + 'px'
+	$nav.css(
+		'height',
+		$nav.css('height') === $nav.prop('scrollHeight') + 'px'
 		? '0px'
-		: menu.scrollHeight + 'px';
+		: $nav.prop('scrollHeight') + 'px'
+	);
 });
 
-// *
-$('#nav').on('click', function(e){
-	var $t= $(this);
-	if(parseInt($t.css('height')) > 100) {
-		$t.css('height',0);
+
+$(document).on('click', function(e){
+	// var $t= $(e.target).closest($nav);
+
+	if(parseInt($nav.css('height')) > 100) {
+		$nav.css('height',0);
+		// console.log($t, $nav.css('height'));
 	}
 });
 </script>
