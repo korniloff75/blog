@@ -2,10 +2,17 @@
 
 class Sitemap extends BlogKff
 {
-	private
+	public static
+		$test = 0,
+		$createGzip = false,
 		$path= \DR.'/sitemap.xml',
-		$RSSpath= \DR.'/rss.xml',
+		$RSSpath= \DR.'/turbo.rss.xml';
 
+	private static
+	// *Защита от повторных вызовов
+		$mapCreated= 0;
+
+	private
 		$sitemap = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n",
 
 		$rss = '<?xml version="1.0" encoding="UTF-8"?>
@@ -19,54 +26,71 @@ class Sitemap extends BlogKff
 
 	public function __construct(DbJSON &$map)
 	{
-		parent::__construct();
-		// $this->path = \SITEMAP['path'] ?? 'sitemap.xml';
-		// $this->RSSpath = \SITEMAP['RSSpath'] ?? 'rss.xml';
+		if(!self::$modDir)
+			parent::__construct();
 
-		$this->rss.= '<title>' . '{{SITENAME}}' . '</title>
+		$this->rss.= '<title>' . $GLOBALS['Config']->header . '</title>
 		<link>' . (self::is('https')?'https':'http') . '://' . \HOST . '</link>
-		<description>' . '{{DESCRIPTION}}' . '</description>
+		<description>' . $GLOBALS['Config']->slogan . '</description>
 		<language>' . 'ru' . '</language>
-		<turbo:analytics type="LiveInternet"></turbo:analytics>';
+		<turbo:analytics type="LiveInternet"></turbo:analytics>'."\n";
 
-		if(
-			self::is_adm() && (
-				!file_exists($this->path)
-				|| !file_exists($this->RSSpath)
-				// || (ceil(time() - filemtime($this->path))/3600/24 > \SITEMAP['expires'])
-			)
-		){
+		$cond= self::is_adm() && (
+			!self::$mapCreated
+			|| !file_exists(self::$path)
+			|| !file_exists(self::$RSSpath)
+			// || (ceil(time() - filemtime(self::$path))/3600/24 > \SITEMAP['expires'])
+		);
+
+		self::$log->add(__METHOD__,null,[
+			'$cond'=>$cond,
+			// '$GLOBALS[\'Config\']'=>$GLOBALS['Config'],
+		]);
+
+		if($cond){
 			$this->build($map);
+			self::$mapCreated= 1;
 		}
 	} // __construct
+
+	public static function test()
+	{
+		self::$test= 1;
+		unlink(self::$path);
+		ob_start();
+		echo '<pre>';
+		$map= self::_createBlogMap(1);
+		echo '</pre>';
+		ob_end_flush();
+		return $map;
+	}
 
 
 	public function build(DbJSON &$map)
 	{
-
-		echo '<pre>';
-
-		foreach($map->get() as $num=>&$catData) {
+		foreach($map as $ind=>$catData) {
 		// foreach($map as $num=>&$catData) {
 			$catId= &$catData['id'];
 			$catName= &$catData['name'];
 
-			echo "<h3>[$num] - $catId - $catName</h3>";
+			echo "<h3>[$ind] - $catId - $catName</h3>";
 			// echo "<p>".\HOST."</p>";
 			// var_dump($catData);
 
 			// *Перебор статей в категории
-			if(count($catData['items'])) foreach($catData['items'] as $artDB)
+			if(count($catData['items'])) foreach($catData['items'] as $artData)
 			{
-				$artPath= self::getPathFromRoot(self::$storagePath."/$catId/{$artDB['id']}");
+				$artPath= self::getPathFromRoot(self::$storagePath."/$catId/{$artData['id']}");
 				echo "$artPath<br>";
 
 				// *Удаляем черновики
-				if(!empty($artDB['not-public'])) continue;
+				if(!empty($artData['not-public'])) continue;
+
+				$artData['date'] = date ('Y-m-d', filemtime(\DR."/$artPath" . self::$l_cfg['ext']));
 
 				$this->sitemap .= "<url>\n"
 				. "<loc>" . (self::is('https')?'https':'http') . '://' . \HOST . "/$artPath</loc>\n"
-				. "<lastmod>" . date ('Y-m-d', filemtime(\DR."/$artPath" . self::$l_cfg['ext'])) . "</lastmod>\n"
+				. "<lastmod>{$artData['date']}</lastmod>\n"
 				. "<changefreq>weekly</changefreq>\n"
 				. "<priority>0.7</priority>\n"
 				. "</url>\n";
@@ -75,15 +99,16 @@ class Sitemap extends BlogKff
 				$itemContent = ($this->_addToRss(\DR."/$artPath" . self::$l_cfg['ext']));
 
 				// echo "<hr>". htmlspecialchars($itemContent);
-				var_dump($artDB);
+				// echo "<h4>\$artData</h4>";
+				// var_dump($artData);
 
-				$itemContent = '<item turbo="true">'
+				$itemContent = "\n".'<item turbo="true">'
 				. "\n<link>" . (self::is('https')?'https':'http') . '://' . \HOST . "/$artPath</link>\n"
 				. "\n<turbo:content>\n<![CDATA[\n"
-				. "<header>{$artDB['title']}</header>\n"
+				. "<header>".($artData['title'] ?? $artData['name'])."</header>\n"
 				. $itemContent
 				. "\n]]>\n</turbo:content>\n"
-				. "</item>\n\n";
+				. "</item>\n";
 
 				// echo "<hr>". htmlspecialchars($itemContent);
 
@@ -99,20 +124,17 @@ class Sitemap extends BlogKff
 
 		echo "<hr><h3>Sitemap</h3>". htmlspecialchars($this->sitemap) . "<hr>";
 		echo "<hr><h3>RSS</h3>". htmlspecialchars($this->rss);
-		echo '</pre>';
 
-		file_put_contents($this->path, $this->sitemap);
-		// !
-		return;
+		file_put_contents(self::$path, $this->sitemap);
 
-		# Compress
-		if( \SITEMAP['gzip'])
+		//* Compress
+		if( self::$createGzip )
 		{
-			file_put_contents($this->path . '.gz', gzencode($this->sitemap,  \SITEMAP['gzip']));
+			file_put_contents(self::$path . '.gz', gzencode($this->sitemap));
 		}
 
 
-		file_put_contents($this->RSSpath, $this->rss);
+		file_put_contents(self::$RSSpath, $this->rss);
 
 		return $this->sitemap;
 	} // build
@@ -140,6 +162,7 @@ class Sitemap extends BlogKff
 		$body= $xpath->query('//body')->item(0);
 
 		$xml= utf8_decode($doc->saveXML($body));
+		$xml= str_replace(']]','',$xml);
 
 		return preg_replace('~<body>([\s\S]+)</body>~u', '$1', $xml, 1);
 		// return utf8_decode($xml);

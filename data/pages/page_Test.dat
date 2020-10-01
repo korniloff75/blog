@@ -1,6 +1,6 @@
 <?php
-// BlogKff::createBlogMap();
- BlogKff::getBlogMap();
+// BlogKff::getBlogMap();
+Sitemap::test();
 ?>
 <pre>
 <code>

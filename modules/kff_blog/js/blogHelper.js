@@ -133,26 +133,31 @@ $('.content').on('click', '#save_sts', $e=>{
 	$e.stopPropagation();
 	$e.preventDefault();
 
-	$list.each((ind,i)=>{
+	// console.log('$list=',$list);
+
+	$list.each((indCat,i)=>{
 		var $i=$(i);
 		out[$i.data('id')]= [];
 		$i.find('[data-id]').each((ind,i)=>{
 			var
 				id = i.getAttribute('data-id'),
 				name = i.getAttribute('data-name'),
-				title = i.getAttribute('title'),
+				title = i.getAttribute('data-title'),
 				oldCatId = i.getAttribute('data-oldCatId');
 
-			if(out[$i.data('id')].filter(function(i){return i.id === id}).length) {
+			if(out[$i.data('id')].filter(
+				function(i){return i.id === id}
+			).length) {
 				err.push('Элемент ' + id + ' не может дублироваться в одной категории!');
 			}
 			out[$i.data('id')].push({
-				id: id, name: name, oldCatId: oldCatId,
+				id: id, ind:[indCat,ind], name: name, oldCatId: oldCatId,
 			});
 
 			if(title.trim()){
-				out[$i.data('id')].title= title;
+				out[$i.data('id')][ind].title= title;
 			}
+			console.log('title.trim()',title.trim(),i.attributes.title.nodeValue);
 			// out[$i.data('id')].push(id);
 		})
 	})

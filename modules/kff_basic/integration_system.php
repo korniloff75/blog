@@ -244,7 +244,7 @@ class Index_my_addon implements BasicClassInterface
 	{
 		if(!self::$log) return;
 
-		self::$log->add(__METHOD__.' self::is_admPanel()',null,[self::is_admPanel(), realpath('.')]);
+		self::$log->add(__METHOD__,null,['self::is_admPanel()'=>self::is_admPanel(), realpath('.')]);
 		// var_dump($GLOBALS['log']);
 	}
 }

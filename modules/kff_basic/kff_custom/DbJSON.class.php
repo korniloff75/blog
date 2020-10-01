@@ -1,18 +1,27 @@
 <?php
-class DbJSON {
+class DbJSON implements Iterator
+{
 	static
+		$log,
 		$convertPath = false;
 
 	private
+		$position = 0,
+		$changed = 0,
+		// $values,
 		$path;
 
-	public
+	private
 		$sequence = [],
 		$db = [];# DataBase # Array
 
 
 	public function __construct(?string $path=null)
 	{
+		global $log;
+
+		self::$log= &$log;
+
 		if(self::$convertPath)
 		{
 			//* fix 4 __destruct
@@ -50,10 +59,46 @@ class DbJSON {
 					trigger_error(__METHOD__.": DB is empty from {$this->path}", E_USER_WARNING);
 				}
 			}
+			else{
 
-		}
+			}
+
+		} //if(!empty($path))
 
 	} // __construct
+
+
+	public function rewind() {
+		$this->position = 0;
+	}
+
+	public function values() {
+		$this->values= $this->values ?? array_values($this->db);
+		return $this->values;
+	}
+
+	public function current() {
+		// *Если строковые ключи
+		if(empty($cur= &$this->db[$this->position])){
+			$cur= &$this->values()[$this->position];
+		}
+		// self::$log->add(__METHOD__,null,['position'=>$this->position, 'cur'=>$cur,]);
+		return $cur;
+	}
+
+	public function key() {
+		return $this->position;
+	}
+
+	public function next() {
+		++$this->position;
+	}
+
+	public function valid() {
+		return
+			isset($this->db[$this->position])
+			|| isset($this->values()[$this->position]);
+	}
 
 	public function count($mode=null)
 	{
@@ -69,7 +114,7 @@ class DbJSON {
 		if(!empty($id))
 			unset($this->db[$id]);
 		else $this->db = [];
-		$this->db['change']= 1;
+		$this->changed= 1;
 		return $this;
 	}
 
@@ -128,7 +173,7 @@ class DbJSON {
 
 		$this->db = $handler($this->db, $data);
 
-		$this->db['change']= 1;
+		$this->changed= 1;
 
 		return $this;
 	}
@@ -150,10 +195,33 @@ class DbJSON {
 		else{
 			$this->db[]= $item;
 		}
-		$this->db['change']= 1;
+		$this->changed= 1;
 		return $this;
 	}
 
+	public function filter($key)
+	{
+		return array_filter($this->db, function(&$i) use($key){
+			if(!is_array($i)) return;
+			return isset($i[$key]);
+		});
+	}
+
+
+	/**
+	 * *Поиск в базе 2-мерного массива по значению ключа
+	 *
+	 */
+	public function find($key, $val, $strict=1)
+	{
+		if(count($searches= $this->filter($key))) foreach($searches as &$i){
+			if(
+				$strict && $i[$key] === $val
+				|| !$strict && $i[$key] == $val
+			) return $i;
+		}
+		return;
+	}
 
 	/**
 	 * Меняем местами элементы
@@ -161,7 +229,7 @@ class DbJSON {
 	public function swap($firstId, $secondId)
 	{
 		list($this->db[$secondId], $this->db[$firstId]) = [$this->db[$firstId], $this->db[$secondId]];
-		$this->db['change']= 1;
+		$this->changed= 1;
 		return $this;
 	}
 
@@ -171,7 +239,7 @@ class DbJSON {
 	public function replace($data)
 	{
 		$this->db = $data;
-		$this->db['change']= 1;
+		$this->changed= 1;
 
 		return $this;
 	}
@@ -200,15 +268,13 @@ class DbJSON {
 	{
 		global $log;
 		// note test
-		// $this->db['change']= 1;
+		// $this->changed= 1;
 		if(!empty($this->db['test'])){
 			$log->add(__METHOD__.': База перед записью',E_USER_WARNING,[$this->db]);
 		}
 
 		// *check changes
-		if(empty($this->db['change'])) return;
-
-		unset($this->db['change']);
+		if(!$this->changed) return;
 
 		if(empty($this->path))
 			$log->add(__METHOD__.': Не указан путь записи базы',$log::BACKTRACE,['$this->path'=>$this->path]);

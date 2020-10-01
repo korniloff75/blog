@@ -76,26 +76,26 @@ class BlogKff_adm extends BlogKff
 		$catsAll = json_decode($catsAllJson, 1);
 		$cats = array_keys($catsAll);
 
-		self::$log->add(__METHOD__.' $catsAll',null,[$catsAll]);
+		self::$log->add(__METHOD__,null,['$cats'=>$cats, '$catsAll'=>$catsAll]);
 
 		self::$catsDB->replace($cats);
 
 		// *Перебираем категории
-		foreach($cats as $cat) {
-			$catPathname = self::$storagePath . "/$cat";
-			$items = &$catsAll[$cat];
+		foreach($cats as $ind=>$catId) {
+			$catPathname = self::$storagePath . "/$catId";
+			$items = &$catsAll[$catId];
 
 			$catDB = new DbJSON($catPathname . "/data.json");
 			$catDB->clear('items');
 
-			self::$log->add(__METHOD__,null,[$cat,$items]);
+			self::$log->add(__METHOD__,null,['$catId'=>$catId,'$items'=>$items,]);
 
 			// *Перебираем элементы
 			foreach($items as &$item) {
 				$artPathname= "$catPathname/{$item['id']}" . self::$l_cfg['ext'];
 
 				// *Элемент перемещён в другую категорию
-				if($item['oldCatId'] !== $cat)
+				if($item['oldCatId'] !== $catId)
 				{
 					$oldCatPath = self::$storagePath . "/{$item['oldCatId']}";
 					rename("{$oldCatPath}/{$item['id']}" . self::$l_cfg['ext'], $artPathname);
@@ -104,7 +104,7 @@ class BlogKff_adm extends BlogKff
 					// *Перезаписываем данные в базе статьи
 					// $artDB = new DbJSON("$catPathname/{$item['id']}.json");
 					$artDB = self::getArtDB($artPathname);
-					$artDB->set(['catId'=>$cat, 'catName'=>$catDB->get('name')]);
+					$artDB->set(['catId'=>$catId, 'catName'=>$catDB->get('name')]);
 
 					unset($item['oldCatId']);
 				}
@@ -112,12 +112,15 @@ class BlogKff_adm extends BlogKff
 				// *Обновляем базу элементов категории
 				$catDB->append(['items'=>[$item]]);
 
-			}
+			} //foreach
 
 			if(!empty($oldCatPath))
 				$this->_updateCatDB(new SplFileInfo($oldCatPath));
 
-		}
+			// *Обновляем карту
+			self::_createBlogMap(1);
+
+		} //foreach
 
 		return $cats;
 	}
@@ -137,6 +140,9 @@ class BlogKff_adm extends BlogKff
 		unlink("$removePath" . self::$l_cfg['ext']);
 
 		$this->_updateCatDB(new SplFileInfo($catPath));
+
+		// *Обновляем карту
+		self::_createBlogMap();
 	}
 
 	/**
@@ -152,6 +158,9 @@ class BlogKff_adm extends BlogKff
 		cpDir::RemoveDir(self::$storagePath. "/$removeId");
 		$num= array_search($removeId, self::$catsDB->get());
 		self::$catsDB->remove($num);
+
+		// *Обновляем карту
+		self::_createBlogMap();
 	}
 
 
@@ -188,9 +197,9 @@ class BlogKff_adm extends BlogKff
 		if(!in_array($catId, self::$catsDB->get()))
 			self::$catsDB->append([$catId]);
 
-		foreach(self::$catsDB->get() as $num=>&$cat){
-			if(!is_dir(self::$storagePath."/$cat"))
-			self::$catsDB->remove($num);
+		foreach(self::$catsDB as $ind=>$catId){
+			if(!is_dir(self::$storagePath."/$catId"))
+			self::$catsDB->remove($ind);
 		}
 
 		return $success;
@@ -258,10 +267,13 @@ class BlogKff_adm extends BlogKff
 			<ul id="categories" class="uk-nav uk-nav-default" uk-sortable="group: cats; handle: .uk-sortable-handle;">
 
 			<?php
-			foreach(self::$catsDB->get() as &$catId) {
-				$catData = self::getCategoryDB($catId)->get();
+			// self::$log->add(__METHOD__,null,['self::$catsDB'=>self::$catsDB, ]);
+
+			foreach(self::$catsDB as $catId) {
+				$catData = self::getCategoryData($catId);
 				$catData['id'] = $catData['id'] ?? $catId;
-				self::$log->add(__METHOD__,null,['$catId'=>$catId, '$catData'=>$catData]);
+
+				// self::$log->add(__METHOD__,null,['$catId'=>$catId, '$catData'=>$catData]);
 				?>
 				<li>
 				<div class="uk-flex uk-flex-middle uk-margin-top">
@@ -279,20 +291,23 @@ class BlogKff_adm extends BlogKff
 				<ul data-id=<?=$catData['id']?> class="listArticles uk-nav uk-nav-default uk-width-auto" uk-sortable="group: cat-items; handle: .uk-sortable-handle; cls-custom: uk-box-shadow-small uk-flex uk-flex-expand uk-background">
 
 				<?php
-				if(is_array($catData['items'])) foreach($catData['items'] as &$art) {
-					echo "<li data-id={$art['id']} data-name=\"{$art['name']}\" data-oldCatId= {$catData['id']} uk-tooltip title=\"{$art['title']}\" class=\"uk-flex uk-flex-wrap uk-flex-middle\">
+				if(is_array($catData['items'])) foreach($catData['items'] as $ind=>&$artData) {
+					$artData['title'] = $artData['title'] ?? $artData['name'];
+					// $artData['date'] = $artData['date'];
+
+					echo "<li data-id={$artData['id']} data-index={$ind} data-name=\"{$artData['name']}\" data-oldCatId= {$catData['id']} uk-tooltip title=\"{$artData['title']}\" data-title=\"{$artData['title']}\" class=\"uk-flex uk-flex-wrap uk-flex-middle\">
 					<div class=\"uk-sortable-handle uk-margin-small-right\" uk-icon=\"icon: table\"></div>
 
 					<!-- artName -->
-					{$art['name']}
+					{$artData['name']}
 
 					<!-- Remove article -->
-					<span uk-icon=\"trash\" data-del=\"$catId/{$art['id']}\" class='delArticle'></span>
+					<span uk-icon=\"trash\" data-del=\"$catId/{$artData['id']}\" class='delArticle'></span>
 
 
 
 					</li>";
-					// print_r($art);
+					// print_r($artData);
 				}
 
 				?>

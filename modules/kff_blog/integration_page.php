@@ -4,7 +4,17 @@ if (!class_exists('System')) exit; // Запрет прямого доступа
 // *Очищаем основную систему от лишнего кода
 class BlogKff_page extends BlogKff
 {
-	// public ;
+	private $artPathname;
+
+	/* public function __construct()
+	{
+		global $Page;
+		parent::__construct();
+
+		$this->artPathname=
+	} */
+
+
 	/**
 	 * *Лента новостей
 	 * @param quantity - кол-во элементов
@@ -16,7 +26,7 @@ class BlogKff_page extends BlogKff
 
 
 		foreach($this->getArticleList($quantity) as $ts=>&$artPathname){
-			$artData= self::getArtDB($artPathname)->get();
+			$artData= self::getArtData($artPathname);
 
 			// *Черновики видны только админу
 			if(!empty($artData['not-public'])){
@@ -96,6 +106,7 @@ class BlogKff_page extends BlogKff
 			'~\\' . self::$l_cfg['ext'] . '$~'
 		); */
 
+		// foreach(new RecursiveIteratorIterator($storageIterator) as $c=>$FI){
 		foreach(new RecursiveIteratorIterator($storageIterator) as $c=>$FI){
 			if($FI->isDir() || $FI->getExtension() !== substr(self::$l_cfg['ext'], 1)) continue;
 
@@ -128,14 +139,24 @@ class BlogKff_page extends BlogKff
 	protected function c_saveEdit($html)
 
 	{
-		if(!self::is_adm())
+		$artPathname= $this->getArtPathname();
+		self::$log->add(__METHOD__,null,['$artPathname'=>$artPathname]);
+
+		if(
+			!self::is_adm()
+			|| !file_exists($artPathname)
+		)
 			return false;
 
-		$artDB= self::getArtDB();
-		self::$log->add('$this->opts=',null,[$this->opts]);
+		// $mapDB= self::getBlogMap();
+		$artDB= self::getArtDB($artPathname);
+		$artData= self::getArtData($artPathname);
+
+		self::$log->add(__METHOD__,null,['$this->opts'=>$this->opts]);
 
 		array_walk($this->opts['artOpts'], function(&$v, $k){
 			switch ($k) {
+				case 'tag':
 				case 'keywords':
 					$v= preg_replace('~\s*(,)\s*~u', '$1', $v);
 					break;
@@ -148,9 +169,24 @@ class BlogKff_page extends BlogKff
 			}
 		});
 
-		$artDB->set($this->opts['artOpts']);
+		$this->opts['artOpts']['date'] = date ('Y-m-d', filemtime($artPathname));
 
-		return file_put_contents(self::$storagePath . "/{$this->opts['cat']}/{$this->opts['art']}" . self::$l_cfg['ext'], $html);
+		$artDB->set($this->opts['artOpts']);
+		// self::$map->set()
+
+		file_put_contents(self::$storagePath . "/{$this->opts['cat']}/{$this->opts['art']}" . self::$l_cfg['ext'], $html);
+
+		// *Обновляем карту
+		// self::_createBlogMap(1);
+		$map= self::getBlogMap();
+		$ind= $artData['ind'];
+
+		$newData= [$ind[0]=>[
+			'items'=>[$ind[1]=>$artDB->get()]
+		]];
+		$map->set($newData);
+
+		self::$log->add(__METHOD__,null,['$ind'=>$ind,'$artDB'=>$artDB,]);
 	}
 
 
@@ -217,12 +253,11 @@ class BlogKff_page extends BlogKff
 	 */
 	public function Render()
 	{
-		global $Page;
 		$edit= isset($_GET['edit']);
 
-		$artDB= self::getArtDB();
+		$artData= self::getArtData($this->getArtPathname());
 
-		echo '<h1 id="title">' . ($artDB->get('title') ?? $artDB->get('name')) . '</h1>';
+		echo '<h1 id="title">' . ($artData['title'] ?? $artData['name']) . '</h1>';
 	?>
 
 		<script src="/<?=self::$modDir?>/js/blogHelper.js"></script>
@@ -233,20 +268,20 @@ class BlogKff_page extends BlogKff
 		{
 		?>
 		<div id="artOpts" class="uk-flex uk-flex-wrap uk-flex-middle">
-			<span class="uk-width-1-3"><b>name</b></span> <input name="name" class="uk-width-expand" type="text" placeholder="name" value="<?=$artDB->get('name')?>"><p class="uk-width-1 uk-margin-remove"></p>
+			<span class="uk-width-1-3"><b>name</b></span> <input name="name" class="uk-width-expand" type="text" placeholder="name" value="<?=$artData['name']?>"><p class="uk-width-1 uk-margin-remove"></p>
 
-			<span class="uk-width-1-3"><b>title</b></span> <input name="title" class="uk-width-expand" type="text" placeholder="title" value="<?=$artDB->get('title')?>"><p class="uk-width-1 uk-margin-remove"></p>
+			<span class="uk-width-1-3"><b>title</b></span> <input name="title" class="uk-width-expand" type="text" placeholder="title" value="<?=$artData['title'] ?? $artData['name']?>"><p class="uk-width-1 uk-margin-remove"></p>
 
-			<span class="uk-width-1-3"><b>description</b></span><textarea name="description" class="uk-width-expand" type="text" placeholder="description"><?=$artDB->get('description')?></textarea><p class="uk-width-1 uk-margin-remove"></p>
+			<span class="uk-width-1-3"><b>description</b></span><textarea name="description" class="uk-width-expand" type="text" placeholder="description"><?=$artData['description']?></textarea><p class="uk-width-1 uk-margin-remove"></p>
 
-			<span class="uk-width-1-3"><b>keywords</b></span><input name="keywords" class="uk-width-expand" type="text" placeholder="keywords" value="<?=$artDB->get('keywords')?>"><p class="uk-width-1 uk-margin-remove"></p>
+			<span class="uk-width-1-3"><b>keywords</b></span><input name="keywords" class="uk-width-expand" type="text" placeholder="keywords" value="<?=$artData['keywords']?>"><p class="uk-width-1 uk-margin-remove"></p>
 
-			<span class="uk-width-1-3"><b>Метки</b></span><input name="tag" class="uk-width-expand" type="text" placeholder="метки" value="<?=$artDB->get('tag')?>"><p class="uk-width-1 uk-margin-remove"></p>
+			<span class="uk-width-1-3"><b>Метки</b> (через запятую)</span><input name="tag" class="uk-width-expand" type="text" placeholder="метки" value="<?=$artData['tag']?>"><p class="uk-width-1 uk-margin-remove"></p>
 
-			<span class="uk-width-1-3"><b>Черновик</b></span><!-- <input name="not-public" class="uk-width-expand" type="text" placeholder="bool" value="<?=$artDB->get('not-public')?>"> -->
-			<select name="not-public" value="<?=!empty($artDB->get('not-public'))? 1: 0 ?>">
+			<span class="uk-width-1-3"><b>Черновик</b></span><!-- <input name="not-public" class="uk-width-expand" type="text" placeholder="bool" value="<?=$artData['not-public']?>"> -->
+			<select name="not-public" value="<?=!empty($artData['not-public'])? 1: 0 ?>">
 				<option value="0">Опубликовано</option>
-				<option value="1" <?=!empty($artDB->get('not-public'))? 'selected': '' ?>>Черновик</option>
+				<option value="1" <?=!empty($artData['not-public'])? 'selected': '' ?>>Черновик</option>
 			</select>
 
 		</div>
