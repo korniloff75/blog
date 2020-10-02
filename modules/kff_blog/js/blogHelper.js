@@ -151,7 +151,7 @@ $('.content').on('click', '#save_sts', $e=>{
 				err.push('Элемент ' + id + ' не может дублироваться в одной категории!');
 			}
 			out[$i.data('id')].push({
-				id: id, ind:[indCat,ind], name: name, oldCatId: oldCatId,
+				id: id, ind:[indCat,ind], name: name, oldCatId: oldCatId, tag: i.getAttribute('data-tag'),
 			});
 
 			if(title.trim()){

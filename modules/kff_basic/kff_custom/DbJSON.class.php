@@ -1,6 +1,8 @@
 <?php
 class DbJSON implements Iterator
 {
+	public $test;
+
 	static
 		$log,
 		$convertPath = false;
@@ -22,6 +24,7 @@ class DbJSON implements Iterator
 
 		self::$log= &$log;
 
+		// *Deprecated
 		if(self::$convertPath)
 		{
 			//* fix 4 __destruct
@@ -269,8 +272,10 @@ class DbJSON implements Iterator
 		global $log;
 		// note test
 		// $this->changed= 1;
-		if(!empty($this->db['test'])){
+		if(!empty($this->db['test']) || $this->test){
 			$log->add(__METHOD__.': База перед записью',E_USER_WARNING,[$this->db]);
+			// *Deprecated
+			unset($this->db['test']);
 		}
 
 		// *check changes

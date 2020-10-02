@@ -11,17 +11,11 @@ if(!$kff::is_adm()) die('Access denied!');
 
 class BlogKff_adm extends BlogKff
 {
-	// protected static
-	// 	$modDir;
-
-
-	public function __construct()
+	/* public function __construct()
 	{
 		parent::__construct();
 
-		$this->RenderPU();
-
-	} // __construct
+	} // __construct */
 
 
 	/**
@@ -76,12 +70,12 @@ class BlogKff_adm extends BlogKff
 		$catsAll = json_decode($catsAllJson, 1);
 		$cats = array_keys($catsAll);
 
-		self::$log->add(__METHOD__,null,['$cats'=>$cats, '$catsAll'=>$catsAll]);
+		// self::$log->add(__METHOD__,null,['$cats'=>$cats, '$catsAll'=>$catsAll]);
 
 		self::$catsDB->replace($cats);
 
 		// *Перебираем категории
-		foreach($cats as $ind=>$catId) {
+		foreach($cats as $catInd=>$catId) {
 			$catPathname = self::$storagePath . "/$catId";
 			$items = &$catsAll[$catId];
 
@@ -91,7 +85,7 @@ class BlogKff_adm extends BlogKff
 			self::$log->add(__METHOD__,null,['$catId'=>$catId,'$items'=>$items,]);
 
 			// *Перебираем элементы
-			foreach($items as &$item) {
+			foreach($items as $ind=>&$item) {
 				$artPathname= "$catPathname/{$item['id']}" . self::$l_cfg['ext'];
 
 				// *Элемент перемещён в другую категорию
@@ -104,7 +98,7 @@ class BlogKff_adm extends BlogKff
 					// *Перезаписываем данные в базе статьи
 					// $artDB = new DbJSON("$catPathname/{$item['id']}.json");
 					$artDB = self::getArtDB($artPathname);
-					$artDB->set(['catId'=>$catId, 'catName'=>$catDB->get('name')]);
+					$artDB->set(['ind'=>[$catInd,$ind],'catId'=>$catId, 'catName'=>$catDB->get('name')]);
 
 					unset($item['oldCatId']);
 				}
@@ -116,6 +110,9 @@ class BlogKff_adm extends BlogKff
 
 			if(!empty($oldCatPath))
 				$this->_updateCatDB(new SplFileInfo($oldCatPath));
+
+			$catDB->__destruct();
+			$catDB->__destruct= null;
 
 			// *Обновляем карту
 			self::_createBlogMap(1);
@@ -322,6 +319,11 @@ class BlogKff_adm extends BlogKff
 		<button id="save_sts">Save</button>
 	</div><!-- .content -->
 	<?php
+	}
+
+	function __destruct()
+	{
+		$this->RenderPU();
 	}
 }
 

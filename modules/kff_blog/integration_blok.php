@@ -16,7 +16,7 @@ class BlogKff_sidebar extends BlogKff
 
 		echo '<ul uk-nav="multiple: false" class="categories uk-nav-parent-icon uk-nav-primary uk-nav-center" uk-sticky="show-on-up:true; media:@m; bottom: .sidebar; " style="background: inherit;">';
 
-		foreach(self::getBlogMap() as $num=>$catData){
+		foreach(self::getBlogMap() as $ind=>$catData){
 
 			if(empty($catData['items']))
 				continue;
@@ -54,14 +54,14 @@ class BlogKff_sidebar extends BlogKff
 					foreach($catData['items'] as &$art) {
 						// self::$log->add("/$catId/{$art['id']}");
 						// todo Оптимизировать
-						$artData= self::getArtDB(self::$storagePath . "/$catId/{$art['id']}" . self::$l_cfg['ext'])->get();
+						// $artData= self::getArtData(self::$storagePath . "/$catId/{$art['id']}" . self::$l_cfg['ext']);
 
 						$li= "<li data-id={$art['id']} data-cat=$catId class=\"\">
-						<a href=\"/{$pageId}/$catId/{$art['id']}\" title=\"" . ($artData['title'] ?? $artData['name']) . "\" uk-tooltip>{$art['name']}</a>
+						<a href=\"/{$pageId}/$catId/{$art['id']}\" title=\"" . ($art['title'] ?? $art['name']) . "\" uk-tooltip>{$art['name']}</a>
 
 						</li>";
 
-						if(!empty($artData['not-public'])){
+						if(!empty($art['not-public'])){
 							if(self::is_adm())
 							echo str_replace('class=""', 'class="not-public"', $li);
 						}

@@ -11,24 +11,18 @@ if(!$kff::is_adm()) die('Access denied!');
 
 class BlogKff_adm extends BlogKff
 {
-	// protected static
-	// 	$modDir;
-
-
-	public function __construct()
+	/* public function __construct()
 	{
 		parent::__construct();
 
-		$this->RenderPU();
-
-	} // __construct
+	} // __construct */
 
 
 	/**
 	 * *Перезаписываем catName/data.json
 	 *
 	 */
-	protected function _updateCatData(SplFileInfo $catFI, $humName=null)
+	protected function _updateCatDB(SplFileInfo $catFI, $humName=null)
 	{
 		$catPathname = $catFI->getPathname();
 
@@ -51,6 +45,7 @@ class BlogKff_adm extends BlogKff
 					'id'=> $artId,
 					'name'=> $artDB->get('name') ?? $humName,
 					'title'=> $artDB->get('title'),
+					// 'title'=> $artDB->get('title') ? $artDB->get('title'): $artDB->get('name'),
 					'not-public'=> $artDB->get('not-public') ?? 0,
 				]]
 			]);
@@ -64,43 +59,6 @@ class BlogKff_adm extends BlogKff
 		}
 	}
 
-	/**
-	 * *Перезаписываем категории из ФС
-	 * note сортировка статей сбрасывается
-	 */
-	function updateCategories()
-	{
-		$cats = [];
-		foreach(
-			new FilesystemIterator(self::$storagePath, FilesystemIterator::SKIP_DOTS|FilesystemIterator::UNIX_PATHS) as $catFI
-		) {
-			if(!$catFI->isDir()) continue;
-			// echo $catFI->getFilename() . '<br>';
-
-			$catFilename = $catFI->getFilename();
-
-			$this->_updateCatData($catFI);
-
-			$cats []= $catFilename;
-
-		} // foreach
-
-		$this->catsDB->replace($cats);
-
-		return $cats;
-	}
-
-
-	/**
-	 * *Получаем категории из базы
-	 */
-	public function getCategories()
-	{
-		return empty($cats = $this->catsDB->get()) ?
-			$this->updateCategories()
-			: $cats;
-	}
-
 
 	// *Методы контроллера
 
@@ -112,26 +70,26 @@ class BlogKff_adm extends BlogKff
 		$catsAll = json_decode($catsAllJson, 1);
 		$cats = array_keys($catsAll);
 
-		self::$log->add(__METHOD__.' $catsAll',null,[$catsAll]);
+		// self::$log->add(__METHOD__,null,['$cats'=>$cats, '$catsAll'=>$catsAll]);
 
-		$this->catsDB->replace($cats);
+		self::$catsDB->replace($cats);
 
 		// *Перебираем категории
-		foreach($cats as $cat) {
-			$catPathname = self::$storagePath . "/$cat";
-			$items = &$catsAll[$cat];
+		foreach($cats as $catInd=>$catId) {
+			$catPathname = self::$storagePath . "/$catId";
+			$items = &$catsAll[$catId];
 
 			$catDB = new DbJSON($catPathname . "/data.json");
 			$catDB->clear('items');
 
-			self::$log->add(__METHOD__,null,[$cat,$items]);
+			self::$log->add(__METHOD__,null,['$catId'=>$catId,'$items'=>$items,]);
 
 			// *Перебираем элементы
-			foreach($items as &$item) {
+			foreach($items as $ind=>&$item) {
 				$artPathname= "$catPathname/{$item['id']}" . self::$l_cfg['ext'];
 
 				// *Элемент перемещён в другую категорию
-				if($item['oldCatId'] !== $cat)
+				if($item['oldCatId'] !== $catId)
 				{
 					$oldCatPath = self::$storagePath . "/{$item['oldCatId']}";
 					rename("{$oldCatPath}/{$item['id']}" . self::$l_cfg['ext'], $artPathname);
@@ -140,7 +98,7 @@ class BlogKff_adm extends BlogKff
 					// *Перезаписываем данные в базе статьи
 					// $artDB = new DbJSON("$catPathname/{$item['id']}.json");
 					$artDB = self::getArtDB($artPathname);
-					$artDB->set(['catId'=>$cat, 'catName'=>$catDB->get('name')]);
+					$artDB->set(['ind'=>[$catInd,$ind],'catId'=>$catId, 'catName'=>$catDB->get('name')]);
 
 					unset($item['oldCatId']);
 				}
@@ -148,12 +106,18 @@ class BlogKff_adm extends BlogKff
 				// *Обновляем базу элементов категории
 				$catDB->append(['items'=>[$item]]);
 
-			}
+			} //foreach
 
 			if(!empty($oldCatPath))
-				$this->_updateCatData(new SplFileInfo($oldCatPath));
+				$this->_updateCatDB(new SplFileInfo($oldCatPath));
 
-		}
+			$catDB->__destruct();
+			$catDB->__destruct= null;
+
+			// *Обновляем карту
+			self::_createBlogMap(1);
+
+		} //foreach
 
 		return $cats;
 	}
@@ -172,7 +136,10 @@ class BlogKff_adm extends BlogKff
 		unlink("$removePath.json");
 		unlink("$removePath" . self::$l_cfg['ext']);
 
-		$this->_updateCatData(new SplFileInfo($catPath));
+		$this->_updateCatDB(new SplFileInfo($catPath));
+
+		// *Обновляем карту
+		self::_createBlogMap();
 	}
 
 	/**
@@ -186,8 +153,11 @@ class BlogKff_adm extends BlogKff
 		self::$log->add("Удаление категории $removeId");
 		require_once DR.'/'. self::$dir ."/cpDir.class.php";
 		cpDir::RemoveDir(self::$storagePath. "/$removeId");
-		$num= array_search($removeId, $this->catsDB->get());
-		$this->catsDB->remove($num);
+		$num= array_search($removeId, self::$catsDB->get());
+		self::$catsDB->remove($num);
+
+		// *Обновляем карту
+		self::_createBlogMap();
 	}
 
 
@@ -219,15 +189,14 @@ class BlogKff_adm extends BlogKff
 		$catDB = new DbJSON("$catPath/data.json");
 		$catDB->set($data);
 
-		// $this->updateCategories();
 
 		// *Переписываем список категорий
-		if(!in_array($catId, $this->catsDB->get()))
-			$this->catsDB->append([$catId]);
+		if(!in_array($catId, self::$catsDB->get()))
+			self::$catsDB->append([$catId]);
 
-		foreach($this->catsDB->get() as $num=>&$cat){
-			if(!is_dir(self::$storagePath."/$cat"))
-			$this->catsDB->remove($num);
+		foreach(self::$catsDB as $ind=>$catId){
+			if(!is_dir(self::$storagePath."/$catId"))
+			self::$catsDB->remove($ind);
 		}
 
 		return $success;
@@ -267,7 +236,7 @@ class BlogKff_adm extends BlogKff
 			file_put_contents($artPathname,"<p>New Article - <b>$new_article</b>!</p>")
 		) {
 			$artDB->set($cfg);
-			$this->_updateCatData(new SplFileInfo($catPath), $cfg['name']);
+			$this->_updateCatDB(new SplFileInfo($catPath), $cfg['name']);
 		}
 		else {
 			self::$log->add(__METHOD__.' Не получается добавить статью '.$artPathname,E_USER_WARNING);
@@ -295,11 +264,14 @@ class BlogKff_adm extends BlogKff
 			<ul id="categories" class="uk-nav uk-nav-default" uk-sortable="group: cats; handle: .uk-sortable-handle;">
 
 			<?php
-			foreach($this->getCategories() as &$cat) {
-				$catData = $this->getCategory($cat);
-				$catData['id'] = $catData['id'] ?? $cat;
-				// self::$log->add(__METHOD__,null,[$cat, $catData]);
-			?>
+			// self::$log->add(__METHOD__,null,['self::$catsDB'=>self::$catsDB, ]);
+
+			foreach(self::$catsDB as $catId) {
+				$catData = self::getCategoryData($catId);
+				$catData['id'] = $catData['id'] ?? $catId;
+
+				// self::$log->add(__METHOD__,null,['$catId'=>$catId, '$catData'=>$catData]);
+				?>
 				<li>
 				<div class="uk-flex uk-flex-middle uk-margin-top">
 					<div class="uk-sortable-handle uk-margin-small-right" uk-icon="icon: table; ratio: 1.5"></div>
@@ -316,20 +288,23 @@ class BlogKff_adm extends BlogKff
 				<ul data-id=<?=$catData['id']?> class="listArticles uk-nav uk-nav-default uk-width-auto" uk-sortable="group: cat-items; handle: .uk-sortable-handle; cls-custom: uk-box-shadow-small uk-flex uk-flex-expand uk-background">
 
 				<?php
-				if(is_array($catData['items'])) foreach($catData['items'] as &$art) {
-					echo "<li data-id={$art['id']} data-name=\"{$art['name']}\" data-oldCatId= {$catData['id']} uk-tooltip title=\"{$art['title']}\" class=\"uk-flex uk-flex-wrap uk-flex-middle\">
+				if(is_array($catData['items'])) foreach($catData['items'] as $ind=>&$artData) {
+					$artData['title'] = $artData['title'] ?? $artData['name'];
+					// $artData['date'] = $artData['date'];
+
+					echo "<li data-id={$artData['id']} data-index={$ind} data-name=\"{$artData['name']}\" data-oldCatId= {$catData['id']} uk-tooltip title=\"{$artData['title']}\" data-title=\"{$artData['title']}\" class=\"uk-flex uk-flex-wrap uk-flex-middle\">
 					<div class=\"uk-sortable-handle uk-margin-small-right\" uk-icon=\"icon: table\"></div>
 
 					<!-- artName -->
-					{$art['name']}
+					{$artData['name']}
 
 					<!-- Remove article -->
-					<span uk-icon=\"trash\" data-del=\"$cat/{$art['id']}\" class='delArticle'></span>
+					<span uk-icon=\"trash\" data-del=\"$catId/{$artData['id']}\" class='delArticle'></span>
 
 
 
 					</li>";
-					// print_r($art);
+					// print_r($artData);
 				}
 
 				?>
@@ -345,10 +320,14 @@ class BlogKff_adm extends BlogKff
 	</div><!-- .content -->
 	<?php
 	}
+
+	function __destruct()
+	{
+		$this->RenderPU();
+	}
 }
 
 $Blog = new BlogKff_adm;
 
 
 // *Tests
-// print_r($Blog->getCategories());

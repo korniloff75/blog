@@ -9,6 +9,7 @@ input[type="text"], input[type="password"], select {
 	margin-left: 225px;
 } */
 *[contenteditable="true"]{
+	padding: 1em;
 	background-color: rgba(0, 0, 255, 0.151);
 	outline: 1px solid blue;
 	outline-offset: -1px;

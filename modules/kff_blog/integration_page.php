@@ -334,6 +334,11 @@ class BlogKff_page extends BlogKff
 		}
 	}
 
+	function __destruct()
+	{
+		// $this->Render();
+	}
+
 }
 
 ob_start();
@@ -342,9 +347,5 @@ $Blog = new BlogKff_page;
 
 $Blog->Render();
 
-?>
-
-
-
-<?php
 return ob_get_clean();
+// ob_end_clean();

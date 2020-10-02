@@ -316,7 +316,6 @@ class BlogKff extends Index_my_addon
 
 	public function __destruct()
 	{
-		// unset(self::$artBase);
 		return false;
 	}
 
