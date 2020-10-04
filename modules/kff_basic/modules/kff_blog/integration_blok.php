@@ -52,10 +52,6 @@ class BlogKff_sidebar extends BlogKff
 					<?php
 
 					foreach($catData['items'] as &$art) {
-						// self::$log->add("/$catId/{$art['id']}");
-						// todo Оптимизировать
-						// $artData= self::getArtData(self::$storagePath . "/$catId/{$art['id']}" . self::$l_cfg['ext']);
-
 						$li= "<li data-id={$art['id']} data-cat=$catId class=\"\">
 						<a href=\"/{$pageId}/$catId/{$art['id']}\" title=\"" . ($art['title'] ?? $art['name']) . "\" uk-tooltip>{$art['name']}</a>
 

@@ -20,7 +20,8 @@ class AdmPanel extends Index_my_addon
 		ob_start();
 		?>
 		<link rel="stylesheet" href="/<?=Index_my_addon::getPathFromRoot(__DIR__)?>/css/admin.style.css">
-		<script>
+		<script data-method="<?=__METHOD__?>">
+		$(()=>{
 			'use strict';
 			var $sidebar= $("#bar");
 
@@ -42,7 +43,7 @@ class AdmPanel extends Index_my_addon
 
 				$('div#main').addClass('uk-width-3-4 uk-float-right');
 			}
-
+		})
 		</script>
 
 		<?php

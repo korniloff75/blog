@@ -33,6 +33,8 @@ class BlogKff extends Index_my_addon
 		// * self::$catsDB с категориями
 		self::_defineCatsDB();
 
+		self::getBlogMap();
+
 		if(!$this->_InputController())
 			self::addUIkit();
 
@@ -64,8 +66,6 @@ class BlogKff extends Index_my_addon
 	protected static function _defineCatsDB()
 	{
 		if(self::$catsDB) return;
-
-		self::getBlogMap();
 
 		self::$blogDB = new DbJSON(__DIR__.'/cfg.json');
 		self::$l_cfg= self::$blogDB->get();
@@ -145,10 +145,7 @@ class BlogKff extends Index_my_addon
 
 		$catData= self::$map->find('id',$catId);
 
-		/* $artData= end(array_filter($catData['items'], function(&$i) use($artId){
-
-			return $i['id'] === $artId;
-		})); */
+		// self::$log->add(__METHOD__,null,['$catData'=>self::$map]);
 
 		foreach($catData['items'] as $i){
 			if(is_numeric($i['ind']))
@@ -159,8 +156,45 @@ class BlogKff extends Index_my_addon
 			}
 		}
 
-		
 		return $artData;
+	}
+
+
+	/**
+	 * *Перезаписываем catName/data.json
+	 *
+	 */
+	protected static function _updateCatDB(SplFileInfo $catFI, $humName=null)
+	:DbJSON
+	{
+		$catPathname = $catFI->getPathname();
+
+		// self::$log->add($catFI->getPathname() . "/*" . self::$l_cfg['ext']);
+
+		$catDB = new DbJSON($catPathname . "/data.json");
+		$catDB->clear('items');
+		// $catDB->append(['name'=>$catFilename]);
+
+		foreach(glob($catPathname . "/*" . self::$l_cfg['ext']) as $n=>&$artPathname) {
+			// *без расширения
+			$artId = pathinfo($artPathname, PATHINFO_FILENAME);
+			$artDB = self::getArtDB($artPathname);
+
+			// if(empty($artDB->get('title')))
+			// 	$artDB->set(['title'=>$artDB->get('name')]);
+
+			$catDB->push([
+				'items'=>[$artDB->get('ind')[1]=>$artDB->get()]
+			]);
+
+			// *Берем данные из первой статьи категории
+			if(!$n){
+				if(!is_string($catDB->get('name')))
+					$catDB->push($artDB->get('catName'), 'name');
+			}
+
+		}
+		return $catDB;
 	}
 
 
@@ -169,11 +203,16 @@ class BlogKff extends Index_my_addon
 	 * @return DbJSON
 	 * note ресурсозатратная. Предпочтение getCategoryData
 	 */
-	private static function _getCategoryDB($catId)
+	protected static function _getCategoryDB($catId)
 	:DbJSON
 	{
-		return new DbJSON(self::$storagePath . "/$catId/data.json");
+		$catDB= new DbJSON(self::$storagePath . "/$catId/data.json");
+		if(!$catDB->count()){
+			$catDB= self::_updateCatDB(new SplFileInfo(self::$storagePath . "/$catId"));
+		}
+		return $catDB;
 
+		// todo try to optimize
 		$db= &self::$artBase[$catId]['self'];
 
 		if(empty($db)){
@@ -268,8 +307,8 @@ class BlogKff extends Index_my_addon
 		$mapPath= self::$storagePath.'/map.json';
 
 		// !test
-		// if(self::is_adm())
-		// 	return Sitemap::test();
+		if(self::is_adm())
+			return Sitemap::test();
 
 		// *Держим в памяти карту
 		// todo избавиться от self::$artBase

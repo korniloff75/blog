@@ -4,7 +4,9 @@ if (!class_exists('System')) exit; // Запрет прямого доступа
 // *Очищаем основную систему от лишнего кода
 class BlogKff_page extends BlogKff
 {
-	private $artPathname;
+	private
+		$artPathname,
+		$artData;
 
 	/* public function __construct()
 	{
@@ -78,7 +80,8 @@ class BlogKff_page extends BlogKff
 
 			$o.="<div class='info uk-float-left'>
 			<p class='uk-margin-small-bottom'>Категория: <b>$catName</b></p>
-			<p class='uk-margin-remove'>Дата: " . date(self::DATE_FORMAT, $ts) . "</p>
+			<p class='uk-margin-remove'>Дата: <time itemprop=\"dateModified\"
+			datetime=\"" . date(DATE_ISO8601, $ts) . "\">" . date(self::DATE_FORMAT, $ts) . "</time></p>
 			</div>
 			<p style='text-align:right;' class='uk-float-right'><a href=\"$artHref\"><button>Читать</button></a></p>
 			<p class='uk-clearfix'></p>
@@ -176,15 +179,21 @@ class BlogKff_page extends BlogKff
 
 		file_put_contents(self::$storagePath . "/{$this->opts['cat']}/{$this->opts['art']}" . self::$l_cfg['ext'], $html);
 
-		// *Обновляем карту
+		// *Обновляем карту и базу категории
 		// self::_createBlogMap(1);
 		$map= self::getBlogMap();
 		$ind= $artData['ind'];
 
-		$newData= [$ind[0]=>[
+		/* $newData= [$ind[0]=>[
 			'items'=>[$ind[1]=>$artDB->get()]
+		]]; */
+		$newData= ["{$ind[0]}"=>[
+			'items'=>["{$ind[1]}"=>$artDB->get()]
 		]];
 		$map->set($newData);
+
+		$catDB= self::_getCategoryDB(basename(dirname($artPathname)));
+		$catDB->set(['items'=>["{$ind[1]}"=>$artDB->get()]]);
 
 		self::$log->add(__METHOD__,null,['$ind'=>$ind,'$artDB'=>$artDB,]);
 	}
@@ -208,13 +217,31 @@ class BlogKff_page extends BlogKff
 			return;
 		}
 
-		$path = str_replace($Page->id, basename(self::$storagePath), DR.explode('?',REQUEST_URI)[0]) . self::$l_cfg['ext'];
+		$path = $this->getArtPathname();
 
 		self::$log->add(__METHOD__,null,['$path'=>$path,'file_exists($path)'=> file_exists($path), '$URI'=>$URI]);
 
 		if( !file_exists($path) ) return;
 
-		include_once $path;
+		$article= file_get_contents($path);
+		preg_match_all('~[\s\W](#.+?\b)~u', $article, $tags);
+		echo $article;
+		self::$log->add(__METHOD__,null,['$tags'=>$tags]);
+
+		$tags= array_unique(array_merge($tags[1], explode(',', $this->artData['tag'])));
+
+
+		echo '<div itemprop="about" itemscope itemtype="https://schema.org/Thing">';
+
+		if(!empty($tags)) foreach($tags as $tag){
+			if(!trim($tag)) continue;
+			if(substr($tag,0,1)!=='#') $tag= "#$tag";
+		?>
+			<span itemprop="name" class="uk-button uk-button-small"><?=$tag?></span>
+
+		<?php
+		}
+		echo '</div><!--about-->';
 	}
 
 
@@ -226,7 +253,6 @@ class BlogKff_page extends BlogKff
 	protected function c_createCKEditorBrowser($upload=null)
 	{
 		global $Page, $URI;
-		require_once DR.'/'.self::$dir.'/CKEditorUploads.class.php';
 		$pathToFiles = "/CKeditor";
 		CKEditorUploads::$pathname .= $pathToFiles;
 		self::$log->add('CKEditorUploads::$pathname= ' . CKEditorUploads::$pathname);
@@ -255,6 +281,7 @@ class BlogKff_page extends BlogKff
 	{
 		$edit= isset($_GET['edit']);
 
+		$artData= &$this->artData;
 		$artData= self::getArtData($this->getArtPathname());
 
 		echo '<h1 id="title">' . ($artData['title'] ?? $artData['name']) . '</h1>';
@@ -278,7 +305,9 @@ class BlogKff_page extends BlogKff
 
 			<span class="uk-width-1-3"><b>Метки</b> (через запятую)</span><input name="tag" class="uk-width-expand" type="text" placeholder="метки" value="<?=$artData['tag']?>"><p class="uk-width-1 uk-margin-remove"></p>
 
-			<span class="uk-width-1-3"><b>Черновик</b></span><!-- <input name="not-public" class="uk-width-expand" type="text" placeholder="bool" value="<?=$artData['not-public']?>"> -->
+			<span class="uk-width-1-3"><b>Автор</b></span><input name="author" class="uk-width-expand" type="text" value="<?=$artData['author']?>"><p class="uk-width-1 uk-margin-remove"></p>
+
+			<span class="uk-width-1-3"><b>Черновик</b></span>
 			<select name="not-public" value="<?=!empty($artData['not-public'])? 1: 0 ?>">
 				<option value="0">Опубликовано</option>
 				<option value="1" <?=!empty($artData['not-public'])? 'selected': '' ?>>Черновик</option>
@@ -294,8 +323,10 @@ class BlogKff_page extends BlogKff
 
 		<?php
 			$this->_printArticle();
+			$ts= filemtime($this->getArtPathname());
 		?>
 		</div><!-- .blog_content -->
+
 
 		<?php
 		if($edit)
@@ -311,6 +342,9 @@ class BlogKff_page extends BlogKff
 		<script>
 			document.querySelector('#saveEdit')
 			.addEventListener('click', BH.editRequest.bind(null));
+
+			// *Удаляем теги
+			$('#editor1').find('[itemprop="about"]').remove();
 
 			// *Запускаем редактор с файловым браузером
 			CKEDITOR.replace( 'editor1', {
@@ -332,6 +366,13 @@ class BlogKff_page extends BlogKff
 		{
 			echo '<a href="?edit"><button>EDIT</button></a>';
 		}
+		?>
+		<div>
+			<p>Автор: <em itemprop="author"><?=$artData['author']??'Павел Корнилов'?></em></p>
+			<p>Дата публикации / редактирования: <time itemprop="dateModified"
+			datetime="<?=date(DATE_ISO8601, $ts)?>"><?=date(self::DATE_FORMAT, $ts)?></time></p>
+		</div>
+		<?php
 	}
 
 	function __destruct()

@@ -33,6 +33,8 @@ class BlogKff extends Index_my_addon
 		// * self::$catsDB с категориями
 		self::_defineCatsDB();
 
+		self::getBlogMap();
+
 		if(!$this->_InputController())
 			self::addUIkit();
 
@@ -65,8 +67,6 @@ class BlogKff extends Index_my_addon
 	{
 		if(self::$catsDB) return;
 
-		self::getBlogMap();
-
 		self::$blogDB = new DbJSON(__DIR__.'/cfg.json');
 		self::$l_cfg= self::$blogDB->get();
 		if(!self::$blogDB->count())
@@ -83,7 +83,7 @@ class BlogKff extends Index_my_addon
 			$catsDB->push ($filename);
 			self::$log->add(__METHOD__,null,['$filename'=>$filename]);
 		}
-		self::$log->add(__METHOD__,null,['$catsDB'=>$catsDB]);
+		// self::$log->add(__METHOD__,null,['$catsDB'=>$catsDB]);
 	}
 
 
@@ -108,7 +108,7 @@ class BlogKff extends Index_my_addon
 		}
 
 		if( $catPathname === \DR ){
-			self::$log->add(__METHOD__.': $catPathname is not VALID!',Logger::BACKTRACE,['$Page->id'=>$Page->id,'$artPathname'=>$artPathname,'$catId'=>$catId]);
+			// self::$log->add(__METHOD__.': $catPathname is not VALID!',Logger::BACKTRACE,['$Page->id'=>$Page->id,'$artPathname'=>$artPathname,'$catId'=>$catId]);
 			// note Устранение конфликтов
 			return new DbJSON;
 		}
@@ -138,12 +138,12 @@ class BlogKff extends Index_my_addon
 		}
 
 		if( $catPathname === \DR ){
-			self::$log->add(__METHOD__.': $catPathname is not VALID!',Logger::BACKTRACE,['$Page->id'=>$Page->id,'$artPathname'=>$artPathname,'$catId'=>$catId]);
+			// self::$log->add(__METHOD__.': $catPathname is not VALID!',Logger::BACKTRACE,['$Page->id'=>$Page->id,'$artPathname'=>$artPathname,'$catId'=>$catId]);
 			// note Устранение конфликтов
 			return;
 		}
 
-		$catData= self::$map->find('id',$catId);
+		$catData= self::getBlogMap()->find('id',$catId);
 
 		/* $artData= end(array_filter($catData['items'], function(&$i) use($artId){
 
@@ -154,13 +154,54 @@ class BlogKff extends Index_my_addon
 			if(is_numeric($i['ind']))
 				$i['ind']= [$catData['ind'], $i['ind']];
 			if($i['id'] === $artId){
-				self::$log->add(__METHOD__,null,['$artData'=>$i]);
+				// self::$log->add(__METHOD__,null,['$artData'=>$i]);
 				return $i;
 			}
 		}
 
-		
 		return $artData;
+	}
+
+
+		/**
+	 * *Перезаписываем catName/data.json
+	 *
+	 */
+	protected static function _updateCatDB(SplFileInfo $catFI, $humName=null)
+	{
+		$catPathname = $catFI->getPathname();
+
+		// self::$log->add($catFI->getPathname() . "/*" . self::$l_cfg['ext']);
+
+		$catDB = new DbJSON($catPathname . "/data.json");
+		$catDB->clear('items');
+		// $catDB->append(['name'=>$catFilename]);
+		$nameFixed= is_string($catDB->get('name'));
+
+		foreach(glob($catPathname . "/*" . self::$l_cfg['ext']) as $ind=>&$artPathname) {
+			// *без расширения
+			$artId = pathinfo($artPathname, PATHINFO_FILENAME);
+			$artDB = self::getArtDB($artPathname);
+
+			// if(empty($artDB->get('title')))
+			// 	$artDB->set(['title'=>$artDB->get('name')]);
+
+			$item= $artDB->get();
+			$item['ind']= $item['ind']?? [$catDB->get('ind')??0, $ind];
+			$item['id']= $item['id']?? $artId;
+
+			$catDB->append([
+				'items'=>[$item]
+			]);
+
+			// *Берем данные из статьи категории
+			if($artDB->get('catName') && !$nameFixed){
+				$catDB->push($artDB->get('catName'), 'name');
+				$nameFixed=1;
+			}
+
+		}
+		return $catDB;
 	}
 
 
@@ -169,10 +210,16 @@ class BlogKff extends Index_my_addon
 	 * @return DbJSON
 	 * note ресурсозатратная. Предпочтение getCategoryData
 	 */
-	private static function _getCategoryDB($catId)
+	protected static function _getCategoryDB($catId)
 	:DbJSON
 	{
-		return new DbJSON(self::$storagePath . "/$catId/data.json");
+		$catDB= new DbJSON(self::$storagePath . "/$catId/data.json");
+
+		if(!$catDB->count()){
+			$catDB= self::_updateCatDB(new SplFileInfo(self::$storagePath . "/$catId"));
+		}
+
+		return $catDB;
 
 		$db= &self::$artBase[$catId]['self'];
 
@@ -197,7 +244,7 @@ class BlogKff extends Index_my_addon
 			$catData= self::_getCategoryDB($catId)->get();
 		}
 
-		self::$log->add(__METHOD__,null,['$catData'=>$catData]);
+		self::$log->add(__METHOD__,null,['$catId'=>$catId, '$catData'=>$catData]);
 
 		return $catData;
 	}

@@ -61,7 +61,7 @@ class Sitemap extends BlogKff
 		echo '<pre>';
 		$map= self::_createBlogMap(1);
 		echo '</pre>';
-		ob_end_flush();
+		ob_end_clean();
 		return $map;
 	}
 

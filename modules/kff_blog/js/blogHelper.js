@@ -60,7 +60,6 @@ $('.content').on('click', '.removeCategory', $e=>{
 
 
 // *.delArticle
-// todo ...
 $('.content').on('click', '.delArticle', $e=>{
 	var $t= $($e.currentTarget);
 

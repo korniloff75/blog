@@ -18,48 +18,6 @@ class BlogKff_adm extends BlogKff
 	} // __construct */
 
 
-	/**
-	 * *Перезаписываем catName/data.json
-	 *
-	 */
-	protected function _updateCatDB(SplFileInfo $catFI, $humName=null)
-	{
-		$catPathname = $catFI->getPathname();
-
-		// self::$log->add($catFI->getPathname() . "/*" . self::$l_cfg['ext']);
-
-		$catDB = new DbJSON($catPathname . "/data.json");
-		$catDB->clear('items');
-		// $catDB->append(['name'=>$catFilename]);
-
-		foreach(glob($catPathname . "/*" . self::$l_cfg['ext']) as $n=>&$artPathname) {
-			// *без расширения
-			$artId = pathinfo($artPathname, PATHINFO_FILENAME);
-			$artDB = self::getArtDB($artPathname);
-
-			// if(empty($artDB->get('title')))
-			// 	$artDB->set(['title'=>$artDB->get('name')]);
-
-			$catDB->append([
-				'items'=>[[
-					'id'=> $artId,
-					'name'=> $artDB->get('name') ?? $humName,
-					'title'=> $artDB->get('title'),
-					// 'title'=> $artDB->get('title') ? $artDB->get('title'): $artDB->get('name'),
-					'not-public'=> $artDB->get('not-public') ?? 0,
-				]]
-			]);
-
-			// *Берем данные из первой статьи категории
-			if(!$n){
-				if(!is_string($catDB->get('name')))
-					$catDB->push($artDB->get('catName'), 'name');
-			}
-
-		}
-	}
-
-
 	// *Методы контроллера
 
 	/**
@@ -109,7 +67,7 @@ class BlogKff_adm extends BlogKff
 			} //foreach
 
 			if(!empty($oldCatPath))
-				$this->_updateCatDB(new SplFileInfo($oldCatPath));
+				self::_updateCatDB(new SplFileInfo($oldCatPath));
 
 			$catDB->__destruct();
 			$catDB->__destruct= null;
@@ -136,7 +94,7 @@ class BlogKff_adm extends BlogKff
 		unlink("$removePath.json");
 		unlink("$removePath" . self::$l_cfg['ext']);
 
-		$this->_updateCatDB(new SplFileInfo($catPath));
+		self::_updateCatDB(new SplFileInfo($catPath));
 
 		// *Обновляем карту
 		self::_createBlogMap();
@@ -236,7 +194,9 @@ class BlogKff_adm extends BlogKff
 			file_put_contents($artPathname,"<p>New Article - <b>$new_article</b>!</p>")
 		) {
 			$artDB->set($cfg);
-			$this->_updateCatDB(new SplFileInfo($catPath), $cfg['name']);
+			$artDB->__destruct();
+			$artDB->__destruct = null;
+			self::_updateCatDB(new SplFileInfo($catPath), $cfg['name']);
 		}
 		else {
 			self::$log->add(__METHOD__.' Не получается добавить статью '.$artPathname,E_USER_WARNING);
@@ -246,7 +206,7 @@ class BlogKff_adm extends BlogKff
 	/**
 	 * *Вывод в админку
 	 */
-	private function RenderPU()
+	public function RenderPU()
 	{
 		global $MODULE;
 		?>
@@ -266,11 +226,15 @@ class BlogKff_adm extends BlogKff
 			<?php
 			// self::$log->add(__METHOD__,null,['self::$catsDB'=>self::$catsDB, ]);
 
-			foreach(self::$catsDB as $catId) {
+			foreach(self::$catsDB->get() as $catInd=>$catId) {
+			// self::$catsDB->rewind();
+			// foreach(self::$catsDB as $catInd=>$catId) {
 				$catData = self::getCategoryData($catId);
 				$catData['id'] = $catData['id'] ?? $catId;
 
-				// self::$log->add(__METHOD__,null,['$catId'=>$catId, '$catData'=>$catData]);
+				// self::$log->add(__METHOD__,null,['count'=>count(self::$catsDB), '$catInd'=>$catInd, '$catId'=>$catId, '$catData'=>$catData]);
+				// !
+				// continue;
 				?>
 				<li>
 				<div class="uk-flex uk-flex-middle uk-margin-top">
@@ -323,11 +287,11 @@ class BlogKff_adm extends BlogKff
 
 	function __destruct()
 	{
-		$this->RenderPU();
+		// $this->RenderPU();
 	}
 }
 
 $Blog = new BlogKff_adm;
-
+$Blog->RenderPU();
 
 // *Tests

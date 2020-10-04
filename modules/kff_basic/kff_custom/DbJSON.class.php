@@ -1,5 +1,5 @@
 <?php
-class DbJSON implements Iterator
+class DbJSON implements Iterator, Countable
 {
 	public $test;
 
@@ -10,7 +10,7 @@ class DbJSON implements Iterator
 	private
 		$position = 0,
 		$changed = 0,
-		// $values,
+		$values,
 		$path;
 
 	private
@@ -54,7 +54,6 @@ class DbJSON implements Iterator
 			$this->db = json_decode($json, true) ?? [];
 
 			if(empty($this->db)){
-				global $log;
 				if(is_object($log)){
 					$log->add(__METHOD__.": DB is EMPTY!", $log::BACKTRACE);
 				}
@@ -63,16 +62,16 @@ class DbJSON implements Iterator
 				}
 			}
 			else{
-
+				$this->rewind();
 			}
 
 		} //if(!empty($path))
-
 	} // __construct
 
 
 	public function rewind() {
 		$this->position = 0;
+		// return $this;
 	}
 
 	public function values() {
@@ -95,9 +94,14 @@ class DbJSON implements Iterator
 
 	public function next() {
 		++$this->position;
+		// self::$log->add(__METHOD__,null,[ '$this->position'=>$this->position]);
+		// return $this->db[$this->position] ?? $this->values()[$this->position] ?? null;
 	}
 
 	public function valid() {
+		/* self::$log->add(__METHOD__,null,['bool'=>(
+			isset($this->db[$this->position]) || isset($this->values()[$this->position])
+		), '$this->db[$this->position]'=>$this->db[$this->position], '$this->position'=>$this->position]); */
 		return
 			isset($this->db[$this->position])
 			|| isset($this->values()[$this->position]);
