@@ -232,5 +232,12 @@ U.ready(()=>{
 	}
 });
 
+// *Запускаем редактор с файловым браузером
+Object.assign(CKEDITOR.config, {
+	filebrowserBrowseUrl: '/index?name=createCKEditorBrowser',
+	disallowedContent : 'img{width,height}',
+	image_removeLinkByEmptyURL: true,
+});
+
 CKEDITOR.inlineAll();
 </script>

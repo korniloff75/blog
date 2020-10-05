@@ -148,7 +148,10 @@ class Index_my_addon implements BasicClassInterface
 			<script src="'.$UIKitPath.'/js/uikit.min.js"></script>
 			';
 
-			if(!empty(self::$cfg['uk']['include_picts']))
+			if(
+				!empty(self::$cfg['uk']['include_picts'])
+				|| self::is_adm()
+			)
 			{
 				$addonsPages .= '
 				<!-- UIkit picts-->
@@ -212,8 +215,9 @@ class Index_my_addon implements BasicClassInterface
 
 	public static function is_admPanel ()
 	{
-		// return file_exists('./newpassword.php');
-		return explode('/', \REQUEST_URI)[1] === 'admin';
+		global $Page;
+		return empty($Page);
+		// return explode('/', \REQUEST_URI)[1] === 'admin';
 	}
 
 

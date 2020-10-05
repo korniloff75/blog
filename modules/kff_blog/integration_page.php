@@ -51,6 +51,7 @@ class BlogKff_page extends BlogKff
 			$xpath = new DOMXpath($doc);
 			$imgs = $xpath->query("//img[1]");
 			$fragm = $xpath->query("//p");
+
 			// self::$log->add(__METHOD__,null,[$img, $fragm]);
 
 			// echo "$artId<br>";
@@ -65,8 +66,21 @@ class BlogKff_page extends BlogKff
 				// self::$log->add('$imgs->item(0)->getAttribute("src")',null,[$img->getAttribute("src")]);
 			}
 
+			// *Ищем сепаратор
+			if(
+				($separators= $xpath->query("//p[@class=separator]"))
+				&& !empty($separators->item(0))
+			){
+				$c=0;
+				while (
+					!empty($p= $fragm->item($c++))
+					// && !$p->attributes
+				) {
+					// todo определить: есть ли у элемента нужный класс
+				}
+			}
 			// *Первые параграфы
-			if(!empty($fragm))
+			elseif(!empty($fragm->item(0)))
 			{
 				$c=0;
 
@@ -83,7 +97,11 @@ class BlogKff_page extends BlogKff
 			<p class='uk-margin-remove'>Дата: <time itemprop=\"dateModified\"
 			datetime=\"" . date(DATE_ISO8601, $ts) . "\">" . date(self::DATE_FORMAT, $ts) . "</time></p>
 			</div>
-			<p style='text-align:right;' class='uk-float-right'><a href=\"$artHref\"><button>Читать</button></a></p>
+			<p style='text-align:right;' class='uk-float-right'>";
+			if(self::is_adm()){
+				$o.= "<a href=\"{$artHref}?edit\" class='uk-margin-right' uk-icon='icon: file-edit' title='Редактировать'></a>";
+			}
+			$o.= "<a href=\"$artHref\"><button>Читать</button></a></p>
 			<p class='uk-clearfix'></p>
 
 			<hr class=\"uk-divider-icon \">";
@@ -220,16 +238,20 @@ class BlogKff_page extends BlogKff
 		$article= file_get_contents($path);
 
 		// *Вытаскиваем #тэги
-		preg_match_all('~[\s\W](#.+?\b)~u', $article, $tags);
+		preg_match_all('~[\s\W](#\D.+?\b)~u', $article, $tags);
 		echo $article;
 		self::$log->add(__METHOD__,null,['$tags'=>$tags]);
 
-		$tags= array_unique(array_merge($tags[1], explode(',', $this->artData['tag'])));
+		if(!empty($tags)){
+
+		}
+
+		$this->artData['tag']= array_unique(array_merge($tags[1], explode(',', $this->artData['tag'])));
 
 
 		echo '<div class="tags" itemprop="about" itemscope itemtype="https://schema.org/Thing">';
 
-		if(!empty($tags)) foreach($tags as $tag){
+		if(!empty($this->artData['tag'])) foreach($this->artData['tag'] as $tag){
 			if(!trim($tag)) continue;
 			if(substr($tag,0,1)!=='#') $tag= "#$tag";
 		?>

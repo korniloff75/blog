@@ -265,6 +265,7 @@ class BlogKff extends Index_my_addon
 	protected static function _createBlogMap($force=0)
 	:DbJSON
 	{
+		$map= &self::$map;
 		$map= new DbJSON(self::$storagePath.'/map.json');
 		if(!$force && $map->count())
 			return $map;
@@ -297,12 +298,15 @@ class BlogKff extends Index_my_addon
 			// var_dump($cat);
 
 			// *Массив с базой категории добавляем в карту
-			$map->push($catDB->get()) ;
+			$map->push($catDB->get());
 
 		} // foreach
 
 		// self::$log->add(__METHOD__.' BlogMap',null,[$map]);
 		new Sitemap($map);
+
+		/* $map->__destruct();
+		$map->__destruct= null; */
 
 		// die;
 		return $map;
@@ -322,10 +326,6 @@ class BlogKff extends Index_my_addon
 		// todo избавиться от self::$artBase
 		$map= &self::$map;
 		$map= $map ?? new DbJSON($mapPath);
-
-		/* $catData= array_filter($map->get(), function($i){return $i['id'] === $catId;})['items'];
-
-		$artData array_filter($catData, function($i){return $i['id'] === $artId;}); */
 
 		if(!$map->count()){
 			$map= self::_createBlogMap();
@@ -355,6 +355,12 @@ class BlogKff extends Index_my_addon
 
 		<!-- UIkit JS -->
 		<script src="<?=$UIKpath?>/js/uikit.min.js"></script>
+
+		<?php
+		if(self::is_adm()){
+			echo '<script src="'.$UIKpath.'/js/uikit-icons.min.js"></script>';
+		}
+		?>
 		<!-- /UIkit -->
 
 		<?php
