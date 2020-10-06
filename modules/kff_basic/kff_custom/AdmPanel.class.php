@@ -33,7 +33,7 @@ class AdmPanel extends Index_my_addon
 				$sidebar.addClass("uk-offcanvas-bar")
 			.wrap("<div id='navbar' uk-offcanvas='overlay: true'/>");
 
-				$("#main>.header").prepend("<button class='uk-offcanvas-close' uk-toggle='target: #navbar' style='position:static;'>Menu</button>", $("a.exit"));
+				$("#main>.header").prepend("<a class='uk-offcanvas-close' uk-toggle='target: #navbar' style='position:static;' uk-icon='icon: menu; ratio:2;' title='Меню' uk-tooltip></a>", $("a.exit"));
 			}
 			else{
 				$sidebar.css({

@@ -317,11 +317,11 @@ class Basic
 		<!-- class="menu_page" -->
 		<!-- <div class="uk-flex"> -->
 			<!-- <div style="width: 4em;"></div> -->
-			<ul uk-tab uk-sticky="top: 100; show-on-up:true;">
-				<li><button>Модули</button></li>
-				<li><button>Подмодули</button></li>
-				<li><button>Настройки</button></li>
-			</ul>
+		<ul uk-tab uk-sticky="top: 100; show-on-up:true;">
+			<li><button>Модули</button></li>
+			<li><button>Подмодули</button></li>
+			<li><button>Настройки</button></li>
+		</ul>
 		<!-- </div> -->
 
 		<div class="uk-switcher">
