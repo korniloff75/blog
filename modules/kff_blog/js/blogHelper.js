@@ -37,7 +37,7 @@ var BH = {
 }
 
 // ?
-var U = U || window.UIkit&&UIkit.util;
+var U = U || window.UIkit && UIkit.util;
 
 
 // *Events
@@ -134,7 +134,7 @@ $('.content').on('click', '#save_sts', $e=>{
 
 	// console.log('$list=',$list);
 
-	$list.each((indCat,i)=>{
+	$list.each((catInd,i)=>{
 		var $i=$(i);
 		out[$i.data('id')]= [];
 		$i.find('[data-id]').each((ind,i)=>{
@@ -150,14 +150,13 @@ $('.content').on('click', '#save_sts', $e=>{
 				err.push('Элемент ' + id + ' не может дублироваться в одной категории!');
 			}
 			out[$i.data('id')].push({
-				id: id, ind:[indCat,ind], name: name, oldCatId: oldCatId, tag: i.getAttribute('data-tag'),
+				id: id, ind:[catInd,ind], name: name, oldCatId: oldCatId, tag: i.getAttribute('data-tag'),
 			});
 
 			if(title.trim()){
 				out[$i.data('id')][ind].title= title;
 			}
-			console.log('title.trim()',title.trim(),i.attributes.title.nodeValue);
-			// out[$i.data('id')].push(id);
+			// console.log('title.trim()',title.trim(),i.attributes.title.nodeValue);
 		})
 	})
 
@@ -167,9 +166,9 @@ $('.content').on('click', '#save_sts', $e=>{
 
 		// setTimeout(()=>{location.reload()}, 2000);
 	} else {
-		kff.request('',{name:'sortCategories', value: JSON.stringify(out)},['.content','.log'])
+		kff.request('',{name:'sortCategories', value: JSON.stringify(out)},['.switcher-item.order','.log'])
 		.then(()=>{
-			UIkit.notification( "Порядок элементов успешно сохранён",'success');
+			UIkit.notification( "<span uk-icon='icon: check; ratio:1.5;'></span> Порядок элементов успешно сохранён",'success');
 		});
 	}
 

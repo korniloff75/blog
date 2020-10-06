@@ -69,9 +69,9 @@ foreach($mds as &$m)
 		// todo history
 		if(is_array($val)) continue;
 
-		$tag = $key !== 'description' ? "<input class=uk-width-2-3 type=text value='$val'>" : "<div contentEditable=true class=uk-width-2-3>$val</div>";
+		$tag = $key !== 'description' ? "<input class=uk-width-2-3 type=text value='$val'>" : "<div contentEditable=true class=uk-width-2-3@s>$val</div>";
 
-		echo "<li class='uk-flex uk-flex-wrap uk-padding-small'><span class=uk-width-1-3>$key </span> $tag</li>";
+		echo "<li class='uk-flex uk-flex-wrap uk-padding-small'><span class=uk-width-1-3@s>$key </span> $tag</li>";
 	}
 	// todo
 	// require_once $adm_path;

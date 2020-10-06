@@ -225,7 +225,7 @@ class BlogKff_page extends BlogKff
 
 		// *На стартовой - новостная лента
 		if(self::is_indexPage()) {
-			echo $this->newsTape();
+			echo $this->newsTape(self::$l_cfg['newsTapeLength']);
 			return;
 		}
 

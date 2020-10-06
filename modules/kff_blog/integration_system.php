@@ -57,7 +57,8 @@ class BlogKff extends Index_my_addon
 			if(is_string($r['opts']))
 				$r['opts'] = json_decode($r['opts'],1);
 			$this->opts = @$r['opts'];
-			return $this->{$m_name}(filter_var($r['value']));
+			$val= is_array($r['value'])? filter_var_array($r['value']): filter_var($r['value']);
+			return $this->{$m_name}($val) || true;
 		}
 		return false;
 	}

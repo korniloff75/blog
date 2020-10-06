@@ -46,8 +46,6 @@ class BlogKff_adm extends BlogKff
 			foreach($items as $ind=>&$item) {
 				$artPathname= "$catPathname/{$item['id']}" . self::$l_cfg['ext'];
 
-				$artDB = self::getArtDB($artPathname);
-
 				// *Элемент перемещён в другую категорию
 				if($item['oldCatId'] !== $catId)
 				{
@@ -61,12 +59,10 @@ class BlogKff_adm extends BlogKff
 					$artDB->set(['ind'=>[$catInd,$ind],'catId'=>$catId, 'catName'=>$catDB->get('name')]);
 
 					unset($item['oldCatId']);
-					$artDB->clear('oldCatId');
 				}
 
 				// *Обновляем базу элементов категории
-				// $catDB->append(['items'=>[$item]]);
-				$catDB->push(['items'=>$artDB->get()]);
+				$catDB->append(['items'=>[$item]]);
 
 			} //foreach
 
@@ -82,6 +78,16 @@ class BlogKff_adm extends BlogKff
 		} //foreach
 
 		return $cats;
+	}
+
+
+	/**
+	 * *Сохраняем настройки блога
+	 */
+	protected static function c_saveSts($sts)
+	{
+		var_dump($sts);
+		self::$blogDB->replace($sts);
 	}
 
 
@@ -198,6 +204,8 @@ class BlogKff_adm extends BlogKff
 			file_put_contents($artPathname,"<p>New Article - <b>$new_article</b>!</p>")
 		) {
 			$artDB->set($cfg);
+			$artDB->__destruct();
+			$artDB->__destruct = null;
 			self::_updateCatDB(new SplFileInfo($catPath), $cfg['name']);
 		}
 		else {
@@ -213,74 +221,45 @@ class BlogKff_adm extends BlogKff
 		global $MODULE;
 		?>
 
-		<div class="header"><h1><a href="#" onclick="location.reload(); return false;">Настройки</a> <?=$MODULE?></h1></div>
+		<div class="header">
+			<h1><a href="#" onclick="location.reload(); return false;">Настройки</a> <?=$MODULE?></h1>
+		</div>
 
 		<script src="/<?=self::$modDir?>/js/blogHelper.js" defer></script>
 
 		<div class="content">
 
-			<h3>Категории</h3>
+			<ul uk-tab uk-sticky="top: 100; show-on-up:true;">
+				<li><button>Материалы</button></li>
+				<li><button>Настройки</button></li>
+			</ul>
 
-			<input type="text" name="addCategory" placeholder="Название категории"><button class="addCategory">ADD</button>
+			<div class="uk-switcher">
+				<div class="switcher-item order">
 
-			<ul id="categories" class="uk-nav uk-nav-default" uk-sortable="group: cats; handle: .uk-sortable-handle;">
+					<h4>Добавить категорию</h4>
+					<input type="text" name="addCategory" placeholder="Название категории" class="uk-width-expand"><button class="addCategory">ADD</button>
 
-			<?php
-			// self::$log->add(__METHOD__,null,['self::$catsDB'=>self::$catsDB, ]);
+					<h3>Категории блога</h3>
+					<?php
+					// *ul#categories
+					require_once __DIR__.'/admin_order.php'
+					?>
 
-			foreach(self::$catsDB as $catId) {
-				$catData = self::getCategoryData($catId);
-				$catData['id'] = $catData['id'] ?? $catId;
-
-				// self::$log->add(__METHOD__,null,['$catId'=>$catId, '$catData'=>$catData]);
-				?>
-				<li>
-				<div class="uk-flex uk-flex-middle uk-margin-top">
-					<div class="uk-sortable-handle uk-margin-small-right" uk-icon="icon: table; ratio: 1.5"></div>
-					<!-- Category name -->
-					<h4 class="uk-margin-remove"><?=$catData['name']?> <div class="removeCategory" uk-icon="icon: trash; ratio: 1.5" data-del="<?=$catData['id']?>"></div></h4>
+					<h4>Сохранить изменения</h4>
+					<button id="save_sts">Save</button>
 				</div>
 
-				<div style="display: inline-block;">
-					<input type="hidden" name="catId" value="<?=$catData['id']?>">
-					<input type="hidden" name="catName" value="<?=$catData['name']?>">
-					<input type="text" name="addArticle" placeholder="Название статьи">
-				</div><button class="addArticle">ADD</button>
-
-				<ul data-id=<?=$catData['id']?> class="listArticles uk-nav uk-nav-default uk-width-auto" uk-sortable="group: cat-items; handle: .uk-sortable-handle; cls-custom: uk-box-shadow-small uk-flex uk-flex-expand uk-background">
-
+				<div class="switcher-item sts">
 				<?php
-				if(is_array($catData['items'])) foreach($catData['items'] as $ind=>&$artData) {
-					$artData['title'] = $artData['title'] ?? $artData['name'];
-					// $artData['date'] = $artData['date'];
-
-					echo "<li data-id={$artData['id']} data-index={$ind} data-name=\"{$artData['name']}\" data-oldCatId= {$catData['id']} uk-tooltip title=\"{$artData['title']}\" data-title=\"{$artData['title']}\" class=\"uk-flex uk-flex-wrap uk-flex-middle\">
-					<div class=\"uk-sortable-handle uk-margin-small-right\" uk-icon=\"icon: table\"></div>
-
-					<!-- artName -->
-					{$artData['name']}
-
-					<!-- Remove article -->
-					<span uk-icon=\"trash\" data-del=\"$catId/{$artData['id']}\" class='delArticle'></span>
-
-
-
-					</li>";
-					// print_r($artData);
-				}
-
+					// *
+					require_once __DIR__.'/admin_sts.php'
 				?>
-				</ul>
-			</li>
-			<?php
-			}
-			?>
+				</div>
+			</div><!-- .uk-switcher -->
 
-		</ul><!-- #categories -->
-
-		<button id="save_sts">Save</button>
-	</div><!-- .content -->
-	<?php
+		</div><!-- .content -->
+		<?php
 	}
 
 	function __destruct()

@@ -46,7 +46,7 @@
 
 $('.topbar').append($('a.exit'),'<button class="uk-offcanvas-close" uk-toggle="target: #navbar">Menu</button>'); */
 
-var U= UIkit.util;
+var U= window.U || UIkit.util;
 // console.log('U=',U);
 
 U.ready(()=>{

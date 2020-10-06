@@ -82,6 +82,16 @@ class BlogKff_adm extends BlogKff
 
 
 	/**
+	 * *Сохраняем настройки блога
+	 */
+	protected static function c_saveSts($sts)
+	{
+		var_dump($sts);
+		self::$blogDB->replace($sts);
+	}
+
+
+	/**
 	 * !Удаляем статью
 	 */
 	public function c_removeArticle($removePath)
@@ -220,15 +230,15 @@ class BlogKff_adm extends BlogKff
 		<div class="content">
 
 			<ul uk-tab uk-sticky="top: 100; show-on-up:true;">
-				<li><button>Сортировка</button></li>
+				<li><button>Материалы</button></li>
 				<li><button>Настройки</button></li>
 			</ul>
 
 			<div class="uk-switcher">
-				<div class="switcher-item">
+				<div class="switcher-item order">
 
 					<h4>Добавить категорию</h4>
-					<input type="text" name="addCategory" placeholder="Название категории"><button class="addCategory">ADD</button>
+					<input type="text" name="addCategory" placeholder="Название категории" class="uk-width-expand"><button class="addCategory">ADD</button>
 
 					<h3>Категории блога</h3>
 					<?php
@@ -238,6 +248,13 @@ class BlogKff_adm extends BlogKff
 
 					<h4>Сохранить изменения</h4>
 					<button id="save_sts">Save</button>
+				</div>
+
+				<div class="switcher-item sts">
+				<?php
+					// *
+					require_once __DIR__.'/admin_sts.php'
+				?>
 				</div>
 			</div><!-- .uk-switcher -->
 

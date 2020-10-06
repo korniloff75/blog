@@ -51,6 +51,7 @@ class BlogKff_page extends BlogKff
 			$xpath = new DOMXpath($doc);
 			$imgs = $xpath->query("//img[1]");
 			$fragm = $xpath->query("//p");
+
 			// self::$log->add(__METHOD__,null,[$img, $fragm]);
 
 			// echo "$artId<br>";
@@ -65,8 +66,21 @@ class BlogKff_page extends BlogKff
 				// self::$log->add('$imgs->item(0)->getAttribute("src")',null,[$img->getAttribute("src")]);
 			}
 
+			// *Ищем сепаратор
+			if(
+				($separators= $xpath->query("//p[@class=separator]"))
+				&& !empty($separators->item(0))
+			){
+				$c=0;
+				while (
+					!empty($p= $fragm->item($c++))
+					// && !$p->attributes
+				) {
+					// todo определить: есть ли у элемента нужный класс
+				}
+			}
 			// *Первые параграфы
-			if(!empty($fragm))
+			elseif(!empty($fragm->item(0)))
 			{
 				$c=0;
 
@@ -83,7 +97,11 @@ class BlogKff_page extends BlogKff
 			<p class='uk-margin-remove'>Дата: <time itemprop=\"dateModified\"
 			datetime=\"" . date(DATE_ISO8601, $ts) . "\">" . date(self::DATE_FORMAT, $ts) . "</time></p>
 			</div>
-			<p style='text-align:right;' class='uk-float-right'><a href=\"$artHref\"><button>Читать</button></a></p>
+			<p style='text-align:right;' class='uk-float-right'>";
+			if(self::is_adm()){
+				$o.= "<a href=\"{$artHref}?edit\" class='uk-margin-right' uk-icon='icon: file-edit' title='Редактировать'></a>";
+			}
+			$o.= "<a href=\"$artHref\"><button>Читать</button></a></p>
 			<p class='uk-clearfix'></p>
 
 			<hr class=\"uk-divider-icon \">";
@@ -179,21 +197,15 @@ class BlogKff_page extends BlogKff
 
 		file_put_contents(self::$storagePath . "/{$this->opts['cat']}/{$this->opts['art']}" . self::$l_cfg['ext'], $html);
 
-		// *Обновляем карту и базу категории
+		// *Обновляем карту
 		// self::_createBlogMap(1);
 		$map= self::getBlogMap();
 		$ind= $artData['ind'];
 
-		/* $newData= [$ind[0]=>[
+		$newData= [$ind[0]=>[
 			'items'=>[$ind[1]=>$artDB->get()]
-		]]; */
-		$newData= ["{$ind[0]}"=>[
-			'items'=>["{$ind[1]}"=>$artDB->get()]
 		]];
 		$map->set($newData);
-
-		$catDB= self::_getCategoryDB(basename(dirname($artPathname)));
-		$catDB->set(['items'=>["{$ind[1]}"=>$artDB->get()]]);
 
 		self::$log->add(__METHOD__,null,['$ind'=>$ind,'$artDB'=>$artDB,]);
 	}
@@ -213,7 +225,7 @@ class BlogKff_page extends BlogKff
 
 		// *На стартовой - новостная лента
 		if(self::is_indexPage()) {
-			echo $this->newsTape();
+			echo $this->newsTape(self::$l_cfg['newsTapeLength']);
 			return;
 		}
 
@@ -224,16 +236,22 @@ class BlogKff_page extends BlogKff
 		if( !file_exists($path) ) return;
 
 		$article= file_get_contents($path);
-		preg_match_all('~[\s\W](#.+?\b)~u', $article, $tags);
+
+		// *Вытаскиваем #тэги
+		preg_match_all('~[\s\W](#\D.+?\b)~u', $article, $tags);
 		echo $article;
 		self::$log->add(__METHOD__,null,['$tags'=>$tags]);
 
-		$tags= array_unique(array_merge($tags[1], explode(',', $this->artData['tag'])));
+		if(!empty($tags)){
+
+		}
+
+		$this->artData['tag']= array_unique(array_merge($tags[1], explode(',', $this->artData['tag'])));
 
 
-		echo '<div itemprop="about" itemscope itemtype="https://schema.org/Thing">';
+		echo '<div class="tags" itemprop="about" itemscope itemtype="https://schema.org/Thing">';
 
-		if(!empty($tags)) foreach($tags as $tag){
+		if(!empty($this->artData['tag'])) foreach($this->artData['tag'] as $tag){
 			if(!trim($tag)) continue;
 			if(substr($tag,0,1)!=='#') $tag= "#$tag";
 		?>
@@ -241,7 +259,7 @@ class BlogKff_page extends BlogKff
 
 		<?php
 		}
-		echo '</div><!--about-->';
+		echo '<!--about--></div>';
 	}
 
 
@@ -284,8 +302,9 @@ class BlogKff_page extends BlogKff
 		$artData= &$this->artData;
 		$artData= self::getArtData($this->getArtPathname());
 
-		echo '<h1 id="title">' . ($artData['title'] ?? $artData['name']) . '</h1>';
+		echo '<h1 id="title" itemprop="headline">' . ($artData['title'] ?? $artData['name']) . '</h1>';
 	?>
+		<meta itemprop="identifier" content="<?=self::getPathFromRoot($this->getArtPathname())?>">
 
 		<script src="/<?=self::$modDir?>/js/blogHelper.js"></script>
 
@@ -295,19 +314,19 @@ class BlogKff_page extends BlogKff
 		{
 		?>
 		<div id="artOpts" class="uk-flex uk-flex-wrap uk-flex-middle">
-			<span class="uk-width-1-3"><b>name</b></span> <input name="name" class="uk-width-expand" type="text" placeholder="name" value="<?=$artData['name']?>"><p class="uk-width-1 uk-margin-remove"></p>
+			<span class="uk-width-1-3@s"><b>name</b></span> <input name="name" class="uk-width-expand" type="text" placeholder="name" value="<?=$artData['name']?>"><p class="uk-width-1 uk-margin-remove"></p>
 
-			<span class="uk-width-1-3"><b>title</b></span> <input name="title" class="uk-width-expand" type="text" placeholder="title" value="<?=$artData['title'] ?? $artData['name']?>"><p class="uk-width-1 uk-margin-remove"></p>
+			<span class="uk-width-1-3@s"><b>title</b></span> <input name="title" class="uk-width-expand" type="text" placeholder="title" value="<?=$artData['title'] ?? $artData['name']?>"><p class="uk-width-1 uk-margin-remove"></p>
 
-			<span class="uk-width-1-3"><b>description</b></span><textarea name="description" class="uk-width-expand" type="text" placeholder="description"><?=$artData['description']?></textarea><p class="uk-width-1 uk-margin-remove"></p>
+			<span class="uk-width-1-3@s"><b>description</b></span><textarea name="description" class="uk-width-expand" type="text" placeholder="description"><?=$artData['description']?></textarea><p class="uk-width-1 uk-margin-remove"></p>
 
-			<span class="uk-width-1-3"><b>keywords</b></span><input name="keywords" class="uk-width-expand" type="text" placeholder="keywords" value="<?=$artData['keywords']?>"><p class="uk-width-1 uk-margin-remove"></p>
+			<span class="uk-width-1-3@s"><b>keywords</b> (через запятую)</span><input name="keywords" class="uk-width-expand" type="text" placeholder="keywords" value="<?=$artData['keywords']?>"><p class="uk-width-1 uk-margin-remove"></p>
 
-			<span class="uk-width-1-3"><b>Метки</b> (через запятую)</span><input name="tag" class="uk-width-expand" type="text" placeholder="метки" value="<?=$artData['tag']?>"><p class="uk-width-1 uk-margin-remove"></p>
+			<span class="uk-width-1-3@s"><b>Метки</b> (через запятую)</span><input name="tag" class="uk-width-expand" type="text" placeholder="метки" value="<?=$artData['tag']?>"><p class="uk-width-1 uk-margin-remove"></p>
 
-			<span class="uk-width-1-3"><b>Автор</b></span><input name="author" class="uk-width-expand" type="text" value="<?=$artData['author']?>"><p class="uk-width-1 uk-margin-remove"></p>
+			<span class="uk-width-1-3@s"><b>Автор</b></span><input name="author" class="uk-width-expand" type="text" value="<?=$artData['author']?>"><p class="uk-width-1 uk-margin-remove"></p>
 
-			<span class="uk-width-1-3"><b>Черновик</b></span>
+			<span class="uk-width-1-3@s"><b>Черновик</b></span>
 			<select name="not-public" value="<?=!empty($artData['not-public'])? 1: 0 ?>">
 				<option value="0">Опубликовано</option>
 				<option value="1" <?=!empty($artData['not-public'])? 'selected': '' ?>>Черновик</option>
@@ -319,7 +338,7 @@ class BlogKff_page extends BlogKff
 		}
 		?>
 
-		<div id='editor1' class="blog_content" <?=$edit?'contenteditable=true':''?>>
+		<div id='editor1' class="blog_content" <?=$edit?'contenteditable=true':''?> itemprop="articleBody">
 
 		<?php
 			$this->_printArticle();
@@ -369,7 +388,7 @@ class BlogKff_page extends BlogKff
 		?>
 		<div>
 			<p>Автор: <em itemprop="author"><?=$artData['author']??'Павел Корнилов'?></em></p>
-			<p>Дата публикации / редактирования: <time itemprop="dateModified"
+			<p>Дата публикации / редактирования: <time itemprop="dateModified" data-ts="<?=$ts?>"
 			datetime="<?=date(DATE_ISO8601, $ts)?>"><?=date(self::DATE_FORMAT, $ts)?></time></p>
 		</div>
 		<?php

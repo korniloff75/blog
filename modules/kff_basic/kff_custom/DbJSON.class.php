@@ -243,7 +243,7 @@ class DbJSON implements Iterator, Countable
 	/**
 	 * @param data {array}
 	 */
-	public function replace($data)
+	public function replace(array $data)
 	{
 		$this->db = $data;
 		$this->changed= 1;
