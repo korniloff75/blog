@@ -1,0 +1,248 @@
+#ajax-content section#comments {
+	color: #123;
+	background: #f5f5f5;
+	padding: 0 5px;
+}
+
+section#comments .admin {
+	background: #ded;
+	padding: 70px 50px;
+	padding: 7px;
+	order: 1px solid #999;
+	margin: 30px auto;
+	color: #147;
+}
+
+section#comments .name {
+	min-width: 100px;
+	width: 31%;
+	text-align: right;
+	padding-right: 20px;
+}
+
+
+#comments #entries * {
+	max-width: 100%;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}
+
+#comments #comments_header {
+	padding-top: 20px;
+	margin-top: 20px;
+}
+
+#bb_bar > img,
+#bb_bar > i {
+	border: 1px solid;
+	border-radius: 3px;
+	box-shadow: 1px 1px 2px #999;
+	padding: 5px;
+	margin: 5px;
+}
+
+#sm_bar i{
+	color: #b81;
+	font-size: 1.5em;
+	margin: 5px;
+}
+#sm_bar i:hover{
+	color: #fff;
+}
+#sm_bar > img {
+	margin: 3px;
+	border: none;
+}
+
+#comments .entry {
+	margin-bottom: 20px;
+	overflow: auto;
+}
+
+#comments .entry_mess{
+	padding-top:20px;
+	font: 16px 'Source Sans Pro', verdana;
+	color:#000;
+	background: #eee linear-gradient(to right, #eeeeee, #ffffff 10%, #eeeeee 70%, #ffffff, #eeeeee) repeat scroll 0 0;
+	border: 1px solid #ddd;
+	margin: 0 0 10px ;
+	padding: 5px;
+
+}
+
+#comments .entry_mess i.fa {
+	color: #b81;
+	font-size: 1.3em;
+}
+
+#comments .head_entry {
+	font-weight: 700;
+	padding: 1px 0;
+}
+
+#comments .entry_answer {
+	background: #eee linear-gradient(#f1f1f1, #fefefe 30%, #f5f5f5 90%) repeat scroll 0 0;
+	border: 1px dotted #aaa;
+	margin: 10px 0;
+	padding: 5px 5px 10px 30px;
+	font: 16px "Alegreya Sans SC", OpenGost_B, sans-serif;
+}
+
+.paginator {
+  margin: 5px 0;
+  padding: 3px;
+}
+
+.paginator > a {
+	color: #d2a;
+  /* border: 1px solid #aaaaaa; */
+  padding: 3px;
+}
+
+/* Send form */
+
+#form-outbox form,
+#form-outbox input,
+#form-outbox ul,
+#form-outbox li,
+#form-outbox ol,
+#form-outbox label {
+	margin:0px;
+	padding:0px;
+}
+
+#form-outbox{
+	width:100%;
+	min-height: 400px;
+	/* color:#555555; */
+	font-size:15px Arial, Helvetica, sans-serif;
+	/* background: url(img/dark_wood_texture.jpg) #282828; */
+}
+
+#form-outbox #response {
+	color:white;
+	text-align:center;
+	padding:10px;
+	margin-top:10px;
+}
+
+#form-outbox > #form-container{
+	max-width: 500px;
+	margin:30px auto;
+	background-color:#f5f5f5;
+	padding:15px;
+
+	-moz-border-radius:12px;
+	-khtml-border-radius: 12px;
+	-webkit-border-radius: 12px;
+	border-radius:12px;
+	border: 7px outset #000;
+}
+
+/* #form-container div {
+	display: flex;
+	flex-wrap: wrap;
+	flex-basis: 100%;
+	align-items: center;
+	align-content: center;
+	margin: 5px 0;
+} */
+
+#form-container div > input,
+#form-container div > textarea, {
+	flex: 4 1;
+	padding: 2px 5px
+}
+
+#form-container div > label:first-child {
+	flex: 1 1 50%;
+}
+
+#form-container div > [value] {
+	flex: 1 1 50%;
+}
+
+#form-container div > input[type=submit] {
+	flex-grow: 7;
+}
+
+.clear{
+	clear:both;
+}
+
+#form-container a,
+#form-container a:visited {
+	color:#00BBFF;
+	text-decoration:none;
+	outline:none;
+}
+
+#form-container a:hover{
+	text-decoration:underline;
+}
+
+#form-container label{
+	text-transform:uppercase;
+	font-size:10px;
+	font-family:Tahoma,Arial,Sans-serif;
+}
+
+#ajax-content #form-container input:not([type='button']), #ajax-content #form-container textarea {
+	width: 100%;
+	/* color: #404040; */
+	font: 16px Arial,Helvetica,sans-serif;
+	resize: vertical;
+	border: 1px inset;
+	padding: 3px;
+	background: #eee;
+}
+
+#form-container #c_subm {
+	flex: 1 1 auto;
+}
+
+#form-container #response {
+	white-space: pre-line;
+	color: #fff;
+	font-size: 10px;
+	font-weight: bold;
+	margin-top: 10px;
+	padding: 10px;
+	text-transform: uppercase;
+}
+
+.success {
+	color:#fff;
+	background-color: green;
+}
+
+.error {
+	color:#fff;
+	background-color: #ab0000;
+}
+
+#loading{
+	position:relative;
+	bottom:9px;
+	visibility:hidden;
+}
+
+/* /Send form */
+
+
+@media (max-width: 700px) {
+	section#comments,
+	#form-outbox > #form-container {
+		padding: 5px;
+		border: none;
+	}
+	#comments #entries * {
+		overflow-wrap: break-word;
+	/*	word-break: break-all; */
+	}
+
+	#comments_form > div {
+		flex-direction: column;
+	}
+
+}

@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Europe/Moscow');
 
 require_once __DIR__ . "/kff_custom/traits/Helpers.trait.php";
 
@@ -6,6 +7,8 @@ require_once __DIR__ . "/kff_custom/traits/Helpers.trait.php";
 class Index_my_addon implements BasicClassInterface
 {
 	use Helpers;
+
+	const ADM_FOLDER_NAME= 'admin';
 
 	public static
 		// $log = false,
@@ -69,7 +72,7 @@ class Index_my_addon implements BasicClassInterface
 			AdmPanel::addResponsive();
 		}
 
-		self::$log->add('REQUEST_URI=',null, [$_SERVER['REQUEST_URI']]);
+		self::$log->add(__METHOD__,null, ['S_REQUEST_URI'=>$_SERVER['REQUEST_URI'], 'REQUEST_URI'=>\REQUEST_URI]);
 		self::$log->add(__METHOD__,null, [__CLASS__.'::$cfg'=>self::$cfg]);
 
 	}
@@ -216,8 +219,9 @@ class Index_my_addon implements BasicClassInterface
 	public static function is_admPanel ()
 	{
 		global $Page;
-		return empty($Page);
-		// return explode('/', \REQUEST_URI)[1] === 'admin';
+		// self::$log->add(__METHOD__,null,['is_admPanel'=>empty($Page)]);
+		// return empty($Page);
+		return explode('/', \REQUEST_URI)[1] === self::ADM_FOLDER_NAME;
 	}
 
 
@@ -257,4 +261,4 @@ $kff = new Index_my_addon();
 
 $log = $kff::get_log();
 
-// $log->add('$URI=',null,[$URI]);
+// $log->add(basename(__FILE__),null,['$URI'=>$URI, '$Page'=>$Page]);

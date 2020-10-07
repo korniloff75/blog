@@ -28,7 +28,9 @@ class Logger
 		# array with a current log
 		$log = [];
 
-	static $printed = false;
+	static
+		$printed = false,
+		$notWrite;
 
 	/**
 	 * @name - name of the log file
@@ -271,6 +273,9 @@ class Logger
 
 	public function __destruct()
 	{
+		// *Не логируем серверную обработку 404
+		if(self::$notWrite) return;
+
 		$txt = __METHOD__;
 		$dump = null;
 		// $this->add();

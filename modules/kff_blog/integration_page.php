@@ -44,8 +44,8 @@ class BlogKff_page extends BlogKff
 			@$doc->loadHTMLFile($artPathname);
 			$doc->normalizeDocument();
 
-			$catId= $artData['catId'] ?? basename(dirname($artPathname));
-			$catName= $artData['catName'];
+			$catId= &$artData['catId'] ?? basename(dirname($artPathname));
+			$catName= &$artData['catName'] ?? $catId;
 			$artId= basename($artPathname, self::$l_cfg['ext']);
 
 			$xpath = new DOMXpath($doc);
@@ -129,9 +129,13 @@ class BlogKff_page extends BlogKff
 
 		// foreach(new RecursiveIteratorIterator($storageIterator) as $c=>$FI){
 		foreach(new RecursiveIteratorIterator($storageIterator) as $c=>$FI){
-			if($FI->isDir() || $FI->getExtension() !== substr(self::$l_cfg['ext'], 1)) continue;
+			if(
+				$FI->isDir()
+				|| $FI->getExtension() !== substr(self::$l_cfg['ext'], 1)
+				|| !$ts= $FI->getMTime()
+			) continue;
 
-			$arr[$FI->getMTime()]= $FI->getPathname();
+			$arr[$ts]= $FI->getPathname();
 			// echo $c . $FI . '<br>';
 		}
 
@@ -342,7 +346,7 @@ class BlogKff_page extends BlogKff
 
 		<?php
 			$this->_printArticle();
-			$ts= filemtime($this->getArtPathname());
+			$ts= file_exists($this->getArtPathname())? filemtime($this->getArtPathname()): null;
 		?>
 		</div><!-- .blog_content -->
 
@@ -385,6 +389,8 @@ class BlogKff_page extends BlogKff
 		{
 			echo '<a href="?edit"><button>EDIT</button></a>';
 		}
+
+		if(!self::is_indexPage()){
 		?>
 		<div>
 			<p>Автор: <em itemprop="author"><?=$artData['author']??'Павел Корнилов'?></em></p>
@@ -392,6 +398,7 @@ class BlogKff_page extends BlogKff
 			datetime="<?=date(DATE_ISO8601, $ts)?>"><?=date(self::DATE_FORMAT, $ts)?></time></p>
 		</div>
 		<?php
+		}
 	}
 
 	function __destruct()

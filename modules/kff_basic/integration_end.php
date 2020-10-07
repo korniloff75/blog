@@ -16,6 +16,13 @@ if(class_exists('BlogKff'))
 	}
 } */
 
+$log->add(basename(__FILE__),null,['$URI'=>$URI, /* '$Page'=>$Page */]);
+
+if(!$Page) {
+	$log::$notWrite= 1;
+	die('404');
+}
+
 // *{{coreHead}}
 ob_start();
 ?>

@@ -160,7 +160,7 @@ class BlogKff extends Index_my_addon
 			}
 		}
 
-		return $artData;
+		return $catData;
 	}
 
 
