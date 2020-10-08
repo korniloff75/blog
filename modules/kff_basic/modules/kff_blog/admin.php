@@ -107,7 +107,7 @@ class BlogKff_adm extends BlogKff
 		self::_updateCatDB(new SplFileInfo($catPath));
 
 		// *Обновляем карту
-		self::_createBlogMap();
+		self::_createBlogMap(1);
 	}
 
 	/**
@@ -125,7 +125,7 @@ class BlogKff_adm extends BlogKff
 		self::$catsDB->remove($num);
 
 		// *Обновляем карту
-		self::_createBlogMap();
+		self::_createBlogMap(1);
 	}
 
 
@@ -167,6 +167,8 @@ class BlogKff_adm extends BlogKff
 			self::$catsDB->remove($ind);
 		}
 
+		self::$map->append([$catDB->get()]);
+
 		return $success;
 	}
 
@@ -196,7 +198,7 @@ class BlogKff_adm extends BlogKff
 		// self::$log->add(__METHOD__." Файл $artPathname уже существует???",E_USER_WARNING,[file_exists($artPathname)]);
 
 		if(file_exists($artPathname)) {
-			self::$log->add(__METHOD__." Файл $artPathname уже существует!",E_USER_WARNING);
+			self::$log->add(__METHOD__." ERROR: Файл $artPathname уже существует!",E_USER_WARNING);
 			return false;
 		}
 
@@ -207,6 +209,7 @@ class BlogKff_adm extends BlogKff
 			$artDB->__destruct();
 			$artDB->__destruct = null;
 			self::_updateCatDB(new SplFileInfo($catPath), $cfg['name']);
+			// self::$map->set([])
 		}
 		else {
 			self::$log->add(__METHOD__.' Не получается добавить статью '.$artPathname,E_USER_WARNING);

@@ -44,8 +44,8 @@ class BlogKff_page extends BlogKff
 			@$doc->loadHTMLFile($artPathname);
 			$doc->normalizeDocument();
 
-			$catId= &$artData['catId'] ?? basename(dirname($artPathname));
-			$catName= &$artData['catName'] ?? $catId;
+			$catId= $artData['catId'] ?? basename(dirname($artPathname));
+			$catName= $artData['catName'] ?? $catId;
 			$artId= basename($artPathname, self::$l_cfg['ext']);
 
 			$xpath = new DOMXpath($doc);
@@ -56,18 +56,28 @@ class BlogKff_page extends BlogKff
 
 			// echo "$artId<br>";
 			// echo addcslashes($artId, "'")."<br>";
-			$artHref= "/{$Page->id}/$catId/$artId";
+			$artHref= "/{$Page->id}";
+			if($catId) $artHref.= "/$catId";
+			$artHref.= "/$artId";
+
 			$o.="<a href=\"$artHref\"><h3>" . ($artData['title'] ?? $artData['name']) . "</h3></a>";
 
 			// *Первое изображение
-			if(!empty($img= $imgs->item(0)))
-			{
-				$o.= "<img src=".$img->getAttribute("src").">" ;
+			if(
+				!empty($img= $imgs->item(0))
+				&& (
+					$src= $img->getAttribute("src")
+					// || ($src= $img->getAttribute("data-src"))
+				)
+			){
+				$o.= "<img src=".$src.">" ;
 				// self::$log->add('$imgs->item(0)->getAttribute("src")',null,[$img->getAttribute("src")]);
 			}
 
 			// *Ищем сепаратор
+			// todo ...
 			if(
+				false &&
 				($separators= $xpath->query("//p[@class=separator]"))
 				&& !empty($separators->item(0))
 			){
@@ -79,8 +89,9 @@ class BlogKff_page extends BlogKff
 					// todo определить: есть ли у элемента нужный класс
 				}
 			}
+			
 			// *Первые параграфы
-			elseif(!empty($fragm->item(0)))
+			if(!empty($fragm->item(0)))
 			{
 				$c=0;
 
@@ -199,6 +210,8 @@ class BlogKff_page extends BlogKff
 		$artDB->set($this->opts['artOpts']);
 		// self::$map->set()
 
+		$html= htmlspecialchars_decode(str_replace(['#+#','#-#'], ['<?','?>'], $html));
+
 		file_put_contents(self::$storagePath . "/{$this->opts['cat']}/{$this->opts['art']}" . self::$l_cfg['ext'], $html);
 
 		// *Обновляем карту
@@ -219,7 +232,7 @@ class BlogKff_page extends BlogKff
 	/**
 	 * *Вывод контента по /$Page->id/catName/artName
 	 */
-	private function _printArticle()
+	private function _printArticle($edit=null)
 	{
 		global $URI, $Page;
 		// *вырубаем в админке
@@ -243,7 +256,7 @@ class BlogKff_page extends BlogKff
 
 		// *Вытаскиваем #тэги
 		preg_match_all('~[\s\W](#\D.+?\b)~u', $article, $tags);
-		echo $article;
+
 		self::$log->add(__METHOD__,null,['$tags'=>$tags]);
 
 		if(!empty($tags)){
@@ -251,6 +264,14 @@ class BlogKff_page extends BlogKff
 		}
 
 		$this->artData['tag']= array_unique(array_merge($tags[1], explode(',', $this->artData['tag'])));
+
+		if($edit){
+			// echo htmlentities($article);
+			echo str_replace(['<?','?>'], ['#+#','#-#'],$article);
+		}
+		else{
+			include_once $path;
+		}
 
 
 		echo '<div class="tags" itemprop="about" itemscope itemtype="https://schema.org/Thing">';
@@ -306,6 +327,8 @@ class BlogKff_page extends BlogKff
 		$artData= &$this->artData;
 		$artData= self::getArtData($this->getArtPathname());
 
+		self::$log->add(__METHOD__,null,['$artData'=>$artData]);
+
 		echo '<h1 id="title" itemprop="headline">' . ($artData['title'] ?? $artData['name']) . '</h1>';
 	?>
 		<meta itemprop="identifier" content="<?=self::getPathFromRoot($this->getArtPathname())?>">
@@ -345,7 +368,7 @@ class BlogKff_page extends BlogKff
 		<div id='editor1' class="blog_content" <?=$edit?'contenteditable=true':''?> itemprop="articleBody">
 
 		<?php
-			$this->_printArticle();
+			$this->_printArticle($edit);
 			$ts= file_exists($this->getArtPathname())? filemtime($this->getArtPathname()): null;
 		?>
 		</div><!-- .blog_content -->
@@ -355,7 +378,7 @@ class BlogKff_page extends BlogKff
 		if($edit)
 		{
 		?>
-		<div>
+		<div class="uk-margin-vertical">
 			<button id="saveEdit" class="uk-button-primary">SAVE</button>
 			<button id="resetEdit" class="uk-button-default uk-float-right" onclick="location.replace(location.pathname)">Reset</button>
 		</div>
@@ -387,15 +410,24 @@ class BlogKff_page extends BlogKff
 		}
 		elseif(self::is_adm() && !self::is_indexPage())
 		{
-			echo '<a href="?edit"><button>EDIT</button></a>';
+			echo '<p><a href="?edit"><button>EDIT</button></a></p>';
 		}
+
+		// var_dump(self::is_indexPage());
 
 		if(!self::is_indexPage()){
 		?>
 		<div>
-			<p>Автор: <em itemprop="author"><?=$artData['author']??'Павел Корнилов'?></em></p>
+
+			<?php
+			if(!empty($artData['author'])){
+			?>
+			<p>Автор: <em itemprop="author"><?=$artData['author']?></em></p>
+			<?php } ?>
+
 			<p>Дата публикации / редактирования: <time itemprop="dateModified" data-ts="<?=$ts?>"
 			datetime="<?=date(DATE_ISO8601, $ts)?>"><?=date(self::DATE_FORMAT, $ts)?></time></p>
+
 		</div>
 		<?php
 		}

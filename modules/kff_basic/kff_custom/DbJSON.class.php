@@ -186,6 +186,26 @@ class DbJSON implements Iterator, Countable
 	}
 
 	/**
+	 * *db - линейный массив
+	 * @param item {array} - ассоциативный
+	 * заменяем на $item элемент с $key === $val
+	 */
+	public function setInd(array $item, $key, $val, $strict=1)
+	{
+		foreach($this->db as &$i){
+			if(
+				$strict && $i[$key] === $val
+				|| !$strict && $i[$key] == $val
+			) {
+				$i= $item;
+				$this->changed= 1;
+			}
+		}
+
+		return $this;
+	}
+
+	/**
 	 * alias $this->set()
 	 * можно передавать массив как аргумент
 	 */
@@ -221,12 +241,16 @@ class DbJSON implements Iterator, Countable
 	 */
 	public function find($key, $val, $strict=1)
 	{
-		if(count($searches= $this->filter($key))) foreach($searches as &$i){
+		// if(count($searches= $this->filter($key))) foreach($searches as &$i){
+		foreach($this->db as &$i){
 			if(
 				$strict && $i[$key] === $val
 				|| !$strict && $i[$key] == $val
 			) return $i;
 		}
+
+		self::$log->add(__METHOD__,\Logger::BACKTRACE,['$this->db'=>$this->db, '$key'=>$key, '$val'=>$val]);
+
 		return;
 	}
 

@@ -144,9 +144,9 @@
 'use strict';
 // *top padding
 $(()=>{
-	document.querySelector('.container.bgcontent').style.paddingTop= getComputedStyle(
+	/* document.querySelector('.container.bgcontent').style.paddingTop= getComputedStyle(
 		$('.bgheader')[0]
-	).height;
+	).height; */
 
 	// *AJAX nav
 	// uk-sticky
@@ -162,8 +162,10 @@ $(()=>{
 		}
 		?>
 
-		var stiky= $sidebar.attr('uk-sticky') + 'offset:' + $sidebar.prop('offsetTop') + ';';
+		// var stiky= $sidebar.attr('uk-sticky') + 'offset:' + $sidebar.prop('offsetTop') + ';';
+		var stiky= $sidebar.attr('uk-sticky') + 'offset:' + parseInt(getComputedStyle($('.bgheader')[0]).height) + ';';
 		console.log('stiky=',stiky);
+		// !
 		$sidebar.attr('uk-sticky', stiky);
 	}
 

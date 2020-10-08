@@ -116,11 +116,11 @@ class BlogKff extends Index_my_addon
 
 		$dbPath= $catPathname ."/$artId.json";
 
-		// $artDB= &self::$artBase[$catId][$artId];
-		// $artDB= $artDB ?? new DbJSON($dbPath);
+		// self::$log->add(__METHOD__,\Logger::BACKTRACE,[/* '$Page->id'=>$Page->id,  */'$catPathname'=>$catPathname, '$artPathname'=>$artPathname]);
 
 		return new DbJSON($dbPath);
 	}
+
 
 	public static function getArtData($artPathname=null)
 	{
@@ -146,21 +146,17 @@ class BlogKff extends Index_my_addon
 
 		$catData= self::getBlogMap()->find('id',$catId);
 
-		/* $artData= end(array_filter($catData['items'], function(&$i) use($artId){
-
-			return $i['id'] === $artId;
-		})); */
-
-		foreach($catData['items'] as $i){
-			if(is_numeric($i['ind']))
-				$i['ind']= [$catData['ind'], $i['ind']];
-			if($i['id'] === $artId){
-				// self::$log->add(__METHOD__,null,['$artData'=>$i]);
-				return $i;
+		foreach($catData['items'] as &$artData){
+			if(is_numeric($artData['ind']))
+				$artData['ind']= [$catData['ind'], $artData['ind']];
+			if($artData['id'] === $artId){
+				// self::$log->add(__METHOD__,null,['$artData'=>$artData]);
+				$artData['catName']= $catData['name'];
+				return $artData;
 			}
 		}
 
-		return $artData;
+		return $catData;
 	}
 
 
@@ -174,6 +170,7 @@ class BlogKff extends Index_my_addon
 
 		// self::$log->add($catFI->getPathname() . "/*" . self::$l_cfg['ext']);
 
+		$catId= $catFI->getFilename();
 		$catDB = new DbJSON($catPathname . "/data.json");
 		$catDB->clear('items');
 		// $catDB->append(['name'=>$catFilename]);
@@ -202,6 +199,10 @@ class BlogKff extends Index_my_addon
 			}
 
 		}
+
+		// *Заносим в $map
+		self::$map->setInd($catDB->get(), 'id', $catId);
+
 		return $catDB;
 	}
 

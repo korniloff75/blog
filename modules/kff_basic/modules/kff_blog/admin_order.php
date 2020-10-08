@@ -26,10 +26,10 @@ foreach(self::$catsDB->get() as $catInd=>$catId) {
 		<h4 class="uk-margin-remove"><?=$catData['name']?> <div class="removeCategory" uk-icon="icon: trash; ratio: 1.5" data-del="<?=$catData['id']?>"></div></h4>
 	</div>
 
-	<div style="display: inline-block;">
+	<div class="uk-display-inline-block uk-width-1-2@s">
 		<input type="hidden" name="catId" value="<?=$catData['id']?>">
 		<input type="hidden" name="catName" value="<?=$catData['name']?>">
-		<input type="text" name="addArticle" placeholder="Название статьи">
+		<input type="text" name="addArticle" class="uk-width-expand" placeholder="Название статьи">
 	</div><button class="addArticle">ADD</button>
 
 	<ul data-id=<?=$catData['id']?> class="listArticles uk-nav uk-nav-default uk-width-auto" uk-sortable="group: cat-items; handle: .uk-sortable-handle; cls-custom: uk-box-shadow-small uk-flex uk-flex-expand uk-background">

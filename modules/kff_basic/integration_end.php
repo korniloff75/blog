@@ -16,7 +16,7 @@ if(class_exists('BlogKff'))
 	}
 } */
 
-$log->add(basename(__FILE__),null,['$URI'=>$URI, /* '$Page'=>$Page */]);
+// $log->add(basename(__FILE__),null,['$URI'=>$URI, '$Page'=>$Page]);
 
 if(!$Page) {
 	$log::$notWrite= 1;
