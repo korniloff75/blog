@@ -96,7 +96,10 @@ class Sitemap extends BlogKff
 				. "</url>\n";
 
 				// *RSS
-				$itemContent = ($this->_addToRss(\DR."/$artPath" . self::$l_cfg['ext']));
+				ob_start();
+				include \DR."/$artPath" . self::$l_cfg['ext'];
+				// $itemContent = ($this->_addToRss(\DR."/$artPath" . self::$l_cfg['ext']));
+				$itemContent = $this->_addToRss(ob_get_clean());
 
 				// echo "<hr>". htmlspecialchars($itemContent);
 				// echo "<h4>\$artData</h4>";
@@ -143,20 +146,24 @@ class Sitemap extends BlogKff
 	/**
 	 * *Добавляем элемент в RSS
 	 */
-	private function _addToRss($artPathname)
+	private function _addToRss($artContent)
 	{
 		$doc = new DOMDocument('1.0','utf-8');
-		@$doc->loadHTMLFile($artPathname);
+		@$doc->loadHTML($artContent);
 
 		$doc->normalizeDocument();
 
 		$xpath= new \DOMXPath($doc);
 
 		// $body= $xpath->query('//body/descendant::*');
-		$scripts= $xpath->query('//script');
 
-		foreach($scripts as $s){
+		foreach($xpath->query('//script') as $s){
 			$s->parentNode->removeChild($s);
+		}
+
+		foreach($xpath->query('//img[@data-src]') as $i){
+			$i->setAttribute('src', $i->getAttribute('data-src'));
+			$i->removeAttribute('data-src');
 		}
 
 		$body= $xpath->query('//body')->item(0);

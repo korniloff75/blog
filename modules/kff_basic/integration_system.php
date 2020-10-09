@@ -72,10 +72,10 @@ class Index_my_addon implements BasicClassInterface
 			AdmPanel::addResponsive();
 		}
 
-		self::$log->add(__METHOD__,null, ['S_REQUEST_URI'=>$_SERVER['REQUEST_URI'], 'REQUEST_URI'=>\REQUEST_URI]);
-		self::$log->add(__METHOD__,null, [__CLASS__.'::$cfg'=>self::$cfg]);
+		self::$log->add(__METHOD__,null, ['REQUEST_URI'=>\REQUEST_URI, __CLASS__.'::$cfg'=>self::$cfg]);
 
 	}
+
 
 	// *Автозагрузка классов
 	private function _autoloader($class) {

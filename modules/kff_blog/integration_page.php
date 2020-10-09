@@ -60,7 +60,7 @@ class BlogKff_page extends BlogKff
 			if($catId) $artHref.= "/$catId";
 			$artHref.= "/$artId";
 
-			$o.="<a href=\"$artHref\"><h3>" . ($artData['title'] ?? $artData['name']) . "</h3></a>";
+			$o.="<a href=\"$artHref\"><h3 class='uk-h3'>" . ($artData['title'] ?? $artData['name']) . "</h3></a>";
 
 			// *Первое изображение
 			if(
@@ -89,7 +89,7 @@ class BlogKff_page extends BlogKff
 					// todo определить: есть ли у элемента нужный класс
 				}
 			}
-			
+
 			// *Первые параграфы
 			if(!empty($fragm->item(0)))
 			{
@@ -158,14 +158,6 @@ class BlogKff_page extends BlogKff
 		// self::$log->add(__METHOD__,null,[$arr]);
 
 		return $arr;
-	}
-
-
-	// *Стартовая страница блога
-	public static function is_indexPage()
-	{
-		global $URI, $Page;
-		return is_object($Page) && $URI[1] === $Page->id && empty($URI[2]);
 	}
 
 
@@ -330,7 +322,11 @@ class BlogKff_page extends BlogKff
 		self::$log->add(__METHOD__,null,['$artData'=>$artData]);
 
 		echo '<h1 id="title" itemprop="headline">' . ($artData['title'] ?? $artData['name']) . '</h1>';
-	?>
+		?>
+
+		<style>
+
+		</style>
 		<meta itemprop="identifier" content="<?=self::getPathFromRoot($this->getArtPathname())?>">
 
 		<script src="/<?=self::$modDir?>/js/blogHelper.js"></script>

@@ -45,11 +45,7 @@ class MailPlain extends PHPMailer
 		$to_emails = null,
 
 		# Common
-
 		$Mailer = 'smtp',
-		$Port = 465,
-		$SMTPAuth = true,
-		$SMTPSecure = "ssl",
 		$CharSet    = 'UTF-8',
 
 		$attach = null,
@@ -87,6 +83,7 @@ class MailPlain extends PHPMailer
 		}
 
 		$this->FromName = $this->validated['name'];
+		$this->From = $this->validated['email'];
 		$this->Subject = $this->validated['subject'];
 		$this->isHTML($this->SMTP['isHTML']);
 
@@ -96,28 +93,6 @@ class MailPlain extends PHPMailer
 		. "\nIP - " . $kff::realIP()
 		. ($_REQUEST['tg'] ? "\nTelegram - {$_REQUEST['tg']}" : "");
 
-		/* if($this->SMTP['isHTML']) {
-			$this->validated['message'] = nl2br($this->validated['message']);
-		}
-
-		$this->Body = $this->validated['message'];
-		$this->AltBody = strip_tags($this->validated['messageNL']);
-
-		if ($this->SMTP['on'])
-		{
-			$this->IsSMTP();
-			$this->Port = 465;
-			$this->SMTPAuth = true;
-			$this->SMTPSecure = "ssl";
-			$this->Mailer = 'smtp';
-			$this->SMTPDebug = $GLOBALS['status'] === 'admin' ? 2 : 0;
-			$this->setFrom($this->Username);
-			// $this->setFrom($this->validated['email'], $this->validated['name']);
-		}
-		else
-		{
-			$this->From = $this->Username;
-		} */
 
 	} // __construct
 
@@ -211,9 +186,9 @@ class MailPlain extends PHPMailer
 	)
 	{
 		global $log;
-		require_once __DIR__."/../tg.class.php";
+		// require_once __DIR__."/../tg.class.php";
 
-		$log->add('token path= ' . realpath(__DIR__.'/../token.json'));
+		$log->add('token= ' . $this->cfg['tg']['token']);
 
 		$tg = new TG(
 			$this->cfg['tg']['token']
@@ -285,7 +260,7 @@ class MailPlain extends PHPMailer
 
 
 	/**
-	 * Готовим данные к отправке
+	 * *Готовим данные к отправке
 	 */
 	protected function _prepToSend()
 	{
@@ -306,27 +281,29 @@ class MailPlain extends PHPMailer
 			}
 
 			$this->IsSMTP();
-			// $this->Mailer = 'smtp';
+			$this->Port = 465;
+			$this->SMTPAuth = true;
+			$this->SMTPSecure = "ssl";
+
 			$this->SMTPDebug = $GLOBALS['status'] === 'admin' ? 2 : 0;
 			$this->setFrom($this->Username);
 			// $this->setFrom($this->validated['email'], $this->validated['name']);
 		}
 		else
 		{
-			$this->From = $this->Username;
+			$this->IsMail();
 		}
 
 		// *Проверка данных для Telegram
 		$is_TG = (
 			// ($this->cfg['tg']['token'] = $this->cfg['tg']['token'] ?? file_get_contents(__DIR__.'/../token.json'))
-			($this->cfg['tg']['token'] = $this->cfg['tg']['token'] ?? (new DbJSON(__DIR__.'/../token.json'))->get('tg'))
-			&& ($this->cfg['tg']['chat_id']= $this->cfg['tg']['chat_id'])
+			!empty($this->cfg['tg']['token'])
+			&& !empty($this->cfg['tg']['chat_id'])
 		);
 
 		$this->cfg['tg']['on'] = $is_TG;
 
-		$this->log->add('$is_SMTP= ',null,[$is_SMTP]);
-		$this->log->add('$is_TG= ',null,[$is_TG]);
+		$this->log->add(__METHOD__,null,['$is_SMTP'=>$is_SMTP, '$is_TG'=>$is_TG, '$this->cfg'=>$this->cfg]);
 	}
 
 
@@ -397,10 +374,12 @@ class MailPlain extends PHPMailer
 					// return $e->xdebug_message;
 				}
 		} catch (Exception $e) {
+		// } catch (phpmailerException $e) {
 			// var_dump($e);
+			$this->log->add(__METHOD__,null,['$this->cfg'=>$this->cfg, '$e'=>$e]);
 			return false;
 		}
-	}
+	} // TrySend
 } // MailPlain
 
 

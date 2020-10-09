@@ -35,6 +35,21 @@
 	color: #333;
 }
 
+/* #тэги */
+.tags>span {
+	display: inline-block;
+	box-sizing: border-box;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	border-radius: 3px;
+	background-color: #f2f2f2;
+	color: #333;
+	border: none;
+}
+.tags>span:hover {
+	background-color: #ffe8d0;
+}
+
 @media (max-width: 450px) {
 	div.content {
 		padding: 5px;

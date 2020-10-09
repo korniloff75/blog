@@ -259,6 +259,14 @@ class BlogKff extends Index_my_addon
 	}
 
 
+	// *Стартовая страница kff_blog
+	public static function is_indexPage()
+	{
+		global $URI, $Page;
+		return is_object($Page) && $Page->module === 'kff_blog' && $URI[1] === $Page->id && empty($URI[2]);
+	}
+
+
 	/**
 	 * *Создаём карту блога
 	 * @return Array with objects DbJSON

@@ -76,7 +76,9 @@ U.ready(()=>{
 		// console.log($t.prop('checked'));
 		if(!$t.length) return;
 
-		var val= $t.val() === 'on' ? $t.prop('checked') : $t.val();
+		$t.is_checkbox= ($t.val() === 'on');
+
+		var val= $t.is_checkbox ? $t.prop('checked') : $t.val();
 
 		var $include_uikit = $('#include_uikit'),
 			send_data = {
@@ -113,8 +115,18 @@ U.ready(()=>{
 
 		}
 
-		saveSTS(send_data);
+		UIkit.modal.confirm('Подтверждаете действие?')
+		.then(
+			()=>{saveSTS(send_data)},
+			fail=>{
+				$e.preventDefault();
+				$e.stopPropagation();
+				if($t.is_checkbox) $t.prop('checked', !$t.prop('checked'));
+			}
+		);
+
 	});
+
 
 	function saveSTS (send_data) {
 		$.post('', send_data)

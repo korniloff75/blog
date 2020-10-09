@@ -1,7 +1,14 @@
 <!-- <link rel="stylesheet" type="text/css" href="/<?=$kff::getPathFromRoot(__DIR__) ?>/fb_form.css" /> -->
 
 <style>
-	.form-container div {
+.content main {
+	padding: 1em !important;
+}
+.content main .contact{
+	padding: 0;
+}
+
+.form-container div {
 	display: flex;
 	flex-wrap: wrap;
 	flex-basis: 100%;
@@ -136,5 +143,3 @@
 	// console.log(formData);
 })()
 </script>
-
-

@@ -21,9 +21,14 @@ CKEDITOR.editorConfig = function (config) {
 	// config.baseFloatZIndex = 10005;
 
 	// *Allow use tags & scripts
-	config.allowedContent = true;
 	config.protectedSource.push(/<(script)[^>]*>.*<\/\1>/ig);
 	config.protectedSource.push(/<\?[\s\S]*?\?>/g);// разрешить php-код
+	config.allowedContent = true;
+
+	// *Не кодировать спецсимволы в decimal
+	config.entities = false;
+	// *Сохранять переводы строк
+	config.protectedSource.push( /\n/g );
 
 	config.toolbarGroups = [
 		{ name: 'clipboard', groups: ['clipboard'] },
@@ -73,7 +78,7 @@ CKEDITOR.editorConfig = function (config) {
 };
 
 // *Пытаюсь добавить свою кнопку
-CKEDITOR.plugins.add('insertvar',
+/* CKEDITOR.plugins.add('insertvar',
 	{
 		init(editor) {
 			const style = new CKEDITOR.style({ element: 'var' });
@@ -91,4 +96,4 @@ CKEDITOR.plugins.add('insertvar',
 				toolbar: 'insert,99'
 			});
 		}
-	});
+	}); */

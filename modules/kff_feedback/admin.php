@@ -28,60 +28,78 @@ $emails = &$cfg['emails'];
 
 $fromallform = &$cfg['fromallform'];
 
-$tokenDB= new DbJSON(__DIR__.'/../token.json');
+$tokenPathname= $internalDir.'/token.json';
+
+$tokenDB= new DbJSON($tokenPathname);
 $tg_token = $tokenDB->get('tg');
 
 $checked = $fromallform?' checked':'';
 if($emails == false){ $emails = '';}
 
+// *Render
 if($act=='index'){
 	?>
 
-	<div class="header"><h1>Настройки обратной связи</h1></div>
-	<div class="menu_page"><a href="index.php">&#8592; Вернуться назад</a></div>
-	<div class="content">
-	<form name="forma" action="module.php?module=<?=$MODULE?>" method="post">
-	<INPUT TYPE="hidden" NAME="act" VALUE="add">
-	<table class="tblform">
-	<tr>
-		<td>Email адрес получателя писем:</td>
-		<td><input type="text" name="new_cfg_emal_admin" value="<?=$emails?>" size="50"><br><span class="comment">Можно указать несколько адресов через запятую.</span></td>
-	</tr>
-	<tr>
-		<td>Username:<br><span class="comment">Этот адрес будет использован как Username при SMTP авторизации, а также указан в строке отправителя письма.</span></td>
-		<td class="middle"><input type="text" name="smtp_username" value="<?=@$cfg['smtp']['username']?>"></td>
-	</tr>
-	<tr>
-		<td><h3>SMTP</h3>
-		<span class="comment">Данные SMTP-сервера</span></td>
-	</tr>
-	<tr>
-		<td>Host:</td>
-		<td class="middle"><input type="text" name="smtp_host" value="<?=@$cfg['smtp']['host']?>"></td>
-	</tr>
-	<tr>
-		<td>Password:</td>
-		<td class="middle"><input type="text" name="smtp_password" value="<?=@$cfg['smtp']['password']?>"></td>
-	</tr>
-	<tr>
-		<td><h3>Telegram</h3>
-		<span class="comment">Настройки для получения копий писем в ТГ-бота</span></td>
-	</tr>
-	<tr>
-		<td>Token:<br><span class="comment">Индивидуальный токен бота.<br>Как создать нового бота через <i>@botfather</i> и получить его токен есть куча  <a href="https://yandex.ru/search/?clid=2186621&text=%D0%BA%D0%B0%D0%BA%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%82%D1%8C%20%D0%B1%D0%BE%D1%82%20%D1%87%D0%B5%D1%80%D0%B5%D0%B7%20botfather&lr=146&redircnt=1596791584.1" target="_blank" rel="nofollow">информации в инете</a>. </span></td>
-		<td class="middle"><input type="text" name="tg_token" value="<?=@$tg_token?>"></td>
-	</tr>
-	<tr>
-		<td>ID пользователя, группы или канала:<br><span class="comment"> <a href="https://yandex.ru/search/?text=%D1%83%D0%B7%D0%BD%D0%B0%D1%82%D1%8C%20id%20%D0%BA%D0%B0%D0%BD%D0%B0%D0%BB%D0%B0%20telegram&lr=146&clid=2186621&src=suggest_B" target="_blank" rel="nofollow">ID канала</a>. </span></td>
-		<td class="middle"><input type="text" name="tg_chat_id" value="<?=@$cfg['tg']['chat_id']?>"></td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td><input type="submit" name="" value="Сохранить"></td>
-	</tr>
-	</table>
-	</form>
+	<div class="header">
+		<h1>Настройки обратной связи</h1>
 	</div>
+	<div class="menu_page">
+		<a href="index.php">&#8592; Вернуться назад</a>
+	</div>
+
+	<div class="content"><form name="forma" action="module.php?module=<?=$MODULE?>" method="post">
+	<INPUT TYPE="hidden" NAME="act" VALUE="add">
+
+	<div>
+		<div class="uk-display-inline-block uk-width-1-3@s">
+			Email адрес получателя писем:<br><span class="comment">Можно указать несколько адресов через запятую.</span>
+		</div>
+		<input type="text" name="new_cfg_emal_admin" class="uk-width-expand" value="<?=$emails?>" size="50">
+	</div>
+	<div>
+		<div class="uk-display-inline-block uk-width-1-3@s">
+			Username:<br><span class="comment">Этот адрес будет использован как Username при SMTP авторизации, а также указан в строке отправителя письма.</span>
+		</div>
+		<input type="text" name="smtp_username" class="uk-width-expand" value="<?=@$cfg['smtp']['username']?>">
+	</div>
+
+	<h3>SMTP</h3>
+	<p class="comment">Данные SMTP-сервера</p>
+
+	<div>
+		<div class="uk-display-inline-block uk-width-1-3@s">
+			Host:
+		</div>
+		<input type="text" name="smtp_host" class="uk-width-expand" value="<?=@$cfg['smtp']['host']?>">
+	</div>
+	<div>
+		<div class="uk-display-inline-block uk-width-1-3@s">
+			Password:
+		</div>
+		<input type="text" name="smtp_password" class="uk-width-expand" value="<?=@$cfg['smtp']['password']?>">
+	</div>
+
+	<h3>Telegram</h3>
+	<p class="comment">Настройки для получения копий писем в ТГ-бота</p>
+
+	<div>
+		<div class="uk-display-inline-block uk-width-1-3@s">
+			Token:<br><span class="comment">Индивидуальный токен бота.<br>Как создать нового бота через <i>@botfather</i> и получить его токен есть куча  <a href="https://yandex.ru/search/?clid=2186621&text=%D0%BA%D0%B0%D0%BA%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%82%D1%8C%20%D0%B1%D0%BE%D1%82%20%D1%87%D0%B5%D1%80%D0%B5%D0%B7%20botfather&lr=146&redircnt=1596791584.1" target="_blank" rel="nofollow">информации в инете</a>. </span>
+		</div>
+		<input type="text" name="tg_token" class="uk-width-expand" value="<?=@$tg_token?>">
+	</div>
+	<div>
+		<div class="uk-display-inline-block uk-width-1-3@s">
+			ID пользователя, группы или канала:<br><span class="comment"> <a href="https://yandex.ru/search/?text=%D1%83%D0%B7%D0%BD%D0%B0%D1%82%D1%8C%20id%20%D0%BA%D0%B0%D0%BD%D0%B0%D0%BB%D0%B0%20telegram&lr=146&clid=2186621&src=suggest_B" target="_blank" rel="nofollow">ID канала</a>. </span>
+		</div>
+		<input type="text" name="tg_chat_id" class="uk-width-expand" value="<?=@$cfg['tg']['chat_id']?>">
+	</div>
+
+	<div>
+		<input type="submit" name="" value="Сохранить">
+	</div>
+
+	</form></div><!-- .content -->
 
 	<?php
 }
@@ -97,12 +115,16 @@ if($act=='add')
 	$cfg['smtp']['password']= $_POST['smtp_password'];
 
 	$cfg['tg']['chat_id']= $_POST['tg_chat_id'];
+	$cfg['tg']['token']= filter_var($_POST['tg_token']);
 
 	// *Save new token
 	if(isset($_POST['tg_token']) && $_POST['tg_token'] !== $tg_token)
 	{
-		file_put_contents($internalDir.'/token', $_POST['tg_token']);
-		$tokenDB->set(['tg'=> filter_var($_POST['tg_token'])]);
+		if(file_exists($tokenPathname)){
+			copy($tokenPathname, "$tokenPathname.bak");
+		}
+		$tokenDB->set(['tg'=> $cfg['tg']['token']]);
+		// $tokenDB->set(['tg'=> ['token'=>$cfg['tg']['token']]]);
 	}
 
 	$mailToAdminStorage->set($cfg );

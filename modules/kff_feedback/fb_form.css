@@ -1,3 +1,10 @@
+.content main {
+	padding: 1em;
+}
+.content main .contact{
+	padding: 0;
+}
+
 .form-container div {
 	display: flex;
 	flex-wrap: wrap;
@@ -39,6 +46,10 @@
 	text-transform:uppercase;
 	font-size:10px;
 	font-family:Tahoma,Arial,Sans-serif;
+}
+
+textarea#message{
+	height: 10em;
 }
 
 #response {

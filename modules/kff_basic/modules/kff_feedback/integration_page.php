@@ -1,11 +1,8 @@
 <?php
-
 // $log->add('$Page',null,[$Page]);
 
 ob_start();
 ?>
-
-<!-- <script src="<?=$kff::$dir?>/js/kff.js"></script> -->
 
 <link rel="stylesheet" type="text/css" href="/<?=$kff::getPathFromRoot(__DIR__) ?>/fb_form.css" />
 
@@ -16,20 +13,6 @@ ob_start();
 		<form id="feedback-form" name="feedback-form" method="post" action="/?module=php/modules/PHPMailer/handler.php">
 			<input type="hidden" name="captcha" id="captcha"  value="<?=$kff::realIP()?>" />
 			<input type="hidden" name="MAX_FILE_SIZE" value="500000" />
-			<div>
-				<label for="name">Имя</label>
-				<input type="text" name="name" id="name"  required />
-			</div>
-
-			<div>
-				<label for="email">Email</label>
-				<input type="text" name="email" id="email" required />
-			</div>
-
-			<div>
-				<label for="tg">Telegram</label>
-				<input type="text" name="tg" id="tg" placeholder="@NickName или https://t.me/yourLogin" />
-			</div>
 
 			<div>
 				<label for="subject">Тема</label>
@@ -45,6 +28,21 @@ ob_start();
 			<div>
 				<label for="message">Сообщение</label>
 				<textarea name="message" id="message" cols="35" rows="5" required></textarea>
+			</div>
+
+			<div>
+				<label for="name">Имя</label>
+				<input type="text" name="name" id="name"  required />
+			</div>
+
+			<div>
+				<label for="email">Email</label>
+				<input type="text" name="email" id="email" required />
+			</div>
+
+			<div>
+				<label for="tg">Telegram</label>
+				<input type="text" name="tg" id="tg" placeholder="@NickName или https://t.me/yourLogin" />
 			</div>
 
 			<div>
@@ -66,6 +64,49 @@ ob_start();
 
 	</div>
 
+	<p>Для более быстрой связи желательно указывать свой Телеграм.</p>
+
+</div>
+
+
+<style type="text/css">
+/* .content main {
+	padding: 1em;
+}
+.content main .contact{
+	padding: 0;
+} */
+</style>
+
+<div class="contact"><!-- Карта -->
+<div class="map" id="my_map" style="min-height:300px;"><script>
+		'use strict';
+
+		kff.checkLib('ymaps', 'https://api-maps.yandex.ru/2.1/?lang=ru_RU')
+		.then(ymaps=>{ ymaps.ready(()=>{
+			console.log('ymaps.Map = ', ymaps.Map, ymaps.ready, ymaps);
+
+			var myMap = new ymaps.Map('my_map', {
+				// center: [ 45.47574, 34.21895 ],
+				center: [ 45.47574, 34.21895 ],
+				zoom: 8,
+				controls: [],
+			}, {
+				// Optional
+				// Задаем поиск по карте
+				searchControlProvider: 'yandex#search'
+			});
+		})});
+
+		</script></div>
+
+	<div class="addres" id="addres">
+		<?='<h3>Регионы деятельности</h3>
+		<p>Республика Крым.</p>
+		<h3>написать через TELEGRAM</h3>
+			<p>Даже если ваша учётная запись заблокирована за СПАМ, вы сможете написать мне через этого бота - <a target="_blank" href="https://t.me/js_master_bot">@js_master_bot</a></p>
+		';?>
+	</div>
 </div>
 
 
@@ -123,41 +164,6 @@ kff.checkLib('jQuery')
 })
 </script>
 
-<!--  -->
 
-<!-- <div class="contact">
-
-	<div id="my_map" class="map" style="min-height:300px;">
-
-		<script>
-		'use strict';
-
-		kff.checkLib('ymaps', 'https://api-maps.yandex.ru/2.1/?lang=ru_RU')
-		.then(ymaps=>{ ymaps.ready(()=>{
-			console.log('ymaps.Map = ', ymaps.Map, ymaps.ready, ymaps);
-
-			var myMap = new ymaps.Map('my_map', {
-				center: [ 45.47574, 34.21895 ],
-				zoom: 8,
-				controls: [],
-			}, {
-				// Optional
-				// Задаем поиск по карте
-				searchControlProvider: 'yandex#search'
-			});
-		})});
-
-		</script>
-
-	</div>
-
-	<div class="addres" id="addres"><?='
-		<h3>Регионы деятельности</h3>
-		<p>Республика Крым.</p>
-		<h3>написать через TELEGRAM</h3>
-		<p>Даже если ваша учётная запись заблокирована за СПАМ, вы сможете написать мне через этого бота - <a target="_blank" href="https://t.me/js_master_bot">@js_master_bot</a></p>
-	';?>
-	</div>
-</div> -->
 <?php
 return ob_get_clean();
