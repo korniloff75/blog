@@ -157,7 +157,6 @@ class BlogKff_adm extends BlogKff
 		$catDB = new DbJSON("$catPath/data.json");
 		$catDB->set($data);
 
-
 		// *Переписываем список категорий
 		if(!in_array($catId, self::$catsDB->get()))
 			self::$catsDB->append([$catId]);

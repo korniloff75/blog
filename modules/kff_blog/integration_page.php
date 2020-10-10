@@ -167,7 +167,7 @@ class BlogKff_page extends BlogKff
 	protected function c_saveEdit($html)
 
 	{
-		$artPathname= $this->getArtPathname();
+		$artPathname= self::getArtPathname();
 		self::$log->add(__METHOD__,null,['$artPathname'=>$artPathname]);
 
 		if(
@@ -203,6 +203,7 @@ class BlogKff_page extends BlogKff
 		// self::$map->set()
 
 		$html= htmlspecialchars_decode(str_replace(['#+#','#-#'], ['<?','?>'], $html));
+		$html= preg_replace(['~^[\s\n'.PHP_EOL.']+?~','~\n{2,}~'], ['',"\n\n"], $html);
 
 		file_put_contents(self::$storagePath . "/{$this->opts['cat']}/{$this->opts['art']}" . self::$l_cfg['ext'], $html);
 
@@ -216,7 +217,7 @@ class BlogKff_page extends BlogKff
 		]];
 		$map->set($newData);
 
-		self::$log->add(__METHOD__,null,['$ind'=>$ind,'$artDB'=>$artDB,]);
+		self::$log->add(__METHOD__,null,['$ind'=>$ind,'$artDB'=>$artDB, "\$map->get({$ind[0]})"=>$map->get($ind[0])]);
 	}
 
 
@@ -227,18 +228,13 @@ class BlogKff_page extends BlogKff
 	private function _printArticle($edit=null)
 	{
 		global $URI, $Page;
-		// *вырубаем в админке
+
 		if(	!is_object($Page)	) {
+			self::$log->add(__METHOD__.': Отключаем в админке', null,['$Page'=>$Page]);
 			return;
 		}
 
-		// *На стартовой - новостная лента
-		if(self::is_indexPage()) {
-			echo $this->newsTape(self::$l_cfg['newsTapeLength']);
-			return;
-		}
-
-		$path = $this->getArtPathname();
+		$path = self::getArtPathname();
 
 		self::$log->add(__METHOD__,null,['$path'=>$path,'file_exists($path)'=> file_exists($path), '$URI'=>$URI]);
 
@@ -247,15 +243,15 @@ class BlogKff_page extends BlogKff
 		$article= file_get_contents($path);
 
 		// *Вытаскиваем #тэги
-		preg_match_all('~[\s\W](#\D.+?\b)~u', $article, $tags);
+		preg_match_all('~[\s\W](#\D.+?\b)~u', $article, $tag);
 
-		self::$log->add(__METHOD__,null,['$tags'=>$tags]);
+		self::$log->add(__METHOD__,null,['$tag'=>$tag]);
 
-		if(!empty($tags)){
+		if(!empty($tag)){
 
 		}
 
-		$this->artData['tag']= array_unique(array_merge($tags[1], explode(',', $this->artData['tag'])));
+		$this->artData['tag']= array_unique(array_merge($tag[1], explode(',', $this->artData['tag'])));
 
 		if($edit){
 			// echo htmlentities($article);
@@ -266,17 +262,19 @@ class BlogKff_page extends BlogKff
 		}
 
 
-		echo '<div class="tags" itemprop="about" itemscope itemtype="https://schema.org/Thing">';
+		if(!empty($this->artData['tag'])){
+			echo '<div class="tags uk-margin" itemprop="about" itemscope itemtype="https://schema.org/Thing">';
 
-		if(!empty($this->artData['tag'])) foreach($this->artData['tag'] as $tag){
-			if(!trim($tag)) continue;
-			if(substr($tag,0,1)!=='#') $tag= "#$tag";
-		?>
-			<span itemprop="name" class="uk-button uk-button-small"><?=$tag?></span>
+			foreach($this->artData['tag'] as $tag){
+				if(!trim($tag)) continue;
+				if(substr($tag,0,1)!=='#') $tag= "#$tag";
+			?>
+				<span itemprop="name" class="uk-button uk-button-small"><?=$tag?></span>
 
-		<?php
+			<?php
+			}
+			echo '<!--about--></div>';
 		}
-		echo '<!--about--></div>';
 	}
 
 
@@ -317,7 +315,7 @@ class BlogKff_page extends BlogKff
 		$edit= isset($_GET['edit']);
 
 		$artData= &$this->artData;
-		$artData= self::getArtData($this->getArtPathname());
+		$artData= self::getArtData(self::getArtPathname());
 
 		self::$log->add(__METHOD__,null,['$artData'=>$artData]);
 
@@ -327,7 +325,7 @@ class BlogKff_page extends BlogKff
 		<style>
 
 		</style>
-		<meta itemprop="identifier" content="<?=self::getPathFromRoot($this->getArtPathname())?>">
+		<meta itemprop="identifier" content="<?=self::getPathFromRoot(self::getArtPathname())?>">
 
 		<script src="/<?=self::$modDir?>/js/blogHelper.js"></script>
 
@@ -364,8 +362,17 @@ class BlogKff_page extends BlogKff
 		<div id='editor1' class="blog_content" <?=$edit?'contenteditable=true':''?> itemprop="articleBody">
 
 		<?php
+		// *На стартовой - новостная лента
+		if(self::is_indexPage()) {
+			echo $this->newsTape(self::$l_cfg['newsTapeLength']);
+		}
+		else{
 			$this->_printArticle($edit);
-			$ts= file_exists($this->getArtPathname())? filemtime($this->getArtPathname()): null;
+		}
+
+		$ts= file_exists(self::getArtPathname())?
+			filemtime(self::getArtPathname())
+			: null;
 		?>
 		</div><!-- .blog_content -->
 
@@ -412,21 +419,25 @@ class BlogKff_page extends BlogKff
 		// var_dump(self::is_indexPage());
 
 		if(!self::is_indexPage()){
+			$this->renderDateBlock($artData);
+		}
+	}
+
+	function renderDateBlock(array $artData)
+	{
+		echo '<div class="dateBlock uk-margin">';
+
+		if(!empty($artData['author'])){
 		?>
-		<div>
 
-			<?php
-			if(!empty($artData['author'])){
-			?>
-			<p>Автор: <em itemprop="author"><?=$artData['author']?></em></p>
-			<?php } ?>
+		<p>Автор: <em itemprop="author"><?=$artData['author']?></em></p>
+		<?php } ?>
 
-			<p>Дата публикации / редактирования: <time itemprop="dateModified" data-ts="<?=$ts?>"
-			datetime="<?=date(DATE_ISO8601, $ts)?>"><?=date(self::DATE_FORMAT, $ts)?></time></p>
+		<p>Дата публикации / редактирования: <time itemprop="dateModified" data-ts="<?=$ts?>"
+		datetime="<?=date(DATE_ISO8601, $ts)?>"><?=date(self::DATE_FORMAT, $ts)?></time></p>
 
 		</div>
 		<?php
-		}
 	}
 
 	function __destruct()

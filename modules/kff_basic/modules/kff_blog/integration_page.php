@@ -60,7 +60,7 @@ class BlogKff_page extends BlogKff
 			if($catId) $artHref.= "/$catId";
 			$artHref.= "/$artId";
 
-			$o.="<a href=\"$artHref\"><h3>" . ($artData['title'] ?? $artData['name']) . "</h3></a>";
+			$o.="<a href=\"$artHref\"><h3 class='uk-h3'>" . ($artData['title'] ?? $artData['name']) . "</h3></a>";
 
 			// *Первое изображение
 			if(
@@ -325,7 +325,7 @@ class BlogKff_page extends BlogKff
 		?>
 
 		<style>
-		
+
 		</style>
 		<meta itemprop="identifier" content="<?=self::getPathFromRoot($this->getArtPathname())?>">
 

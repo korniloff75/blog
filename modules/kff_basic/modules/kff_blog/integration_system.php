@@ -6,7 +6,8 @@ class BlogKff extends Index_my_addon
 		// *default
 		$def_cfg = [
 			'name'=> 'Блог',
-			'ext'=>'.dat'
+			'ext'=>'.dat',
+			'newsTapeLength'=>10,
 		],
 		$blogDB,
 		// *Локальный конфиг
@@ -222,14 +223,6 @@ class BlogKff extends Index_my_addon
 		}
 
 		return $catDB;
-
-		$db= &self::$artBase[$catId]['self'];
-
-		if(empty($db)){
-			$db= new DbJSON(self::$storagePath . "/$catId/data.json");
-		}
-
-		return $db;
 	}
 
 

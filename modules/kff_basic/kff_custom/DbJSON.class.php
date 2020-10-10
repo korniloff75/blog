@@ -186,13 +186,38 @@ class DbJSON implements Iterator, Countable
 	}
 
 	/**
-	 * *db - линейный массив
-	 * @param item {array} - ассоциативный
-	 * заменяем на $item элемент с $key === $val
+	 * *db - линейный массив с ассоциативными
+	 * [{},{},...]
+	 * @param key - ключ для поиска
+	 * @param val - искомое значение key
+	 * @return индекс ассоциативного массива
+	 */
+	public function getInd($key, $val, $strict=1)
+	{
+		foreach($this->db as $ind=>&$i){
+			if(
+				$strict && $i[$key] === $val
+				|| !$strict && $i[$key] == $val
+			) {
+				return $i['ind']= $ind;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * *db - [{},{},...]
+	 * *Замена элемента $this->db с индексом $this->getInd(@key, @val)
+	 * @param item {array} - ассоциативный массив
 	 */
 	public function setInd(array $item, $key, $val, $strict=1)
 	{
-		foreach($this->db as &$i){
+		$ind= $this->getInd($key,$val,$strict);
+
+		$this->db[$ind]= $item;
+
+		/* foreach($this->db as &$i){
 			if(
 				$strict && $i[$key] === $val
 				|| !$strict && $i[$key] == $val
@@ -200,14 +225,29 @@ class DbJSON implements Iterator, Countable
 				$i= $item;
 				$this->changed= 1;
 			}
-		}
+		} */
 
 		return $this;
 	}
 
 	/**
-	 * alias $this->set()
-	 * можно передавать массив как аргумент
+	 * *db - [{},{},...]
+	 * *Поиск в базе по значению ключа
+	 */
+	public function find($key, $val, $strict=1)
+	{
+		$ind= $this->getInd($key,$val,$strict);
+
+		if(empty($this->db[$ind])){
+			self::$log->add(__METHOD__,\Logger::BACKTRACE,['$this->db'=>$this->db, '$key'=>$key, '$val'=>$val]);
+			return null;
+		}
+		else return $this->db[$ind];
+	}
+
+
+	/**
+	 * alias $this->set() без перезаписи
 	 */
 	public function append(array $data)
 	{
@@ -226,33 +266,15 @@ class DbJSON implements Iterator, Countable
 		return $this;
 	}
 
-	public function filter($key)
+	// ?
+	/* public function filter($key)
 	{
 		return array_filter($this->db, function(&$i) use($key){
 			if(!is_array($i)) return;
 			return isset($i[$key]);
 		});
-	}
+	} */
 
-
-	/**
-	 * *Поиск в базе 2-мерного массива по значению ключа
-	 *
-	 */
-	public function find($key, $val, $strict=1)
-	{
-		// if(count($searches= $this->filter($key))) foreach($searches as &$i){
-		foreach($this->db as &$i){
-			if(
-				$strict && $i[$key] === $val
-				|| !$strict && $i[$key] == $val
-			) return $i;
-		}
-
-		self::$log->add(__METHOD__,\Logger::BACKTRACE,['$this->db'=>$this->db, '$key'=>$key, '$val'=>$val]);
-
-		return;
-	}
 
 	/**
 	 * Меняем местами элементы

@@ -1,4 +1,3 @@
-<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
 <!-- <script src="/modules/ckeditor_plus/ckeditor/ckeditor.js"></script> -->
 <!-- <script src="https://cdn.ckeditor.com/4.7.3/standard/ckeditor.js"></script> -->
 <script src="/modules/ckeditor_4.5.8_standard/ckeditor/ckeditor.js"></script>
@@ -38,14 +37,6 @@
 
 <script>
 'use strict';
-// kff.checkLib('jQuery')
-// .then($=>{
-// $('.bar').attr('uk-offcanvas',"overlay: true");
-/* $('#bar').addClass('uk-offcanvas-bar')
-.wrap('<div id="navbar" uk-offcanvas="overlay: true"/>');
-
-$('.topbar').append($('a.exit'),'<button class="uk-offcanvas-close" uk-toggle="target: #navbar">Menu</button>'); */
-
 var U= window.U || UIkit.util;
 // console.log('U=',U);
 
@@ -106,7 +97,8 @@ U.ready(()=>{
 		if($installAll.prop('checked')) {
 			send_data.val= {installAll:1};
 			// $installAll.closest('ul').find('input[type=checkbox]').prop({checked:1});
-			$installAll.closest('ul').find('input[type=checkbox]').each((ind,i)=>{
+			$installAll.closest('ul').find('input[type=checkbox]')
+			.each((ind,i)=>{
 				if(i === $installAll[0]) return;
 
 				i.checked = 1;
@@ -117,7 +109,7 @@ U.ready(()=>{
 
 		UIkit.modal.confirm('Подтверждаете действие?')
 		.then(
-			()=>{saveSTS(send_data)},
+			success=>{saveSTS(send_data)},
 			fail=>{
 				$e.preventDefault();
 				$e.stopPropagation();

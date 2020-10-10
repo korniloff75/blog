@@ -286,7 +286,7 @@ class MailPlain extends PHPMailer
 			$this->SMTPSecure = "ssl";
 
 			$this->SMTPDebug = $GLOBALS['status'] === 'admin' ? 2 : 0;
-			$this->setFrom($this->Username);
+			$this->setFrom($this->Username, 'Адрес для SMTP');
 			// $this->setFrom($this->validated['email'], $this->validated['name']);
 		}
 		else

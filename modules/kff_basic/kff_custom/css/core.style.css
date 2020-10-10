@@ -55,4 +55,9 @@
 		padding: 5px;
 		margin: 0;
 	}
+	/* Убираем */
+	img[data-src][src*='data:image']{
+		width:0;
+		height:0;
+	}
 }
