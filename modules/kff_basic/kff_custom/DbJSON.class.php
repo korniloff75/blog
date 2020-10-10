@@ -118,8 +118,11 @@ class DbJSON implements Iterator, Countable
 	 */
 	public function clear($id=null)
 	{
-		if(!empty($id))
+		if(!empty($id)){
 			unset($this->db[$id]);
+			// *Удаляем null
+			$this->db= array_filter($this->db);
+		}
 		else $this->db = [];
 		$this->changed= 1;
 		return $this;
@@ -136,7 +139,8 @@ class DbJSON implements Iterator, Countable
 	 */
 	public function get($id=null)
 	{
-		$db = array_diff_key($this->db, ['change'=>1]);
+		// $db = array_diff_key($this->db, ['change'=>1]);
+		$db = &$this->db;
 		return empty($id)?
 			$db : (
 				$db[$id] ?? null
@@ -216,16 +220,6 @@ class DbJSON implements Iterator, Countable
 		$ind= $this->getInd($key,$val,$strict);
 
 		$this->db[$ind]= $item;
-
-		/* foreach($this->db as &$i){
-			if(
-				$strict && $i[$key] === $val
-				|| !$strict && $i[$key] == $val
-			) {
-				$i= $item;
-				$this->changed= 1;
-			}
-		} */
 
 		return $this;
 	}

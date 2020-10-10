@@ -3,37 +3,28 @@
 $buf = ob_get_contents();
 ob_clean();
 
-// *Собираем сюда все финишные замены
-$Templater = [];
-
-/* // *Подкладываем данные из Блога
-if(class_exists('BlogKff'))
-{
-	// $artDB= $Blog->getArtDB()->get();
-	foreach(['title','description','keywords'] as $prop){
-		// $Page->{$prop}= $artDB[$prop];
-		$Page->{$prop}= BlogKff::getArtDB()->get($prop);
-	}
-} */
-
-// $log->add(basename(__FILE__),null,['$URI'=>$URI, '$Page'=>$Page]);
-
 if(!$Page) {
 	$log::$notWrite= 1;
+	header(PROTOCOL.' 404 Not Found'); require('./pages/404.html');
 	die('404');
 }
+
+
+// *Templater
+// *Собираем сюда все финишные замены
+$Templater = [];
 
 // *{{coreHead}}
 ob_start();
 ?>
 
 	<meta charset="utf-8">
-	<?=$Page->get_headhtml()?>
+	<?php $Page->get_headhtml()?>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<title>{{Title}}</title>
-	<meta name="description" content="<?=$Page->get_description()?>">
-	<meta name="keywords" content="<?=$Page->get_keywords()?>">
+	<meta name="description" content="<?php $Page->get_description()?>">
+	<meta name="keywords" content="<?php $Page->get_keywords()?>">
 
 <?php
 $Templater['coreHead']= ob_get_clean();
@@ -107,4 +98,4 @@ $log->add("Уровень буфера= ". ob_get_level() . ' -> flush to index'
 
 
 echo $buf;
-// *-> to flush in index
+// *-> to flush in index.php

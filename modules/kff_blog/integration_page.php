@@ -178,7 +178,7 @@ class BlogKff_page extends BlogKff
 
 		// $mapDB= self::getBlogMap();
 		$artDB= self::getArtDB($artPathname);
-		$artData= self::getArtData($artPathname);
+		// $artData= self::getArtData($artPathname);
 
 		self::$log->add(__METHOD__,null,['$this->opts'=>$this->opts]);
 
@@ -209,8 +209,9 @@ class BlogKff_page extends BlogKff
 
 		// *Обновляем карту
 		// self::_createBlogMap(1);
+		// !ind === null
 		$map= self::getBlogMap();
-		$ind= $artData['ind'];
+		$ind= $artDB->get('ind');
 
 		$newData= [$ind[0]=>[
 			'items'=>[$ind[1]=>$artDB->get()]
@@ -243,15 +244,11 @@ class BlogKff_page extends BlogKff
 		$article= file_get_contents($path);
 
 		// *Вытаскиваем #тэги
-		preg_match_all('~[\s\W](#\D.+?\b)~u', $article, $tag);
+		preg_match_all('~[\s\W](#\D.+?\b)~u', $article, $matchTags);
 
-		self::$log->add(__METHOD__,null,['$tag'=>$tag]);
+		// self::$log->add(__METHOD__,null,['$tag'=>$matchTags]);
 
-		if(!empty($tag)){
-
-		}
-
-		$this->artData['tag']= array_unique(array_merge($tag[1], explode(',', $this->artData['tag'])));
+		$this->artData['tag']= array_unique(array_merge($matchTags[1], explode(',', $this->artData['tag'])));
 
 		if($edit){
 			// echo htmlentities($article);
@@ -319,12 +316,15 @@ class BlogKff_page extends BlogKff
 
 		self::$log->add(__METHOD__,null,['$artData'=>$artData]);
 
+		// *На стартовой - новостная лента
+		if(!$artData){
+			echo $this->newsTape(self::$l_cfg['newsTapeLength']);
+			return;
+		}
+
 		echo '<h1 id="title" itemprop="headline">' . ($artData['title'] ?? $artData['name']) . '</h1>';
 		?>
 
-		<style>
-
-		</style>
 		<meta itemprop="identifier" content="<?=self::getPathFromRoot(self::getArtPathname())?>">
 
 		<script src="/<?=self::$modDir?>/js/blogHelper.js"></script>
@@ -359,21 +359,10 @@ class BlogKff_page extends BlogKff
 		}
 		?>
 
+
 		<div id='editor1' class="blog_content" <?=$edit?'contenteditable=true':''?> itemprop="articleBody">
 
-		<?php
-		// *На стартовой - новостная лента
-		if(self::is_indexPage()) {
-			echo $this->newsTape(self::$l_cfg['newsTapeLength']);
-		}
-		else{
-			$this->_printArticle($edit);
-		}
-
-		$ts= file_exists(self::getArtPathname())?
-			filemtime(self::getArtPathname())
-			: null;
-		?>
+			<?php $this->_printArticle($edit) ?>;
 		</div><!-- .blog_content -->
 
 
@@ -423,8 +412,13 @@ class BlogKff_page extends BlogKff
 		}
 	}
 
+
 	function renderDateBlock(array $artData)
 	{
+		$ts= file_exists(self::getArtPathname())?
+			filemtime(self::getArtPathname())
+			: null;
+
 		echo '<div class="dateBlock uk-margin">';
 
 		if(!empty($artData['author'])){

@@ -179,12 +179,15 @@ class BlogKff_adm extends BlogKff
 		$cfg = ['name'=>$new_article];
 		$new_article = Index_my_addon::translit($new_article);
 		$cfg['id'] = $new_article;
+		$cfg['ind']= explode(',', $this->opts['ind']);
 
 		$catId = $cfg['catId']= $this->opts['catId'] ?? 'default';
 		$catName = $cfg['catName']= $this->opts['catName'];
 		$catPath = self::$storagePath."/$catId";
 		$cfg['path'] = Index_my_addon::getPathFromRoot($catPath);
 		$artPathname = "{$catPath}/{$new_article}" . self::$l_cfg['ext'];
+
+		self::$log->add(__METHOD__,null,['$cfg'=>$cfg]);
 
 		$artDB = self::getArtDB($artPathname);
 
@@ -205,10 +208,15 @@ class BlogKff_adm extends BlogKff
 			file_put_contents($artPathname,"<p>New Article - <b>$new_article</b>!</p>")
 		) {
 			$artDB->set($cfg);
+
+			// *Записываем в карту
+			self::$map->set([$cfg['ind'][0]=>['items'=>[
+				$cfg['ind'][1]=> $artDB->get()
+			]]]);
+
 			$artDB->__destruct();
 			$artDB->__destruct = null;
 			self::_updateCatDB(new SplFileInfo($catPath), $cfg['name']);
-			// self::$map->set([])
 		}
 		else {
 			self::$log->add(__METHOD__.' Не получается добавить статью '.$artPathname,E_USER_WARNING);

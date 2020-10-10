@@ -1,7 +1,4 @@
 <?php
-// return BlogKff::sidebarRender();
-
-global $Page;
 
 class BlogKff_sidebar extends BlogKff
 {

@@ -27,10 +27,11 @@ foreach(self::$catsDB->get() as $catInd=>$catId) {
 	</div>
 
 	<div class="uk-display-inline-block uk-width-1-2@s">
+		<input type="hidden" name="ind" value="<?=$catData['ind'] . ',' . (is_array($catData['items'])? count($catData['items']): 0)?>">
 		<input type="hidden" name="catId" value="<?=$catData['id']?>">
 		<input type="hidden" name="catName" value="<?=$catData['name']?>">
 		<input type="text" name="addArticle" class="uk-width-expand" placeholder="Название статьи">
-	</div><button class="addArticle">ADD</button>
+	</div><button class="addArticle" title="Добавить статью">ADD</button>
 
 	<ul data-id=<?=$catData['id']?> class="listArticles uk-nav uk-nav-default uk-width-auto" uk-sortable="group: cat-items; handle: .uk-sortable-handle; cls-custom: uk-box-shadow-small uk-flex uk-flex-expand uk-background">
 

@@ -2,14 +2,21 @@
 
 $kff::headHtml();
 
-// *Подкладываем данные из Блога
-if(class_exists('BlogKff'))
-{
+
+if(
+	class_exists('BlogKff')
+	&& $artData= BlogKff::getArtData()
+){
+	// $log->add('',null,['$artData'=>$artData]);
+
+	// *Подкладываем данные из Блога
 	foreach(['title','description','keywords'] as $prop){
-		if(!empty($prop= trim(BlogKff::getArtDB()->get($prop)))){
-			$Page->{$prop}= $prop;
+		if(!empty($val= trim($artData[$prop]))){
+			$Page->{$prop}= $val;
+			// $log->add('',null,["$prop"=>$Page->{$prop}]);
 		}
 	}
+	unset($artData);
 }
 
 $Page->endhtml.= '<link rel="stylesheet" href="/'.$kff::$dir.'/css/core.style.css" />';
@@ -60,18 +67,5 @@ if(!empty($kff::$cfg['uk']['use_styles_ul']))
 	})
 	</script>';
 }
-
-// *Examples 4 Surfyk
-/* $pages_start = System::listPages();
-print_r($pages_start);
-// *Нужно поднять вверх $pages_start[4]
-list($pages_start[4], $pages_start[3]) = [$pages_start[3], $pages_start[4]];
-print_r($pages_start);
-
-// *Если нужно записать в файл
-if(
-	file_put_contents(DR.'/data/pages/list.dat', json_encode($pages_start))
-)
-	echo "Файл весело записан."; */
 
 return null;

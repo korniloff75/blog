@@ -99,7 +99,7 @@ class BlogKff extends Index_my_addon
 
 		self::_defineCatsDB();
 		// self::$log->add(__METHOD__." \$artPathname= $artPathname");
-		$artPathname= $artPathname ?? str_replace($Page->id, basename(self::$storagePath), DR.explode('?',REQUEST_URI)[0]) . self::$l_cfg['ext'];
+		$artPathname= $artPathname ?? self::getArtPathname();
 		$catPathname= dirname($artPathname);
 		$catId= basename($catPathname);
 		$artId= basename($artPathname, self::$l_cfg['ext']);
@@ -129,7 +129,7 @@ class BlogKff extends Index_my_addon
 
 		self::_defineCatsDB();
 		// self::$log->add(__METHOD__." \$artPathname= $artPathname");
-		$artPathname= $artPathname ?? str_replace($Page->id, basename(self::$storagePath), DR.explode('?',REQUEST_URI)[0]) . self::$l_cfg['ext'];
+		$artPathname= $artPathname ?? self::getArtPathname();
 		$catPathname= dirname($artPathname);
 		$catId= basename($catPathname);
 		$artId= basename($artPathname, self::$l_cfg['ext']);
@@ -147,9 +147,9 @@ class BlogKff extends Index_my_addon
 
 		$catData= self::getBlogMap()->find('id',$catId);
 
-		foreach($catData['items'] as &$artData){
-			if(is_numeric($artData['ind']))
-				$artData['ind']= [$catData['ind'], $artData['ind']];
+		foreach($catData['items'] as $ind=>&$artData){
+			// if(is_numeric($artData['ind']))
+			// 	$artData['ind']= [$catData['ind'], $ind];
 			if($artData['id'] === $artId){
 				// self::$log->add(__METHOD__,null,['$artData'=>$artData]);
 				$artData['catName']= $catData['name'];
@@ -186,7 +186,7 @@ class BlogKff extends Index_my_addon
 			// 	$artDB->set(['title'=>$artDB->get('name')]);
 
 			$item= $artDB->get();
-			$item['ind']= $item['ind']?? [$catDB->get('ind')??0, $ind];
+			// $item['ind']= $item['ind']?? [$catDB->get('ind')??0, $ind];
 			$item['id']= $item['id']?? $artId;
 
 			$catDB->append([
@@ -245,10 +245,13 @@ class BlogKff extends Index_my_addon
 	}
 
 
-	function getArtPathname()
+	public static function getArtPathname()
 	{
 		global $Page;
-		return str_replace($Page->id, basename(self::$storagePath), DR.explode('?',REQUEST_URI)[0]) . self::$l_cfg['ext'];
+
+		return is_object($Page)?
+		str_replace($Page->id, basename(self::$storagePath), DR.explode('?',REQUEST_URI)[0]) . self::$l_cfg['ext']
+		: null;
 	}
 
 
