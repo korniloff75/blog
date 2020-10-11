@@ -27,8 +27,10 @@ class BlogKff_adm extends BlogKff
 	{
 		$catsAll = json_decode($catsAllJson, 1);
 		$cats = array_keys($catsAll);
+		$oldMap= clone $map= self::getBlogMap();
+		// $map->clear();
 
-		// self::$log->add(__METHOD__,null,['$cats'=>$cats, '$catsAll'=>$catsAll]);
+		self::$log->add(__METHOD__,null,['$oldMap'=>$oldMap, '$cats'=>$cats, /* '$catsAll'=>$catsAll */]);
 
 		self::$catsDB->replace($cats);
 
@@ -40,11 +42,16 @@ class BlogKff_adm extends BlogKff
 			$catDB = new DbJSON($catPathname . "/data.json");
 			$catDB->clear('items');
 
-			self::$log->add(__METHOD__,null,['$catId'=>$catId,'$items'=>$items,]);
+
+			// $map->set([$catInd=>['items'=>null]]);
+
+			// self::$log->add(__METHOD__,null,['$catId'=>$catId,'$oldItems'=>$oldItems, "\$map->get($catInd)"=>$map->get($catInd)]);
 
 			// *Перебираем элементы
 			foreach($items as $ind=>&$item) {
 				$artPathname= "$catPathname/{$item['id']}" . self::$l_cfg['ext'];
+
+				$oldItems= $oldMap->find('id',$item['oldCatId'])['items'];
 
 				// *Элемент перемещён в другую категорию
 				if($item['oldCatId'] !== $catId)
@@ -64,6 +71,23 @@ class BlogKff_adm extends BlogKff
 				// *Обновляем базу элементов категории
 				$catDB->append(['items'=>[$item]]);
 
+				// $artData = self::getArtData($artPathname);
+
+				foreach($oldItems as &$oldItem){
+					if($oldItem['id'] !== $item['id']) continue;
+					$oldItem['ind']= [$catInd,$ind];
+					break;
+				}
+
+				// self::$log->add(__METHOD__,null,['$oldItem'=>$oldItem, '$artData'=>$artData]);
+
+				// *Обновляем карту
+				$map->set([$catInd=>['items'=>[
+					$ind=> $oldItem
+				]]]);
+				unset($oldItem);
+				$oldItems= array_filter($oldItems);
+
 			} //foreach
 
 			if(!empty($oldCatPath))
@@ -72,10 +96,9 @@ class BlogKff_adm extends BlogKff
 			$catDB->__destruct();
 			$catDB->__destruct= null;
 
-			// *Обновляем карту
-			self::_createBlogMap(1);
-
 		} //foreach
+
+		$map->__destruct();
 
 		return $cats;
 	}
@@ -157,7 +180,6 @@ class BlogKff_adm extends BlogKff
 		$catDB = new DbJSON("$catPath/data.json");
 		$catDB->set($data);
 
-
 		// *Переписываем список категорий
 		if(!in_array($catId, self::$catsDB->get()))
 			self::$catsDB->append([$catId]);
@@ -180,12 +202,15 @@ class BlogKff_adm extends BlogKff
 		$cfg = ['name'=>$new_article];
 		$new_article = Index_my_addon::translit($new_article);
 		$cfg['id'] = $new_article;
+		$cfg['ind']= explode(',', $this->opts['ind']);
 
 		$catId = $cfg['catId']= $this->opts['catId'] ?? 'default';
 		$catName = $cfg['catName']= $this->opts['catName'];
 		$catPath = self::$storagePath."/$catId";
 		$cfg['path'] = Index_my_addon::getPathFromRoot($catPath);
 		$artPathname = "{$catPath}/{$new_article}" . self::$l_cfg['ext'];
+
+		self::$log->add(__METHOD__,null,['$cfg'=>$cfg]);
 
 		$artDB = self::getArtDB($artPathname);
 
@@ -206,10 +231,15 @@ class BlogKff_adm extends BlogKff
 			file_put_contents($artPathname,"<p>New Article - <b>$new_article</b>!</p>")
 		) {
 			$artDB->set($cfg);
+
+			// *Записываем в карту
+			self::$map->set([$cfg['ind'][0]=>['items'=>[
+				$cfg['ind'][1]=> $artDB->get()
+			]]]);
+
 			$artDB->__destruct();
 			$artDB->__destruct = null;
 			self::_updateCatDB(new SplFileInfo($catPath), $cfg['name']);
-			// self::$map->set([])
 		}
 		else {
 			self::$log->add(__METHOD__.' Не получается добавить статью '.$artPathname,E_USER_WARNING);

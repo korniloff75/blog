@@ -58,6 +58,9 @@ class BlogKff extends Index_my_addon
 			if(is_string($r['opts']))
 				$r['opts'] = json_decode($r['opts'],1);
 			$this->opts = @$r['opts'];
+
+			self::$log->add(__METHOD__,null,['$this->opts'=>$this->opts]);
+
 			$val= is_array($r['value'])? filter_var_array($r['value']): filter_var($r['value']);
 			return $this->{$m_name}($val) || true;
 		}
@@ -239,7 +242,7 @@ class BlogKff extends Index_my_addon
 			$catData= self::_getCategoryDB($catId)->get();
 		}
 
-		self::$log->add(__METHOD__,null,['$catId'=>$catId, '$catData'=>$catData]);
+		// self::$log->add(__METHOD__,null,['$catId'=>$catId, '$catData'=>$catData]);
 
 		return $catData;
 	}

@@ -271,8 +271,11 @@ var kff = {
 	 * @returns Promise
 	 */
 	request: function(uri, data, sels) {
-		sels = sels || ['.content','.log'];
-		return $.post(uri, data)
+		// sels = sels || ['.content','.log'];
+		if(!sels){
+			return $.post(uri, data)
+		}
+		else return $.post(uri, data)
 		.then(response=>{
 			return kff.render(sels,response);
 		})

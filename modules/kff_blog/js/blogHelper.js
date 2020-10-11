@@ -26,12 +26,30 @@ var BH = {
 		return kff.request('',{
 			act: 'save',
 			name: 'saveEdit',
-			value: CKEDITOR.instances.editor1.getData(),
+			value: CKEDITOR.instances.editor1.getData().trim(),
 			opts: JSON.stringify(opts),
 		}, ['.blog_content','.log']
 		).then(()=>{
 			// UIkit.modal.alert( "Статья успешно отредактирована");
 			UIkit.notification("<span uk-icon='icon: check'></span> Статья успешно отредактирована", 'success')
+		});
+	},
+
+	// *Список статей в категории
+	getCategoryList: function(catId, catName){
+		// UIkit.modal.alert('OPA!');
+		kff.request('',{
+			name: 'getCategoryList',
+			value: catId,
+			opts: null,
+		})
+		.then(response=>{
+			// console.log(response);
+			UIkit.modal.dialog(
+				'<h3 class="uk-text-center">' + catName + '</h3>'
+				+ response
+			);
+
 		});
 	}
 }

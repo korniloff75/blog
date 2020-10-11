@@ -141,7 +141,7 @@ class DbJSON implements Iterator, Countable
 	{
 		// $db = array_diff_key($this->db, ['change'=>1]);
 		$db = &$this->db;
-		return empty($id)?
+		return is_null($id)?
 			$db : (
 				$db[$id] ?? null
 			);

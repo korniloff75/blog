@@ -26,7 +26,7 @@ var BH = {
 		return kff.request('',{
 			act: 'save',
 			name: 'saveEdit',
-			value: CKEDITOR.instances.editor1.getData(),
+			value: CKEDITOR.instances.editor1.getData().trim(),
 			opts: JSON.stringify(opts),
 		}, ['.blog_content','.log']
 		).then(()=>{

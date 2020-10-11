@@ -29,6 +29,7 @@ class BlogKff_page extends BlogKff
 
 		foreach($this->getArticleList($quantity) as $ts=>&$artPathname){
 			$artData= self::getArtData($artPathname);
+			$artData['ts']= $ts;
 
 			// *Черновики видны только админу
 			if(!empty($artData['not-public'])){
@@ -104,14 +105,18 @@ class BlogKff_page extends BlogKff
 			}
 
 			$o.="<div class='info uk-float-left'>
-			<p class='uk-margin-small-bottom'>Категория: <b>$catName</b></p>
-			<p class='uk-margin-remove'>Дата: <time itemprop=\"dateModified\"
-			datetime=\"" . date(DATE_ISO8601, $ts) . "\">" . date(self::DATE_FORMAT, $ts) . "</time></p>
-			</div>
+			<p class='uk-margin-small-bottom'>Категория: <b onclick='BH.getCategoryList(\"$catId\",\"$catName\")' style='cursor:pointer;'>$catName</b></p>";
+
+			ob_start();
+			self::renderDateBlock($artData);
+			$o.= ob_get_clean();
+
+			$o.= "</div>
 			<p style='text-align:right;' class='uk-float-right'>";
 			if(self::is_adm()){
 				$o.= "<a href=\"{$artHref}?edit\" class='uk-margin-right' uk-icon='icon: file-edit' title='Редактировать'></a>";
 			}
+
 			$o.= "<a href=\"$artHref\"><button>Читать</button></a></p>
 			<p class='uk-clearfix'></p>
 
@@ -120,6 +125,7 @@ class BlogKff_page extends BlogKff
 
 		return $o;
 	}
+
 
 	/**
 	 * *Получаем список статей
@@ -162,11 +168,35 @@ class BlogKff_page extends BlogKff
 
 
 	/**
+	 * *Список статей из категории
+	 * @param quantity - кол-во элементов
+	 * todo...
+	 */
+	protected function c_getCategoryList($catId, $quantity=5)
+	{
+		global $Page;
+		ob_start();
+		/* echo '<pre>';
+		var_dump(self::getCategoryData($catId)['items'] );
+		echo '</pre>'; */
+		echo '<ul>';
+		foreach(self::getCategoryData($catId)['items'] as $artData){
+			echo "<li><a href='/{$Page->id}/$catId/".$artData['id']."'>{$artData['name']}</a></li>";
+		}
+		echo '</ul>';
+		ob_end_flush();
+		die;
+	}
+
+
+	/**
 	 * *Сохраняем редактирование
 	 */
 	protected function c_saveEdit($html)
 
 	{
+		if(!self::is_adm()) return false;
+
 		$artPathname= self::getArtPathname();
 		self::$log->add(__METHOD__,null,['$artPathname'=>$artPathname]);
 
@@ -176,11 +206,10 @@ class BlogKff_page extends BlogKff
 		)
 			return false;
 
-		// $mapDB= self::getBlogMap();
 		$artDB= self::getArtDB($artPathname);
 		// $artData= self::getArtData($artPathname);
 
-		self::$log->add(__METHOD__,null,['$this->opts'=>$this->opts]);
+		self::$log->add(__METHOD__,null,['$this->opts[\'artOpts\']'=>$this->opts['artOpts']]);
 
 		array_walk($this->opts['artOpts'], function(&$v, $k){
 			switch ($k) {
@@ -202,7 +231,7 @@ class BlogKff_page extends BlogKff
 		$artDB->set($this->opts['artOpts']);
 		// self::$map->set()
 
-		$html= htmlspecialchars_decode(str_replace(['#+#','#-#'], ['<?','?>'], $html));
+		$html= htmlspecialchars_decode(str_replace(['#+#','#-#'], ['<?','?>'], trim($html)));
 		$html= preg_replace(['~^[\s\n'.PHP_EOL.']+?~','~\n{2,}~'], ['',"\n\n"], $html);
 
 		file_put_contents(self::$storagePath . "/{$this->opts['cat']}/{$this->opts['art']}" . self::$l_cfg['ext'], $html);
@@ -218,7 +247,7 @@ class BlogKff_page extends BlogKff
 		]];
 		$map->set($newData);
 
-		self::$log->add(__METHOD__,null,['$ind'=>$ind,'$artDB'=>$artDB, "\$map->get({$ind[0]})"=>$map->get($ind[0])]);
+		self::$log->add(__METHOD__,null,['$ind'=>$ind,'$artDB'=>$artDB, '$html'=>$html, "\$map->get({$ind[0]})"=>$map->get($ind[0])]);
 	}
 
 
@@ -316,6 +345,8 @@ class BlogKff_page extends BlogKff
 
 		self::$log->add(__METHOD__,null,['$artData'=>$artData]);
 
+		echo '<script src="/' .self::$modDir. '/js/blogHelper.js"></script>';
+
 		// *На стартовой - новостная лента
 		if(!$artData){
 			echo $this->newsTape(self::$l_cfg['newsTapeLength']);
@@ -326,8 +357,6 @@ class BlogKff_page extends BlogKff
 		?>
 
 		<meta itemprop="identifier" content="<?=self::getPathFromRoot(self::getArtPathname())?>">
-
-		<script src="/<?=self::$modDir?>/js/blogHelper.js"></script>
 
 		<?php
 		// *Редактирование
@@ -361,8 +390,7 @@ class BlogKff_page extends BlogKff
 
 
 		<div id='editor1' class="blog_content" <?=$edit?'contenteditable=true':''?> itemprop="articleBody">
-
-			<?php $this->_printArticle($edit) ?>;
+			<?php $this->_printArticle($edit) ?>
 		</div><!-- .blog_content -->
 
 
@@ -408,16 +436,16 @@ class BlogKff_page extends BlogKff
 		// var_dump(self::is_indexPage());
 
 		if(!self::is_indexPage()){
-			$this->renderDateBlock($artData);
+			self::renderDateBlock($artData);
 		}
 	}
 
 
-	function renderDateBlock(array $artData)
+	public static function renderDateBlock(array $artData)
 	{
-		$ts= file_exists(self::getArtPathname())?
+		$ts= $artData['ts'] ?? (file_exists(self::getArtPathname())?
 			filemtime(self::getArtPathname())
-			: null;
+			: null);
 
 		echo '<div class="dateBlock uk-margin">';
 

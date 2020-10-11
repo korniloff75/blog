@@ -50,7 +50,7 @@ class BlogKff extends Index_my_addon
 	 */
 	protected function _InputController()
 	{
-		if(!self::is_adm()) return false;
+		// if(!self::is_adm()) return false;
 
 		$r = &$_REQUEST;
 		if(!empty($r['name']) && method_exists($this, ($m_name = "c_{$r['name']}")))

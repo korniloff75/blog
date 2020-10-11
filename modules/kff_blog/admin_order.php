@@ -9,11 +9,11 @@
 <?php
 // self::$log->add(__METHOD__,null,['self::$catsDB'=>self::$catsDB, ]);
 
-foreach(self::$catsDB->get() as $catInd=>$catId) {
-// self::$catsDB->rewind();
-// foreach(self::$catsDB as $catInd=>$catId) {
-	$catData = self::getCategoryData($catId);
-	$catData['id'] = $catData['id'] ?? $catId;
+// foreach(self::$catsDB->get() as $catInd=>$catId) {
+foreach(self::getBlogMap() as $catInd=>$catData) {
+
+	$catData['id'] = $catData['id'] ?? self::$catsDB->get($catInd);
+	$catId= &$catData['id'];
 
 	// self::$log->add(__METHOD__,null,['count'=>count(self::$catsDB), '$catInd'=>$catInd, '$catId'=>$catId, '$catData'=>$catData]);
 	// !

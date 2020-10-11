@@ -8,7 +8,8 @@ if(!defined('DR'))
 interface BasicClassInterface
 {
 	const
-		DATE_FORMAT = "Y-m-d H:i:s";
+		DATETIME_FORMAT = "Y-m-d H:i:s",
+		DATE_FORMAT = "Y-m-d";
 }
 
 

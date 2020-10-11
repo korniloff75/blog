@@ -1,7 +1,4 @@
 <?php
-// return BlogKff::sidebarRender();
-
-global $Page;
 
 class BlogKff_sidebar extends BlogKff
 {
@@ -18,7 +15,7 @@ class BlogKff_sidebar extends BlogKff
 
 		foreach(self::getBlogMap() as $ind=>$catData){
 
-			if(empty($catData['items']))
+			if(empty($items= $catData['items']))
 				continue;
 			// print_r ($catData);
 
@@ -28,30 +25,12 @@ class BlogKff_sidebar extends BlogKff
 			<li class="uk-parent">
 
 				<a href="#" style="text-decoration:underline; font-size: 1.2em;"><?=$catData['name']?></a>
-				<!-- <div uk-dropdown="mode: hover; delay-hide: 100; pos: left-top@m;">
 
-					<ul data-cat=<?=$catId?>  class="uk-nav uk-dropdown-nav">
-
-					<?php
-
-					foreach($catData['items'] as &$art) {
-
-						echo "<li data-id={$art['id']} data-cat=$catId>
-						<a href=\"/{$Page->id}/$catId/{$art['id']} \">{$art['name']}</a>
-
-						</li>";
-					}
-
-					?>
-					</ul>
-				</div> -->
-
-				<!-- <ul data-cat=<?=$catId?>  class="uk-nav uk-dropdown-nav"> -->
 				<ul data-cat=<?=$catId?>  class="">
 
 					<?php
 
-					foreach($catData['items'] as &$art) {
+					foreach($items as &$art) {
 						$li= "<li data-id={$art['id']} data-cat=$catId class=\"\">
 						<a href=\"/{$pageId}/$catId/{$art['id']}\" itemprop=\"url\" title=\"" . ($art['title'] ?? $art['name']) . "\" uk-tooltip>{$art['name']}</a>
 
