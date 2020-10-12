@@ -30,13 +30,13 @@ class BlogKff_sidebar extends BlogKff
 
 					<?php
 
-					foreach($items as &$art) {
-						$li= "<li data-id={$art['id']} data-cat=$catId class=\"\">
-						<a href=\"/{$pageId}/$catId/{$art['id']}\" itemprop=\"url\" title=\"" . ($art['title'] ?? $art['name']) . "\" uk-tooltip>{$art['name']}</a>
+					foreach($items as &$artData) {
+						$li= "<li data-id={$artData['id']} data-cat=$catId class=\"\">
+						<a href=\"/{$pageId}/$catId/{$artData['id']}\" itemprop=\"url\" title=\"" . ($artData['title'] ?? $artData['name']) . "\" uk-tooltip>{$artData['name']}</a>
 
 						</li>";
 
-						if(!empty($art['not-public'])){
+						if(!empty(filter_var($artData['not-public'],FILTER_VALIDATE_BOOLEAN))){
 							if(self::is_adm())
 							echo str_replace('class=""', 'class="not-public"', $li);
 						}

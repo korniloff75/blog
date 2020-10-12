@@ -51,8 +51,6 @@ foreach(self::getBlogMap() as $catInd=>$catData) {
 		<!-- Remove article -->
 		<span uk-icon=\"trash\" data-del=\"$catId/{$artData['id']}\" class='delArticle'></span>
 
-
-
 		</li>";
 		// print_r($artData);
 	}
