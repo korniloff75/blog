@@ -44,11 +44,14 @@ class Index_my_addon implements BasicClassInterface
 		// *Logger
 		self::$log = new Logger('kff.log', DR);
 
-		// *Системные настройки
+		// *Расширяем системные настройки
 		self::$Config= self::getSystemConfig();
 
 		// require_once DR .'/'. self::$dir.'/DbJSON.php';
-		self::$cfgDB = new DbJSON(__DIR__.'/cfg.json');
+		self::$cfgDB = new DbJSON(DR.'/data/cfg/kff.json');
+		if(!self::$cfgDB->count()){
+			self::$cfgDB->set((new DbJSON(__DIR__.'/cfg.json'))->get());
+		}
 
 		// *Настройки Basic
 		self::$cfg = self::$cfgDB->get();
@@ -72,7 +75,7 @@ class Index_my_addon implements BasicClassInterface
 			AdmPanel::addResponsive();
 		}
 
-		self::$log->add(__METHOD__,null, ['REQUEST_URI'=>\REQUEST_URI, __CLASS__.'::$cfg'=>self::$cfg]);
+		self::$log->add(__METHOD__,null, ['REQUEST_URI'=>\REQUEST_URI, __CLASS__.'::$cfg'=>self::$cfg, /* '$Config'=>self::$Config */]);
 
 	}
 
@@ -95,8 +98,13 @@ class Index_my_addon implements BasicClassInterface
 	public static function getSystemConfig()
 	{
 		global $Config;
-		$Config= $Config ?? [];
-		$def= [
+		$Config= $Config ?? json_decode(file_get_contents(DR.'/data/cfg/config.dat'));
+
+		// $Config= self::$Config ?? new DbJSON(DR.'/data/cfg/config.dat');
+		return $Config;
+
+		$Config::$defaultDB= [
+			'testKey'=>'testValue',
 			'header'=>'Заголовок',
 			'template'=>'deftpl',
 			'slogan'=>'Добро пожаловать на наш сайт',
@@ -119,13 +127,15 @@ class Index_my_addon implements BasicClassInterface
 			'userEmailChange'=>1,
 			// ''=>,
 		];
-		// $cfg= new stdClass;
-		$Config = json_decode(file_get_contents(DR.'/data/cfg/config.dat'));
-		$Config->__get= function($name){
-			return $this->{$name} ?? $def[$name] ?? $Config->{$name} ?? null;
-		};
 
-		return $Config;
+		/* self::$log->add(__METHOD__,null, ['$Config->kff'=>$Config->kff, 'empty($Config->kff)'=>empty($Config->kff)]);
+
+		if(empty($Config->kff)){
+			self::$cfgDB = new DbJSON(__DIR__.'/cfg.json');
+			$Config->set(['kff'=>self::$cfgDB->get()]);
+		} */
+
+
 	}
 
 

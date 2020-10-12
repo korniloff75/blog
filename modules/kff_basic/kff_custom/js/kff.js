@@ -287,16 +287,26 @@ var kff = {
 	 * @param {string HTML} response
 	 */
 	render: function(sels,response) {
-		var out = {};
+		var out = {},
+			stop= 0;
 
 		return kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/js/uikit.min.js')
 		.then(UIkit=>{
 			sels.forEach(i=>{
+				if(stop) return;
 				var targetNode= document.querySelector(i),
-					$tmp= $(response),
-					$sourceNode = $tmp.find(i);
+					$tmp= $(response);
 
-				if(!targetNode) return;
+				// if(!targetNode) return;
+				if(!targetNode){
+					i= 'main';
+					targetNode= document.querySelector(i);
+					stop= 1;
+				};
+
+				var $sourceNode = $tmp.find(i);
+
+				// console.log(i, targetNode, $sourceNode, '\n');
 
 				if(!$sourceNode.length)
 					$sourceNode = $tmp;

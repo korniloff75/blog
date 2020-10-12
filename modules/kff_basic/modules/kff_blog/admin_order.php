@@ -38,9 +38,11 @@ foreach(self::getBlogMap() as $catInd=>$catData) {
 	<?php
 	if(is_array($catData['items'])) foreach($catData['items'] as $ind=>&$artData) {
 		$artData['title'] = $artData['title'] ?? $artData['name'];
-		// $artData['date'] = $artData['date'];
+		$artData['oldCatId']= $catData['id'];
 
-		echo "<li data-id={$artData['id']} data-index={$ind} data-name=\"{$artData['name']}\" data-oldCatId= {$catData['id']} uk-tooltip title=\"{$artData['title']}\" data-title=\"{$artData['title']}\" class=\"uk-flex uk-flex-wrap uk-flex-middle\">
+		echo "<li data-artData='"
+		. json_encode($artData, JSON_UNESCAPED_UNICODE|JSON_HEX_QUOT|JSON_HEX_APOS)
+		. "' uk-tooltip title=\"{$artData['title']}\" class=\"uk-flex uk-flex-wrap uk-flex-middle\">
 		<div class=\"uk-sortable-handle uk-margin-small-right\" uk-icon=\"icon: table\"></div>
 
 		<!-- artName -->

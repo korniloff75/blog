@@ -23,9 +23,11 @@ class BlogKff_adm extends BlogKff
 	/**
 	 * *Сохрааняем сортировку статей
 	 */
-	function c_sortCategories($catsAllJson)
+	function c_sortCategories($catsAll)
 	{
-		$catsAll = json_decode($catsAllJson, 1);
+		if(is_string($catsAll))
+			$catsAll = json_decode($catsAllJson, 1);
+
 		$cats = array_keys($catsAll);
 
 		// self::$log->add(__METHOD__,null,['$cats'=>$cats, '$catsAll'=>$catsAll]);
@@ -40,7 +42,7 @@ class BlogKff_adm extends BlogKff
 			$catDB = new DbJSON($catPathname . "/data.json");
 			$catDB->clear('items');
 
-			self::$log->add(__METHOD__,null,['$catId'=>$catId,'$items'=>$items,]);
+			self::$log->add(__METHOD__,null,['$catId'=>$catId,/* '$items'=>$items, */]);
 
 			// *Перебираем элементы
 			foreach($items as $ind=>&$item) {
@@ -57,6 +59,7 @@ class BlogKff_adm extends BlogKff
 					// $artDB = new DbJSON("$catPathname/{$item['id']}.json");
 					$artDB = self::getArtDB($artPathname);
 					$artDB->set(['ind'=>[$catInd,$ind],'catId'=>$catId, 'catName'=>$catDB->get('name')]);
+					$artDB->save();
 
 					unset($item['oldCatId']);
 				}
@@ -69,8 +72,7 @@ class BlogKff_adm extends BlogKff
 			if(!empty($oldCatPath))
 				self::_updateCatDB(new SplFileInfo($oldCatPath));
 
-			$catDB->__destruct();
-			$catDB->__destruct= null;
+			$catDB->save();
 
 			// *Обновляем карту
 			self::_createBlogMap(1);

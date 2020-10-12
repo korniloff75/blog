@@ -5,7 +5,8 @@ class DbJSON implements Iterator, Countable
 
 	static
 		$log,
-		$convertPath = false;
+		$convertPath = false,
+		$defaultDB;
 
 	private
 		$position = 0,
@@ -69,6 +70,16 @@ class DbJSON implements Iterator, Countable
 	} // __construct
 
 
+	/**
+	 * *Проверка в дефолтном массиве
+	 */
+	public function __get($key) {
+		if(self::$defaultDB && is_null($v= $this->db[$key])){
+			return self::$defaultDB[$key];
+		}
+		return $v;
+	}
+
 	public function rewind() {
 		$this->position = 0;
 		// return $this;
@@ -114,12 +125,12 @@ class DbJSON implements Iterator, Countable
 
 	/**
 	 * *Clear base
-	 * @id optional <string|int>
+	 * @key optional <string|int>
 	 */
-	public function clear($id=null)
+	public function clear($key=null)
 	{
-		if(!empty($id)){
-			unset($this->db[$id]);
+		if(!empty($key)){
+			unset($this->db[$key]);
 			// *Удаляем null
 			$this->db= array_filter($this->db);
 		}
@@ -128,22 +139,22 @@ class DbJSON implements Iterator, Countable
 		return $this;
 	}
 
-	public function remove($id=null)
+	public function remove($key=null)
 	{
-		return $this->clear($id);
+		return $this->clear($key);
 	}
 
 
 	/**
-	 * @id optional <string|int>
+	 * @key optional <string|int>
 	 */
-	public function get($id=null)
+	public function get($key=null)
 	{
 		// $db = array_diff_key($this->db, ['change'=>1]);
 		$db = &$this->db;
-		return is_null($id)?
+		return is_null($key)?
 			$db : (
-				$db[$id] ?? null
+				$db[$key] ?? null
 			);
 	}
 
@@ -311,6 +322,22 @@ class DbJSON implements Iterator, Countable
 	}
 
 
+	public function save()
+	{
+		global $log;
+
+		$this->saved= 1;
+
+		if(empty($this->path))
+			is_object($log) && $log->add(__METHOD__.': Не указан путь записи базы',$log::BACKTRACE,['$this->path'=>$this->path]);
+		else
+			file_put_contents(
+				$this->path,
+				self::toJSON($this->db), LOCK_EX
+			);
+	}
+
+
 	public function __destruct()
 	{
 		global $log;
@@ -323,15 +350,12 @@ class DbJSON implements Iterator, Countable
 		}
 
 		// *check changes
-		if(!$this->changed) return;
+		if(
+			!empty($this->saved)
+			|| !$this->changed
+		) return;
 
-		if(empty($this->path))
-			$log->add(__METHOD__.': Не указан путь записи базы',$log::BACKTRACE,['$this->path'=>$this->path]);
-		else
-			file_put_contents(
-				$this->path,
-				self::toJSON($this->db), LOCK_EX
-			);
+		$this->save();
 
 		/* if(!file_put_contents(
 			$this->path,

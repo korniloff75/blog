@@ -32,7 +32,7 @@ class BlogKff_page extends BlogKff
 			$artData['ts']= $ts;
 
 			// *Черновики видны только админу
-			if(!empty($artData['not-public'])){
+			if(!empty(filter_var($artData['not-public'],FILTER_VALIDATE_BOOLEAN))){
 				if(self::is_adm()){
 					$o.= "<p class='not-public'>Черновик</p>";
 				}
@@ -221,7 +221,7 @@ class BlogKff_page extends BlogKff
 					if(empty(trim($v))) $v= $this->opts['artOpts']['name'];
 					break;
 				case 'not-public':
-					$v= (bool)$v;
+					$v= filter_var($v,FILTER_VALIDATE_BOOLEAN);
 					break;
 			}
 		});
@@ -237,8 +237,7 @@ class BlogKff_page extends BlogKff
 		file_put_contents(self::$storagePath . "/{$this->opts['cat']}/{$this->opts['art']}" . self::$l_cfg['ext'], $html);
 
 		// *Обновляем карту
-		// self::_createBlogMap(1);
-		// !ind === null
+
 		$map= self::getBlogMap();
 		$ind= $artDB->get('ind');
 
@@ -247,7 +246,7 @@ class BlogKff_page extends BlogKff
 		]];
 		$map->set($newData);
 
-		self::$log->add(__METHOD__,null,['$ind'=>$ind,'$artDB'=>$artDB, '$html'=>$html, "\$map->get({$ind[0]})"=>$map->get($ind[0])]);
+		self::$log->add(__METHOD__,null,['$ind'=>$ind,'$artDB'=>$artDB, "\$map->get({$ind[0]})"=>$map->get()]);
 	}
 
 
@@ -353,7 +352,7 @@ class BlogKff_page extends BlogKff
 			return;
 		}
 
-		echo '<h1 id="title" itemprop="headline">' . ($artData['title'] ?? $artData['name']) . '</h1>';
+		echo '<h1 id="title" itemprop="headline" class="'. (filter_var($artData['not-public'],FILTER_VALIDATE_BOOLEAN)? 'not-public':'') .'">' . ($artData['title'] ?? $artData['name']) . '</h1>';
 		?>
 
 		<meta itemprop="identifier" content="<?=self::getPathFromRoot(self::getArtPathname())?>">
@@ -407,7 +406,7 @@ class BlogKff_page extends BlogKff
 
 		<script>
 			document.querySelector('#saveEdit')
-			.addEventListener('click', BH.editRequest.bind(null));
+			.addEventListener('click', BH.editRequest.bind(null, <?=DbJSON::toJSON($artData)?>));
 
 			// *Удаляем теги
 			$('#editor1').find('[itemprop="about"]').remove();

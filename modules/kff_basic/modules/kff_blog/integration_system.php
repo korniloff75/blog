@@ -50,7 +50,7 @@ class BlogKff extends Index_my_addon
 	 */
 	protected function _InputController()
 	{
-		if(!self::is_adm()) return false;
+		// if(!self::is_adm()) return false;
 
 		$r = &$_REQUEST;
 		if(!empty($r['name']) && method_exists($this, ($m_name = "c_{$r['name']}")))
@@ -72,10 +72,14 @@ class BlogKff extends Index_my_addon
 	{
 		if(self::$catsDB) return;
 
-		self::$blogDB = new DbJSON(__DIR__.'/cfg.json');
-		self::$l_cfg= self::$blogDB->get();
+		// self::$blogDB = new DbJSON(__DIR__.'/cfg.json');
+		self::$blogDB = new DbJSON(DR.'/data/cfg/kff.json', 'blog');
+
 		if(!self::$blogDB->count())
-			self::$blogDB->replace(self::$def_cfg);
+			// self::$blogDB->replace(self::$def_cfg);
+			self::$blogDB->replace(array_merge(self::$def_cfg, (new DbJSON(__DIR__.'/cfg.json'))->get()));
+
+		self::$l_cfg= self::$blogDB->get();
 
 		self::$catPath = self::$storagePath.'/categories.json';
 		$catsDB= &self::$catsDB;

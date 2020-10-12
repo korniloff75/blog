@@ -9,19 +9,18 @@ var BH = {
 	},
 
 	// *Save edit article
-	editRequest: function(opts, e) {
-		console.log(location, kff.URI, BH.pageInfo);
-		// return;
-
-		opts= Object.assign({
+	editRequest: function(artData, e) {
+		var opts= {
 			cat: BH.pageInfo.category,
 			art: BH.pageInfo.article,
-			artOpts: {}
-		}, opts || {});
+			artOpts: artData
+		};
 
 		$('#artOpts').find('input,textarea,select').each((ind,i)=>{
 			opts.artOpts[i.name]= i.value;
 		});
+
+		console.log(kff.URI, opts);
 
 		return kff.request('',{
 			act: 'save',
@@ -32,6 +31,24 @@ var BH = {
 		).then(()=>{
 			// UIkit.modal.alert( "Статья успешно отредактирована");
 			UIkit.notification("<span uk-icon='icon: check'></span> Статья успешно отредактирована", 'success')
+		});
+	},
+
+	// *Список статей в категории
+	getCategoryList: function(catId, catName){
+		// UIkit.modal.alert('OPA!');
+		kff.request('',{
+			name: 'getCategoryList',
+			value: catId,
+			opts: null,
+		})
+		.then(response=>{
+			// console.log(response);
+			UIkit.modal.dialog(
+				'<h3 class="uk-text-center">' + catName + '</h3>'
+				+ response
+			);
+
 		});
 	}
 }
@@ -137,26 +154,25 @@ $('.content').on('click', '#save_sts', $e=>{
 	$list.each((catInd,i)=>{
 		var $i=$(i);
 		out[$i.data('id')]= [];
-		$i.find('[data-id]').each((ind,i)=>{
+		$i.find('[data-artData]').each((ind,i)=>{
 			var
-				id = i.getAttribute('data-id'),
-				name = i.getAttribute('data-name'),
-				title = i.getAttribute('data-title'),
-				oldCatId = i.getAttribute('data-oldCatId');
+				data= JSON.parse(i.getAttribute('data-artData'));
 
 			if(out[$i.data('id')].filter(
-				function(i){return i.id === id}
+				function(i){return i.id === data.id}
 			).length) {
 				err.push('Элемент ' + id + ' не может дублироваться в одной категории!');
 			}
-			out[$i.data('id')].push({
+			/* out[$i.data('id')].push({
 				id: id, ind:[catInd,ind], name: name, oldCatId: oldCatId, tag: i.getAttribute('data-tag'),
-			});
+			}); */
+			data.ind= [catInd,ind];
+			out[$i.data('id')].push(data);
 
-			if(title.trim()){
+			/* if(title.trim()){
 				out[$i.data('id')][ind].title= title;
-			}
-			// console.log('title.trim()',title.trim(),i.attributes.title.nodeValue);
+			} */
+			// console.log('data= ', data);
 		})
 	})
 
@@ -166,7 +182,7 @@ $('.content').on('click', '#save_sts', $e=>{
 
 		// setTimeout(()=>{location.reload()}, 2000);
 	} else {
-		kff.request('',{name:'sortCategories', value: JSON.stringify(out)},['.switcher-item.order','.log'])
+		kff.request('',{name:'sortCategories', value: out},['.switcher-item.order','.log'])
 		.then(()=>{
 			UIkit.notification( "<span uk-icon='icon: check; ratio:1.5;'></span> Порядок элементов успешно сохранён",'success');
 		});

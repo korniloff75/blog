@@ -72,7 +72,7 @@ class BlogKff extends Index_my_addon
 	{
 		if(self::$catsDB) return;
 
-		self::$blogDB = new DbJSON(__DIR__.'/cfg.json');
+		self::$blogDB = new DbJSON(DR.'/data/cfg/kff_blog.json');
 		self::$l_cfg= self::$blogDB->get();
 		if(!self::$blogDB->count())
 			self::$blogDB->replace(self::$def_cfg);
