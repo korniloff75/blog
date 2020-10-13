@@ -1,10 +1,14 @@
 <?php
 if(realpath('.') === __DIR__) die(__FILE__);
 
+global $kff, $log;
+// var_dump($kff);
+require_once $kff::$dir. "/traits/Paginator.trait.php";
 
-class Comments
-
+class Comments extends BlogKff
 {
+	use Paginator;
+
 	const
 		SPAM_IP = __DIR__.'/../db/badIP.json',
 		MAX_LEN = 1500,
@@ -23,33 +27,41 @@ class Comments
 	protected
 		$err = [],
 		# Путь к файлу комментариев
-		$path =  \DIR . "comments.json",
+		$path,
 		# Arr with comments
 		$file;
 
 	public
+		$artData,
 		$Title = 'Добавить комментарий',
 		$separator='|-|';
 
 
 	###
-	function __construct()
+	function __construct($artData)
 
 	{
-		global $FileInfo, $Data;
+		global $FileInfo;
 
 		# При Аякс-запросе открываем сессию
 		if(!headers_sent() && !isset($_SESSION)) session_start();
 
-		$_SESSION['captcha'] = \H::realIP();
+		// $this->artData= self::getArtData();
+		$this->artDB= self::getArtDB();
+		$this->artData= $artData;
+
+		$this->path= self::$storagePath. "/{$artData['oldCatId']}/{$artData['id']}_comments.json";
+
+		$_SESSION['captcha'] = self::realIP();
 		$this->userR = @$_SESSION['user'] && self::CAPTCHA_4_USERS == false;
 
-		$this->p_name= $Data['title'];
-		// $this->p_name= php\classes\Navigate::skipNum($FileInfo->getFilename());
+		// ?
+		$this->p_name= $this->artData['title'];
 
 		// $this->data = \DIR . 'data.json';
 
-		$this->file = \H::json($this->path);
+		// $this->file = \H::json($this->path);
+		$this->file = new DbJSON($this->path);
 
 		// var_dump($this->file);
 
@@ -69,11 +81,11 @@ class Comments
 
 		$moder_panel= ' <a href="mailto:'.$email.'" rel="nofollow">'.$email.'</a> <span style="float:right;">IP: '.$IP.' &nbsp; | <img src="/assets/images/icons/edit.png" onclick="commFns.Edit.open('.$num.')" alt="EDIT" title="Редактировать" class="pointer green" /> | <img src="/assets/images/icons/del.png" onclick="commFns.Edit.del('.$num.')" alt="DEL" title="Удалить" class="pointer red" /></span>' ;
 
-		$res= '<div id="ent_page'.$num.'" class="container entry"><div class="head_entry"><span class="uname">'.$num.' '.$name.' &nbsp; CMS: ' . $cms . '</span> <span style="font-size:0.7em;">( '.$time.' )</span>' . "\n" . (!\ADMIN? '': '<div class="core bar">' . $moder_panel . '</div>');
+		$res= '<div id="ent_page'.$num.'" class="container entry"><div class="head_entry"><span class="uname">'.$num.' '.$name.' &nbsp; CMS: ' . $cms . '</span> <span style="font-size:0.7em;">( '.$time.' )</span>' . "\n" . (!self::is_adm()? '': '<div class="core bar">' . $moder_panel . '</div>');
 		$res.= '</div><div class="entry_mess">' . self::smiles(self::BBcode($mess));
 
 		if(trim($answer)) {
-			$res.= '<div class="entry_answer"><p style="font-weight:bold;">'. OWNER['name'] .':</p>'.self::smiles(self::BBcode($answer)).'</div>';
+			$res.= '<div class="entry_answer"><p style="font-weight:bold;">'. self::$cfg['admin']['name'] .':</p>'.self::smiles(self::BBcode($answer)).'</div>';
 		}
 
 		$res.= '</div></div>';
@@ -85,8 +97,7 @@ class Comments
 	function check_no_comm()
 
 	{ # return true - комменты отключены
-		global $Data;
-		return isset($Data['comments']) && !$Data['comments'];
+		return isset($this->artData['comments']) && !$this->artData['comments'];
 	}
 
 
@@ -95,18 +106,14 @@ class Comments
 	function Enabled_Comm($bool)
 ############################
 	{
-		global $H, $Data;
-
 		// $data = \H::json(\DIR . 'data.json');
 
-		if (!\ADMIN) die("<p class='core warning'>У тебя нет прав для данного действия!</p>");
+		if (!self::is_adm()) die("<p class='core warning'>У тебя нет прав для данного действия!</p>");
 
-		if ($bool === 'false')
-			$comments = ['comments'=>0];
-		elseif ($bool === 'true')
-			$comments = ['comments'=>1];
+		$bool= filter_var($bool,FILTER_VALIDATE_BOOLEAN);
 
-		\H::json(\DIR . 'data.json', $comments);
+		// \H::json(\DIR . 'data.json', $comments);
+		$this->artDB->set(['enable-comments'=>$bool]);
 
 		$this->read();
 		die;
@@ -120,7 +127,7 @@ class Comments
 	{
 		$ind = $_REQUEST['num'] - 1;
 
-		@list($u_date, $u_name, $u_mess, $u_home, $u_email, $u_ip, $u_otvet, $u_CMS) = $this->file[$ind];
+		@list($u_date, $u_name, $u_mess, $u_home, $u_email, $u_ip, $u_otvet, $u_CMS) = $this->file->{$ind};
 		// var_dump($this->path, $this->file);
 		// @list($u_date,$u_name,$u_mess,$u_home, $u_email, $u_ip, $u_otvet, $u_CMS) = $this->file{$_POST['id']};
 
@@ -159,10 +166,10 @@ class Comments
 		if(isset($_POST['CMS'])) $arr[] = $_POST['CMS'];
 
 		# присваиваем нужной строке новый комментарий
-		$this->file[$ind] = $arr;
+		$this->file->set([$ind=>$arr]) ;
 
 		# блокируем файл и производим запись обновлённого массива
-		if (!\ADMIN || !\H::json($path, [$ind => $arr]))
+		if (!self::is_adm() || !\H::json($path, [$ind => $arr]))
 			echo '<div class="core warning">Невозможно записать новые данные!</div>';
 
 		// var_dump($GLOBALS['sendToMail']);
@@ -175,7 +182,7 @@ class Comments
 
 			self::sendMail([
 				"Уважаемый(ая) " . $name . "!\nАдминистрация сайта " . \HOST
-				. " ответила на Ваш комментарий на странице - " . $this->p_name,
+				. " ответила на Ваш комментарий на странице - " . $this->artData['title'],
 				'Комментарий' => $e,
 				'Ответ' => $o,
 				'email' => $_POST['email'],
@@ -214,9 +221,9 @@ class Comments
 		if(empty($_POST['email']))
 			$this->err[] = "Не указан email";
 
-		if(\ADMIN)
+		if(self::is_adm())
 			$_POST = array_merge($_POST, [
-				'name' => $_POST['name'] ? $_POST['name'] : \OWNER['name'],
+				'name' => $_POST['name'] ? $_POST['name'] : self::$cfg['admin']['name'],
 				'homepage' => \BASE_URL
 			]);
 
@@ -226,15 +233,10 @@ class Comments
 			"Post" => @$_POST['entry'],
 			"Site"=>@$_POST['homepage'],
 			"email"=>@$_POST['email'],
-			"IP"=>\H::realIP(),
+			"IP"=>self::realIP(),
 			"Ответ"=>"",
 			"CMS"=>@$_POST['CMS'],
 		];
-
-		/* var_dump(
-			$_POST,
-			\OWNER['name']
-		); */
 
 
 		if(empty($arr['IP']))
@@ -252,7 +254,7 @@ class Comments
 		if (count($this->err))
 		{
 			echo '<pre class="core warning">';
-			array_walk($this->err, function($i) {
+			array_walk($this->err, function(&$i) {
 				echo "<p>$i</p>\n";
 			});
 			echo '</pre>';
@@ -264,25 +266,17 @@ class Comments
 		# Если указан, то отсылаем на мыло
 		if(self::TO_EMAIL == true)
 		{
-			$subject = "Комментарий со страницы $this->p_name - ". ($_REQUEST['curpage'] ?? \HOST);
+			$subject = "Комментарий со страницы $this->artData['title'] - ". ($_REQUEST['curpage'] ?? \HOST);
 			self::sendMail($arr, $subject);
 		}
 		// var_dump($arr);
 
-		$this->file[] = array_values($arr);
+		$this->file->push(array_values($arr));
 
-		if (!\H::json($this->path, $this->file, 'rewrite'))
+		if (!$this->file->save())
 		{
 			echo '<div class="core warning">Невозможно добавить новый Post!</div>';
-			\H::$tmp['comm'] = [
-				'path' => $this->path,
-				'file' => $this->file,
-			];
-			\H::log([
-				'echo \'$this->path = \' . self::$tmp[\'comm\'][\'path\']',
-				'echo \'$this->file = \'',
-				'print_r(self::$tmp[\'comm\'][\'file\'])',
-			], __FILE__, __LINE__);
+			self::$log->add(__METHOD__,null,[$this->file]);
 		}
 
 
@@ -295,22 +289,17 @@ class Comments
 	function Del_Comm()
 
 	{
-		global $H;
+		if(!self::adm()) return;
+
 		$ind = $_REQUEST['num'] - 1;
 
 		echo "<h2>Del_Comm</h2>" . __FILE__ . ' : ' . __LINE__ .  "<pre>\n";
 		echo $ind . "\n";
-		var_dump($this->file[$ind]);
+
 		echo '<hr>';
 		echo '</pre>';
 
-		$this->file = array_values(array_diff_key($this->file, [$ind => 0]));
-
-		// if (!$kff['file']['json']([], $this->path, ['str' => $_POST['id']])) {
-		if (!\ADMIN || !\H::json($this->path, $this->file, 'rewrite'))
-			$this->err[] = self::T_FAIL_REMOVE;
-		else
-			echo self::T_SUCCESS_REMOVE;
+		$this->file->clear($ind);
 
 		$this->read();
 		die;
@@ -338,7 +327,7 @@ class Comments
 			echo self::T_FAIL_SEND;
 		else return;
 
-		if(\ADMIN) var_dump($send_succ);
+		if(self::is_adm()) var_dump($send_succ);
 	}
 
 
@@ -348,7 +337,7 @@ class Comments
 ############################
 	{
 
-		global $user, $H,
+		global $user,
 		#
 		$pager;
 		$comments='';
@@ -358,22 +347,14 @@ class Comments
 		# default
 		$pager_def= ['data_count' => 0, 'paginator' => '', 'fragm' => []];
 
-		if ($pager= \H::paginator($this->file, self::MAX_ON_PAGE, 'p_comm', 'reverse', '#comments_header'))
+		if ($pager= $this->Paginator(self::MAX_ON_PAGE, 'p_comm', 'reverse', '#comments_header'))
 		{
-			#####
-			/* echo "<pre>";
-			var_dump($pager);
-			var_dump($kff['paginator']($this->file, self::MAX_ON_PAGE, 'p_comm', 1, '#comments_header'));
-			// var_dump($kff['file']['json'](NULL, $this->path));
-			echo "</pre>"; */
-			#####
-
 			foreach($pager['fragm'] as $i => $ent) {
 				/* echo '<h3>$ent</h3><pre>';
 				print_r( $ent);
 				echo '</pre>'; */
 
-				if (\ADMIN && count($ent) <= 3) {
+				if (self::is_adm() && count($ent) <= 3) {
 					echo "<h1>fucking URL</h1>";
 					var_dump($ent);
 				}
@@ -402,7 +383,7 @@ class Comments
 
 
 		# Rendering comments
-		$m_path = Path::fromRootStat(__DIR__);
+		$m_path = self::getPathFromRoot(__DIR__);
 		?>
 
 		<link rel="stylesheet" href="/<?=$m_path?>/style.css">
@@ -410,7 +391,7 @@ class Comments
 		<?php
 		/*===============<Enabled comments. Start code source>=================
 		#########################*/
-		if (\ADMIN && SENIOR):
+		if (self::is_adm()):
 
 		?>
 
@@ -418,13 +399,12 @@ class Comments
 
 			<h5 class="center" style="display: inline;"> COMMENTS</h5>
 
-			<p>\ADMIN= <?=\ADMIN?></p>
+			<p>self::is_adm()= <?=self::is_adm()?></p>
 			<p>this->path= <?=$this->path?></p>
-			<!-- <p>this->file= <? #print_r($this->file)?></p> -->
 
 			<hr>
-			<p>this->p_name= <?=$this->p_name?></p>
-			<p>check_no_comm(this->p_name)= <? var_dump($this->check_no_comm($this->p_name))?></p>
+			<p>this->p_name= <?=$this->artData['title']?></p>
+			<p>check_no_comm(this->p_name)= <? var_dump($this->check_no_comm($this->artData['title']))?></p>
 
 			<hr>
 			<p>urldecode($_SERVER['QUERY_STRING']) <?var_dump(urldecode($_SERVER['QUERY_STRING']) )?></p>
@@ -432,19 +412,19 @@ class Comments
 
 		<?php
 		endif;
-		if(\ADMIN) :
+		if(self::is_adm()) :
 		?>
 
 		<div class="core bar">
-			<label class="button" style="margin-left:50px;"><input style="width:30px;" onchange="commFns.en_com.call(this)" <?=!$this->check_no_comm($this->p_name) ?'checked="checked"':''?> type="checkbox"> Включить комментарии на этой странице</label>
+			<label class="button" style="margin-left:50px;"><input style="width:30px;" onchange="commFns.en_com.call(this)" <?=!$this->check_no_comm($this->artData['title']) ?'checked="checked"':''?> type="checkbox"> Включить комментарии на этой странице</label>
 		</div>
 
 		<?php
 		endif;
 		// echo $this->js_vars();
 		# VIEW comments block
-		require_once('entries.php');
-		require_once('form.php');
+		require_once 'entries.php';
+		require_once 'form.php';
 
 		?>
 
@@ -464,14 +444,14 @@ class Comments
 	function js_vars()
 
 	{
-		global $user, $pager;
+		global $Config, $user, $pager;
 
 		return json_encode([
-			'adm' => \ADMIN,
-			'email' => \ADM_EMAIL,
+			'adm' => self::is_adm(),
+			'email' => $Config->adminEmail,
 			// 'refPage' => $_REQUEST['page'],
-			'p_name' => $this->p_name,
-			'check_no_comm' => $this->check_no_comm($this->p_name),
+			'p_name' => $this->artData['title'],
+			'check_no_comm' => $this->check_no_comm($this->artData['title']),
 			'name_request' => 'p_comm',
 			'MAX_LEN' => self::MAX_LEN,
 			'captcha' =>  $_SESSION['captcha'] ?? null,
@@ -525,34 +505,18 @@ class Comments
 		return $texto;
 	}
 
+	function Render()
+	{
+		?>
+		<section id="comments">
+			<link rel="stylesheet" href="/<?=self::getPathFromRoot(__DIR__);?>/style.css">
+			<?php #there ?>
+			<p>Тут будут комментарии.</p>
+			<?=$this->read()?>
+			<script type="text/javascript" src="/<?=self::getPathFromRoot(__DIR__);?>/comments.js"></script>
+		</section>
+		<?php
+	}
+
 } ### END class Comments ###
 
-
-###########
-$Comments = $Comments ?? new Comments;
-###########
-
-/*============ Сохранение, редактирование и удаление комментариев по AJAX-запросу ===========*/
-
-$s_method = $_REQUEST['s_method'] ?? null;
-
-switch($s_method) {
-	# Добавляем новый коммент
-	case 'write': $Comments->write(); break;
-	# Выводим форму редактирования коммента
-	case 'edit_comm': $Comments->Edit_Comm(); break;
-	# Сохраняем отредактированный коммент
-	case 'save_edit':
-		$Comments->Save_Edit();
-		break;
-	# Удаляем коммент
-	case 'del': $Comments->Del_Comm(); break;
-	# включение/отключение комментариев
-	case 'enable_comm': $Comments->Enabled_Comm($_POST['enable_comm']); break;
-	default :
-	# Выводим существующие комменты
-	if (isset($Comments) && (!$Comments->check_no_comm($Comments->p_name) || \ADMIN)) {
-		// var_dump(\ADMIN);
-		$Comments->read();
-	}
-}

@@ -17,7 +17,6 @@ var commFns = {
 
 		data = Object.assign( {
 			page: sv.DIR,
-			module: commFns.module
 		}, data || {});
 
 		commFns.refreshed = 0;

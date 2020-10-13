@@ -56,6 +56,7 @@ class Sitemap extends BlogKff
 	public static function test()
 	{
 		self::$test= 1;
+		self::$log->add(__METHOD__. 'run as test', Logger::BACKTRACE);
 		unlink(self::$path);
 		ob_start();
 		echo '<pre>';
@@ -84,7 +85,7 @@ class Sitemap extends BlogKff
 				echo "$artPath<br>";
 
 				// *Удаляем черновики
-				if(!empty($artData['not-public'])) continue;
+				if(filter_var($artData['not-public'],FILTER_VALIDATE_BOOLEAN)) continue;
 
 				$artData['date'] = date ('Y-m-d', filemtime(\DR."/$artPath" . self::$l_cfg['ext']));
 
@@ -105,18 +106,16 @@ class Sitemap extends BlogKff
 				// echo "<h4>\$artData</h4>";
 				// var_dump($artData);
 
-				$itemContent = "\n".'<item turbo="true">'
+				$this->rss .= "\n".'<item turbo="true">'
 				. "\n<link>" . (self::is('https')?'https':'http') . '://' . \HOST . "/$artPath</link>\n"
 				. "\n<turbo:content>\n<![CDATA[\n"
-				. "<header>".($artData['title'] ?? $artData['name'])."</header>\n"
+				. "<header>\n<h1>".($artData['title'] ?? $artData['name'])."</h1>\n</header>\n"
 				. $itemContent
 				. "\n]]>\n</turbo:content>\n"
 				. "</item>\n";
 
 				// echo "<hr>". htmlspecialchars($itemContent);
-
-				$this->rss .= $itemContent;
-			}
+			} //foreach
 
 		} // foreach
 
@@ -164,6 +163,7 @@ class Sitemap extends BlogKff
 		foreach($xpath->query('//img[@data-src]') as $i){
 			$i->setAttribute('src', $i->getAttribute('data-src'));
 			$i->removeAttribute('data-src');
+			if($i->hasAttribute('uk-img')) $i->removeAttribute('uk-img');
 		}
 
 		$body= $xpath->query('//body')->item(0);

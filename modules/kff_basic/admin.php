@@ -17,7 +17,7 @@ if(!$kff::is_adm()) die('Access denied!');
 
 class Basic
 {
-	static $dir, $cfgDB, $cfg, $log, $mds_prefix;
+	static $modDir, $cfgDB, $cfg, $log, $mds_prefix;
 
 	static function init()
 	{
@@ -25,7 +25,7 @@ class Basic
 
 		self::$log = &$log;
 		// *Директория модуля от DR
-		self::$dir = $kff::getPathFromRoot(__DIR__);
+		self::$modDir = $kff::getPathFromRoot(__DIR__);
 
 		/* self::$cfg= json_decode(
 			@file_get_contents(__DIR__.'/cfg.json'), 1
@@ -34,12 +34,13 @@ class Basic
 			'mds_prefix'=> 'kff'
 		]; */
 		self::$cfgDB= &$kff::$cfgDB;
-		self::$cfg= &$kff::$cfg;
-		self::$cfg= array_merge(
-			[
+		if(is_null(self::$cfgDB->get('mds_prefix'))){
+			self::$cfgDB->set([
 				'mds_prefix'=> 'kff_' // *Префикс для сканируемых модулей
-			], self::$cfg
-		);
+			]);
+		}
+		self::$cfg= self::$cfgDB->get();
+
 
 		// self::$log->add('$kff::$cfg=',null, [$kff::$cfg]);
 
@@ -63,10 +64,8 @@ class Basic
 	}
 
 
-	// todo
 	static function saveINI()
 	{
-		global $kff;
 		if(
 			empty(@$ini_path = &$_REQUEST['ini_path'])
 			|| !strpos($ini_path, '.ini')
@@ -80,7 +79,7 @@ class Basic
 		// self::$log->add('parsed INI=',null,[$ini]);
 		$ini[$s_name] = addslashes($s_val);
 
-		file_put_contents($ini_path, $kff::arr2ini($ini));
+		file_put_contents($ini_path, Index_my_addon::arr2ini($ini));
 		?>
 		<div id="response">
 			<?php# var_dump($_REQUEST)?>
@@ -311,7 +310,7 @@ class Basic
 	{
 		$mds = self::scanModules();
 		?>
-		<!-- <link rel="stylesheet" href="/<?=self::$dir?>/admin.style.css"> -->
+		<!-- <link rel="stylesheet" href="/<?=self::$modDir?>/admin.style.css"> -->
 
 		<!-- uk-switcher -->
 		<!-- class="menu_page" -->

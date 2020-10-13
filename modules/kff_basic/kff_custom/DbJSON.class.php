@@ -223,7 +223,7 @@ class DbJSON implements Iterator, Countable
 
 	/**
 	 * *db - [{},{},...]
-	 * *Замена элемента $this->db с индексом $this->getInd(@key, @val)
+	 * *Добавление / замена элемента $this->db с индексом $this->getInd(@key, @val)
 	 * @param item {array} - ассоциативный массив
 	 */
 	public function setInd(array $item, $key, $val, $strict=1)
@@ -315,6 +315,12 @@ class DbJSON implements Iterator, Countable
 	}
 
 
+	public function reverse()
+	{
+		$this->db= array_reverse($this->db);
+	}
+
+
 	# Массив в JSON
 	public static function toJSON(array $arr)
 	{
@@ -330,11 +336,14 @@ class DbJSON implements Iterator, Countable
 
 		if(empty($this->path))
 			is_object($log) && $log->add(__METHOD__.': Не указан путь записи базы',$log::BACKTRACE,['$this->path'=>$this->path]);
-		else
+		else {
 			file_put_contents(
 				$this->path,
 				self::toJSON($this->db), LOCK_EX
 			);
+			$this->changed= 0;
+			return true;
+		}
 	}
 
 

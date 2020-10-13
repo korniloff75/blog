@@ -11,5 +11,9 @@
 		"/admin/include/start.dat",
 		"/system/global.dat"
 	],
-	"init_mods": false
+	"init_mods": false,
+	"admin": {
+		"name": "KorniloFF",
+		"email": "korniloff75@ya.ru"
+	}
 }

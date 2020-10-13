@@ -4,9 +4,15 @@
 
 
 <!-- <hr> -->
-<h2>Глобальные настройки</h2>
-
 <div id="kff_sts" class="kff_sts uk-section">
+
+	<h2>Глобальные настройки</h2>
+
+	<div data-group="admin">
+		<p><span class="uk-width-1-3@m uk-display-inline-block">Имя админа</span>  <input name="name" type="text" class="uk-width-expand" value="<?=self::$cfg['admin']['name']?>"></p>
+		<p><span class="uk-width-1-3@m uk-display-inline-block">Email админа</span>  <input name="email" type="text" class="uk-width-expand" value="<?=self::$cfg['admin']['email']?>"></p>
+	</div>
+
 
 	<p><label>Init Modules <input name="init_mods" type="checkbox" ></label></p>
 	<p class="comment">Инициализация всех модулей. Системная.</p>
@@ -48,9 +54,10 @@ U.ready(()=>{
 	ajaxRender();
 
 	// *Set group 4 checkboxes
-	$content.find('input[type=checkbox]')
+	$content.find('input')
 	.each((ind,i)=>{
-		i.classList.add('uk-checkbox');
+		if(i.type === 'checkbox')
+			i.classList.add('uk-checkbox');
 
 		var group= i.closest('[data-group]');
 		i.group= group && group.getAttribute('data-group');

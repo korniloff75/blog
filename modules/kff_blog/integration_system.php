@@ -183,6 +183,7 @@ class BlogKff extends Index_my_addon
 		foreach(glob($catPathname . "/*" . self::$l_cfg['ext']) as $ind=>&$artPathname) {
 			// *без расширения
 			$artId = pathinfo($artPathname, PATHINFO_FILENAME);
+			// todo Перевести на artData
 			$artDB = self::getArtDB($artPathname);
 
 			// if(empty($artDB->get('title')))
@@ -202,7 +203,9 @@ class BlogKff extends Index_my_addon
 				$nameFixed=1;
 			}
 
-		}
+		} //foreach
+
+		$catDB->save();
 
 		// *Заносим в $map
 		self::$map->setInd($catDB->get(), 'id', $catId);

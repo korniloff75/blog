@@ -1,7 +1,7 @@
 <h4 id="comments_header">Комментарии<?=" ( {$pager['data_count']} )"?></h4>
 
 <?php
-if (\ADMIN &&
+if (self::is_adm() &&
 	($this->check_no_comm($this->p_name))
 ) echo self::T_DISABLED;
 ?>
@@ -24,7 +24,7 @@ if (\ADMIN &&
 	?>
 
 
-	<?php if(\ADMIN && !empty($this->err)): ?>
+	<?php if(self::is_adm() && !empty($this->err)): ?>
 		<div class="core warning">
 			<pre>
 				<?php
