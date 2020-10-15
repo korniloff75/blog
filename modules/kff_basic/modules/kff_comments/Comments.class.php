@@ -337,19 +337,20 @@ class Comments extends BlogKff
 ############################
 	{
 
-		global $user,
+		global $user;
 		#
-		$pager;
 		$comments='';
 
 		// ob_start();
 
 		# default
-		$pager_def= ['data_count' => 0, 'paginator' => '', 'fragm' => []];
+		$pager_def= ['data_count' => 0, 'html' => '', 'fragm' => []];
 
-		if ($pager= $this->Paginator(self::MAX_ON_PAGE, 'p_comm', 'reverse', '#comments_header'))
+		$this->Paginator(self::MAX_ON_PAGE, 'p_comm', 'reverse', '#comments_header');
+
+		if ($this->paginator)
 		{
-			foreach($pager['fragm'] as $i => $ent) {
+			foreach($this->paginator['fragm'] as $i => $ent) {
 				/* echo '<h3>$ent</h3><pre>';
 				print_r( $ent);
 				echo '</pre>'; */
@@ -359,7 +360,7 @@ class Comments extends BlogKff
 					var_dump($ent);
 				}
 
-				$num = $pager['data_count'] + self::MAX_ON_PAGE - $pager['lp'] - $i ; # nE!
+				$num = $this->paginator['data_count'] + self::MAX_ON_PAGE - $this->paginator['lp'] - $i ; # nE!
 
 				list($time, $name, $mess, $Site, $email, $IP,$answer) = $ent;
 
@@ -378,7 +379,7 @@ class Comments extends BlogKff
 		} // file_exists($this->path)
 		else
 		{
-			$pager = $pager_def;
+			$this->paginator = $pager_def;
 		}
 
 
@@ -444,7 +445,7 @@ class Comments extends BlogKff
 	function js_vars()
 
 	{
-		global $Config, $user, $pager;
+		global $Config, $user;
 
 		return json_encode([
 			'adm' => self::is_adm(),
@@ -456,7 +457,7 @@ class Comments extends BlogKff
 			'MAX_LEN' => self::MAX_LEN,
 			'captcha' =>  $_SESSION['captcha'] ?? null,
 			// 'pageName' => getPageName(),
-			'dataCount' => $pager['data_count'],
+			'dataCount' => $this->paginator['data_count'],
 
 			'cms' => $user ? $_SESSION['auth']['data'][4] : ($_POST['homepage'] ?? '')
 		], JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
@@ -510,10 +511,9 @@ class Comments extends BlogKff
 		?>
 		<section id="comments">
 			<link rel="stylesheet" href="/<?=self::getPathFromRoot(__DIR__);?>/style.css">
-			<?php #there ?>
-			<p>Тут будут комментарии.</p>
+
 			<?=$this->read()?>
-			<script type="text/javascript" src="/<?=self::getPathFromRoot(__DIR__);?>/comments.js"></script>
+
 		</section>
 		<?php
 	}

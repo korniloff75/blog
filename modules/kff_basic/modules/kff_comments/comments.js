@@ -148,29 +148,13 @@ var commFns = {
 		}); */
 	},
 
-	paginator : function(e) {
-		e = $().e.fix(e);
-		var t = e.target;
-		// console.log('t.tagName = ' + t.tagName);
-		if(t.tagName !== 'A') return;
-		e.stopPropagation();
-		e.preventDefault();
-
-		commFns.refresh({
-			p_comm: _H.qs.parse(t.href)['p_comm'],
-		}, {
-			// handler: t.href,
-			hash: '#comments_header',
-		});
-
-		console.log('p_comm = ', _H.qs.parse(t.href)['p_comm']);
-
-		history.pushState(null, null, '/' + _H.getPath(t.href));
+	paginator : function paginator() {
+		var ajax= new kff.menu('.uk-pagination', '#wrapEntries');
+		ajax.after= paginator;
 	},
 
 	init: function(gl) {
-		var $paginators = $("#comments .paginator"),
-		$form = $('#comments_form'),
+		var $form = $('#comments_form'),
 		form = $form[0],
 		$entry = $('#entry')[0];
 
@@ -184,7 +168,7 @@ var commFns = {
 		$('#c_subm').on("click", gl.commFns.Send.bind(null, $form));
 
 		// ajax на пагинатор
-		$paginators.on("click",commFns.paginator);
+		this.paginator();
 
 		$(document).on("keyup", function (e) {
 			if (commFns.$formEdit && $().e.fix(e).defKeyCode('esc')) commFns.$formEdit.remove();

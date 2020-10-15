@@ -1,4 +1,4 @@
-<h4 id="comments_header">Комментарии<?=" ( {$pager['data_count']} )"?></h4>
+<h4 id="comments_header">Комментарии<?=" ( {$this->paginator['data_count']} )"?></h4>
 
 <?php
 if (self::is_adm() &&
@@ -6,15 +6,15 @@ if (self::is_adm() &&
 ) echo self::T_DISABLED;
 ?>
 
-<div id="entries">
+<div id="wrapEntries">
 	<?php # Comments BLOCK
-	$cpfr = count($pager['fragm']);
+	$cpfr = count($this->paginator['fragm']);
 	if($cpfr)
 	{
-		echo $pager['paginator'];
+		echo $this->paginator['html'];
 		if ($cpfr > 3) echo '<p><a href="#comments_name" title="'. $this->Title .'">'. $this->Title .'</a></p>';
-		echo $comments
-		. $pager['paginator'];
+		echo "<div id=\"entries\">$comments</div>"
+		. $this->paginator['html'];
 	}
 	else
 	{

@@ -464,7 +464,6 @@ class BlogKff_page extends BlogKff
 
 		if(!empty($artData['author'])){
 		?>
-
 		<p>Автор: <em itemprop="author"><?=$artData['author']?></em></p>
 		<?php } ?>
 

@@ -7,11 +7,15 @@
 
 trait Paginator
 {
+	protected
+	// *DbJSON
+		$file,
+		$paginator;
 
 	public function Paginator (int $max_entries=10, string $name_request='p', $reverse=1, $hash="")
 
 	{
-		$paginator = '';
+		$html = '';
 
 		$data= &$this->file;
 
@@ -32,24 +36,24 @@ trait Paginator
 
 
 		if($page_blocks_count != 1) {
-			$paginator .= "<div class=paginator data-id=\"$name_request\">";
+			$html .= "<ul class='uk-pagination uk-flex-center' data-id=\"$name_request\">";
 
 			for($u=1; $u<=$page_blocks_count; $u++) {
 				if($p!=$u){
-					$paginator .= "<a href='/{$_REQUEST['page']}?$name_request= $u'>$u</a> ";
+					$html .= "<li><a href='?$name_request= $u'>$u</a></li> ";
 				}	elseif($p==$u){
-					$paginator .= "<b>$u</b> ";
+					$html .= "<li class=uk-active><b>$u</b></li>";
 				}
 			}
 
-			$paginator .= "</div>";
+			$html .= "</ul>";
 		} else {
-			$paginator = '';
+			$html = '';
 		}
 
-		return [
+		$this->paginator= [
 			'fragm'=>array_slice($data->get(),$first_page,$max_entries), #-1
-			'paginator' => $paginator,
+			'html' => $html,
 			'fp'=>$first_page,
 			'lp'=>$last_page,
 			'data_count'=>$data_count,

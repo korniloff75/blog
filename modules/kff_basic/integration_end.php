@@ -25,6 +25,7 @@ ob_start();
 	<title>{{Title}}</title>
 	<meta name="description" content="<?php $Page->get_description()?>">
 	<meta name="keywords" content="<?php $Page->get_keywords()?>">
+	<link rel="icon" href="/favicon.ico" type="image/x-icon">
 
 <?php
 $Templater['coreHead']= ob_get_clean();

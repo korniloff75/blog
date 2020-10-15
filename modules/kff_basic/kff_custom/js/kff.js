@@ -229,7 +229,7 @@ var kff = {
 	},
 
 	menu: function($nav, mainSelector) {
-		this.$nav = $nav[0]? $nav: $($nav);
+		this.$nav = ($nav instanceof jQuery)? $nav: $($nav);
 		mainSelector = mainSelector || 'main';
 
 		var self = this,
@@ -375,6 +375,11 @@ kff.menu.prototype.clickHahdler = function ($e) {
 			console.log('uk-dropdown',t.closest('.uk-open'), );
 			var open= $e.target.closest('.uk-open');
 			open && UIkit.dropdown(open).hide();
+		}
+
+		// *After click
+		if(typeof this.after === 'function'){
+			this.after();
 		}
 	});
 

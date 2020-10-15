@@ -87,7 +87,8 @@ class Sitemap extends BlogKff
 				// *Удаляем черновики
 				if(filter_var($artData['not-public'],FILTER_VALIDATE_BOOLEAN)) continue;
 
-				$artData['date'] = date ('Y-m-d', filemtime(\DR."/$artPath" . self::$l_cfg['ext']));
+				$artData['ts'] = filemtime(\DR."/$artPath" . self::$l_cfg['ext']);
+				$artData['date'] = date (self::DATE_FORMAT, $artData['ts']);
 
 				$this->sitemap .= "<url>\n"
 				. "<loc>" . (self::is('https')?'https':'http') . '://' . \HOST . "/$artPath</loc>\n"
@@ -108,6 +109,7 @@ class Sitemap extends BlogKff
 
 				$this->rss .= "\n".'<item turbo="true">'
 				. "\n<link>" . (self::is('https')?'https':'http') . '://' . \HOST . "/$artPath</link>\n"
+				. "<pubDate>". date ('r', $artData['ts']) ."</pubDate>"
 				. "\n<turbo:content>\n<![CDATA[\n"
 				. "<header>\n<h1>".($artData['title'] ?? $artData['name'])."</h1>\n</header>\n"
 				. $itemContent
