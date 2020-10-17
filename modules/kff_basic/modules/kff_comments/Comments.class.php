@@ -36,32 +36,38 @@ class Comments extends BlogKff
 		$Title = 'Добавить комментарий',
 		$separator='|-|';
 
+	static
+		$captcha;
+
 
 	###
 	function __construct($artData)
 
 	{
-		global $FileInfo;
+		global $act;
 
-		# При Аякс-запросе открываем сессию
-		if(!headers_sent() && !isset($_SESSION)) session_start();
+		$this->path= self::$storagePath. "/{$artData['oldCatId']}/{$artData['id']}_comments.json";
+
+		$this->file = new DbJSON($this->path);
+
+		// var_dump($act);
+
+		// if($act==='comments' && $this->_InputController()) die;
+		if($_REQUEST['act']==='comments' &&  $this->_InputController()) die;
+
+		// *При Аякс-запросе открываем сессию
+		// if(!headers_sent() && !isset($_SESSION)) session_start();
 
 		// $this->artData= self::getArtData();
 		$this->artDB= self::getArtDB();
 		$this->artData= $artData;
 
-		$this->path= self::$storagePath. "/{$artData['oldCatId']}/{$artData['id']}_comments.json";
 
-		$_SESSION['captcha'] = self::realIP();
-		$this->userR = @$_SESSION['user'] && self::CAPTCHA_4_USERS == false;
+
+		self::$captcha = self::realIP();
 
 		// ?
 		$this->p_name= $this->artData['title'];
-
-		// $this->data = \DIR . 'data.json';
-
-		// $this->file = \H::json($this->path);
-		$this->file = new DbJSON($this->path);
 
 		// var_dump($this->file);
 
@@ -79,7 +85,7 @@ class Comments extends BlogKff
 		}
 
 
-		$moder_panel= ' <a href="mailto:'.$email.'" rel="nofollow">'.$email.'</a> <span style="float:right;">IP: '.$IP.' &nbsp; | <img src="/assets/images/icons/edit.png" onclick="commFns.Edit.open('.$num.')" alt="EDIT" title="Редактировать" class="pointer green" /> | <img src="/assets/images/icons/del.png" onclick="commFns.Edit.del('.$num.')" alt="DEL" title="Удалить" class="pointer red" /></span>' ;
+		$moder_panel= ' <a href="mailto:'.$email.'" rel="nofollow">'.$email.'</a> <span style="float:right;">IP: '.$IP.' &nbsp; <span uk-icon="icon: file-edit" onclick="commFns.Edit.open('.$num.')" title="Редактировать" style="cursor:pointer; color:green;" ></span> <span uk-icon="icon: close" onclick="commFns.Edit.del('.$num.')" title="Удалить" style="cursor:pointer; color:red;" /></span></span>' ;
 
 		$res= '<div id="ent_page'.$num.'" class="container entry"><div class="head_entry"><span class="uname">'.$num.' '.$name.' &nbsp; CMS: ' . $cms . '</span> <span style="font-size:0.7em;">( '.$time.' )</span>' . "\n" . (!self::is_adm()? '': '<div class="core bar">' . $moder_panel . '</div>');
 		$res.= '</div><div class="entry_mess">' . self::smiles(self::BBcode($mess));
@@ -122,59 +128,71 @@ class Comments extends BlogKff
 
 
 ############################
-	function Edit_Comm()
-############################
+	function c_Edit_Comm()
+
 	{
+		// ob_end_clean();
+		// ob_start();
+		ob_clean();
 		$ind = $_REQUEST['num'] - 1;
 
-		@list($u_date, $u_name, $u_mess, $u_home, $u_email, $u_ip, $u_otvet, $u_CMS) = $this->file->{$ind};
+		@list($u_date, $u_name, $u_mess, $u_home, $u_email, $u_ip, $u_otvet, $u_CMS) = $this->file->get($ind);
 		// var_dump($this->path, $this->file);
 		// @list($u_date,$u_name,$u_mess,$u_home, $u_email, $u_ip, $u_otvet, $u_CMS) = $this->file{$_POST['id']};
 
 		#com_ed - node with formEdit
 		require('formEdit.php');
 
+		ob_end_flush();
 		die;
 	}
 
 
 
 ############################
-	function Save_Edit()
-############################
+	function c_Save_Edit_Comm($form)
+
 	{ # call Ajax
-		global $H;
-		$path=$this->path;
+		if(!self::is_adm()) return;
+
+		ob_clean();
+
+		$path= &$this->path;
 
 		if (!file_exists($path)) die('<div class="core warning">Файл с комментариями не обнаружен по адресу</div>' . $path);
 
   	# загружаем файл в массив
-		$e= $_POST['entry'];
-		$o= trim($_POST['otvet']);
-		$ind = $_POST['ind'];
+		$e= $form['entry'];
+		$o= trim($form['otvet']);
+		$ind = $form['ind'];
 
 		# строим массив с новыми значениями
  		$arr = [
-			$_POST['dt'],  # дата и время
-			$_POST['name'] ?? '', # имя пользователя
+			$form['dt'],  # дата и время
+			$form['name'] ?? '', # имя пользователя
 			$e,  # текст сообщения
-			$_POST['homepage'] ?? '',
-			$_POST['email'],
-			$_POST['ip'],
+			$form['homepage'] ?? '',
+			$form['email'],
+			$form['ip'],
 			$o,
 		];
-		if(isset($_POST['CMS'])) $arr[] = $_POST['CMS'];
+		if(isset($form['CMS'])) $arr[] = $form['CMS'];
+
+		self::$log->add(__METHOD__,null,['$form'=>$form, '$arr'=>$arr]);
+
+		// !
+		// die;
 
 		# присваиваем нужной строке новый комментарий
 		$this->file->set([$ind=>$arr]) ;
 
 		# блокируем файл и производим запись обновлённого массива
-		if (!self::is_adm() || !\H::json($path, [$ind => $arr]))
-			echo '<div class="core warning">Невозможно записать новые данные!</div>';
+		// if (!self::is_adm() || !\H::json($path, [$ind => $arr]))
+			// echo '<div class="core warning">Невозможно записать новые данные!</div>';
 
 		// var_dump($GLOBALS['sendToMail']);
 
-		if(self::TO_EMAIL == true && $_POST['sendToMail'])
+		if(self::TO_EMAIL == true && filter_var($form['sendToMail'], FILTER_VALIDATE_BOOLEAN))
 		{
 			$subject = "Ответ администрации сайта " . \HOST;
 
@@ -190,7 +208,8 @@ class Comments extends BlogKff
 			], $subject, $_POST['email']);
 		}
 
-		$this->read();
+		echo $this->read();
+		ob_end_flush();
 		die;
 	}
 
@@ -205,9 +224,9 @@ class Comments extends BlogKff
 
 		# Невидимая каптча
 		# compare without types
-		if ($_REQUEST['keyCaptcha'] != $_SESSION['captcha'])
+		if ($_REQUEST['keyCaptcha'] != self::$captcha)
 			$this->err["Невидимая каптча"] = [
-				$_REQUEST['keyCaptcha'], $_SESSION['captcha'], $_REQUEST['keyCaptcha'] != $_SESSION['captcha']
+				$_REQUEST['keyCaptcha'], self::$captcha, $_REQUEST['keyCaptcha'] != self::$captcha
 			];
 
 		# Если превышен лимит строк
@@ -336,9 +355,6 @@ class Comments extends BlogKff
 	function read()
 ############################
 	{
-
-		global $user;
-		#
 		$comments='';
 
 		// ob_start();
@@ -447,7 +463,7 @@ class Comments extends BlogKff
 	{
 		global $Config, $user;
 
-		return json_encode([
+		return DbJSON::toJSON([
 			'adm' => self::is_adm(),
 			'email' => $Config->adminEmail,
 			// 'refPage' => $_REQUEST['page'],
@@ -455,12 +471,12 @@ class Comments extends BlogKff
 			'check_no_comm' => $this->check_no_comm($this->artData['title']),
 			'name_request' => 'p_comm',
 			'MAX_LEN' => self::MAX_LEN,
-			'captcha' =>  $_SESSION['captcha'] ?? null,
+			'captcha' =>  self::$captcha ?? null,
 			// 'pageName' => getPageName(),
 			'dataCount' => $this->paginator['data_count'],
 
-			'cms' => $user ? $_SESSION['auth']['data'][4] : ($_POST['homepage'] ?? '')
-		], JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK);
+			'cms' => '',
+		]);
 
 	}
 

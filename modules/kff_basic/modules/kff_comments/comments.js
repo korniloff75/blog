@@ -1,27 +1,47 @@
 // comm_vars - settings in comments.php
 'use strict';
+var U= window.U || UIkit.util;
+
 var commFns = {
 	module: 'php/modules/comments/comments.php',
 	$comments: $('section#comments'),
-	refreshed: 1,
+	refreshed: 0,
 
 
 	refresh: function(data, sts) {
-		if(!commFns.refreshed) return;
+		if(this.refreshed) return Promise.resolve();
 
 		sts = Object.assign( {
-			handler: '/',
+			handler: '',
 			hash: '#',
 			cb: null // callback
 		}, sts || {});
 
 		data = Object.assign( {
-			page: sv.DIR,
+			act: 'comments',
 		}, data || {});
 
-		commFns.refreshed = 0;
+		this.refreshed = 1;
 
-		commFns.$comments.load(
+		console.log('data= ', data);
+
+		return kff.request(
+			sts.handler,
+			data,
+			['#entries']
+		)
+		.then(
+			out=>{
+				console.log('out=', out);
+				commFns.refreshed = 0;
+				// commFns.$formEdit.hide();
+			},
+			err=>{
+				console.info('err=', err);
+			}
+		);
+
+		/* commFns.$comments.load(
 			sts.handler,
 			data,
 			function(response) {
@@ -29,37 +49,60 @@ var commFns = {
 				if(typeof sts.cb === 'function') sts.cb.call(null, response);
 				commFns.refreshed = 1;
 			}
-		);
+		); */
 	},
 
 
 	Edit : {
 		createForm : function (resp) {
-			commFns.$formEdit && commFns.$formEdit.remove();
-			commFns.$formEdit = $('body').cr("div", { id: "com_ed" });
-			commFns.$formEdit.append (resp);
+			// commFns.$formEdit && commFns.$formEdit.remove();
+			// commFns.$formEdit = $('<div/>', { id: "com_ed" }).appendTo("body");
+			commFns.$formEdit= UIkit.modal.dialog(resp);
+			console.log('commFns.$formEdit= ', commFns.$formEdit);
+			// commFns.$formEdit.append (resp);
 		},
 
 		open : function(num) {
-			$.post(comm_vars.ajaxPath, {
-				page: sv.DIR,
-				module: commFns.module,
-				s_method:'edit_comm',
-				num: num })
-				.done(commFns.Edit.createForm);
+			U.ajax('', {
+				method: 'POST',
+				data: JSON.stringify({
+					act: 'comments',
+					name:'Edit_Comm',
+					num: num
+				})
+			}).then(xhr=>{
+				commFns.Edit.createForm(xhr.response);
+			});
+			return;
+			/* $.post('', {
+				act: 'comments',
+				name:'Edit_Comm',
+				num: num
+			}).done(
+				commFns.Edit.createForm
+			); */
 		},
 
 		save : function () {
-			var ajaxData = $(document.forms["edit_comm"]).ajaxForm();
+			var formData= [].reduce.call(document.forms["edit_comm"].querySelectorAll('input,select,textarea'), (a,c)=>{
+				if(!c.name) return a;
+				a[c.name]= c.value;
+				return a;
+			}, {});
 
-			ajaxData.s_method= "save_edit";
+			// console.log(formData);
 
-			commFns.refresh(ajaxData, {
-				cb: function() {
-					$('#com_ed').remove();
-				}
-			});
+			var ajaxData = {
+				name: "Save_Edit_Comm",
+				value: formData
+			};
 
+			console.log('!!! Save !!!\n');
+			commFns.refresh(ajaxData)
+			.then(()=>{
+				console.log('!!! Saved !!!\n');
+				commFns.$formEdit.hide();
+			}, err=>{console.info(err);});
 		},
 
 		del : function(num) {
@@ -169,10 +212,6 @@ var commFns = {
 
 		// ajax на пагинатор
 		this.paginator();
-
-		$(document).on("keyup", function (e) {
-			if (commFns.$formEdit && $().e.fix(e).defKeyCode('esc')) commFns.$formEdit.remove();
-		});
 
 		if(!window.BB) return;
 

@@ -265,7 +265,7 @@ var kff = {
 
 	/**
 	 * Обёртка для аякс-запроса
-	 * @param uri
+	 * @param {String} uri
 	 * @param {Object} data
 	 * @param {Array} sels - массив из селекторов
 	 * @returns Promise
@@ -292,10 +292,13 @@ var kff = {
 
 		return kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/js/uikit.min.js')
 		.then(UIkit=>{
+
 			sels.forEach(i=>{
 				if(stop) return;
 				var targetNode= document.querySelector(i),
-					$tmp= $(response);
+					$dfr= $(document.createDocumentFragment());
+
+				$dfr.html(response);
 
 				// if(!targetNode) return;
 				if(!targetNode){
@@ -304,16 +307,20 @@ var kff = {
 					stop= 1;
 				};
 
-				var $sourceNode = $tmp.find(i);
-
-				// console.log(i, targetNode, $sourceNode, '\n');
+				var $sourceNode = $dfr.find(i);
 
 				if(!$sourceNode.length)
-					$sourceNode = $tmp;
+					$sourceNode = $dfr;
 
-				// out[i]= targetNode.innerHTML= $sourceNode.html();
-				out[i]= $(targetNode).html($sourceNode.html()).html();
+
+
+				// console.log(i, targetNode, $sourceNode, $sourceNode.html(), '\n');
+
+				var newContent= $sourceNode.html();
+
+				out[i]= $(targetNode).html(newContent).html();
 			});
+			
 			// *Подсвечиваем лог
 			sels.includes('.log') && this.highlight('.log');
 			// *title

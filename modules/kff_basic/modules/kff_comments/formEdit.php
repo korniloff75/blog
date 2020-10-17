@@ -1,14 +1,11 @@
 <style>
 #edit_comm {
 	z-index: 10000;
-	min-width: 400px;
-	width: 95%;
+	min-width: 350px;
+	/* width: 95%; */
 	max-width: 600px;
 	min-height: 200px;
 	background: #7e7;
-	position: fixed;
-	top: 0;
-	left: 0;
 }
 #edit_comm .admin {
 	border-width: 1px 1px 1px 5px;
@@ -28,7 +25,7 @@
 	<input name="ind" type="hidden" value="<?=$ind?>">
 	<!-- <input name="cp" type="hidden" value="<?#=$_POST['cp']?>"> -->
 
-	<p> Дата: <input type="text" required="required" size="30" name="dt" value="<?=$u_date?>"> IP: <input type="text" size="30" name="ip" value="<?=$u_ip?>"></p>
+	<p class="uk-width-children-1-2@s"> Дата: <input type="text" required="required" size="30" name="dt" value="<?=$u_date?>"> IP: <input type="text" size="30" name="ip" value="<?=$u_ip?>"></p>
 
 	<hr>
 

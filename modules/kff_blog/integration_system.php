@@ -2,6 +2,8 @@
 class BlogKff extends Index_my_addon
 {
 	protected static
+		$inputData,
+		$AJAX= false,
 		$modDir,
 		// *default
 		$def_cfg = [
@@ -51,8 +53,22 @@ class BlogKff extends Index_my_addon
 	protected function _InputController()
 	{
 		// if(!self::is_adm()) return false;
+		;
 
 		$r = &$_REQUEST;
+
+		// *get AJAX
+		if(
+			empty(self::$inputData)
+			&& is_string(self::$inputData= file_get_contents('php://input'))
+			&& !empty(self::$inputData= json_decode(self::$inputData, 1))
+		){
+			$r= array_merge($r, self::$inputData);
+			self::$AJAX = true;
+		}
+
+		// self::$log->add(__METHOD__,null,['$r'=>$r, 'method_exists($this, ($m_name = "c_{$r[\'name\']}"))'=>method_exists($this, ($m_name = "c_{$r['name']}")), '$this'=>$this]);
+
 		if(!empty($r['name']) && method_exists($this, ($m_name = "c_{$r['name']}")))
 		{
 			if(is_string($r['opts']))

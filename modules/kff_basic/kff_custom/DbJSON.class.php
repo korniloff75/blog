@@ -11,6 +11,7 @@ class DbJSON implements Iterator, Countable
 	private
 		$position = 0,
 		$changed = 0,
+		$reversed = false,
 		$values,
 		$path;
 
@@ -315,8 +316,9 @@ class DbJSON implements Iterator, Countable
 	}
 
 
-	public function reverse()
+	public function reverse($force=0)
 	{
+		if(!$force) $this->reversed= !$this->reversed;
 		$this->db= array_reverse($this->db);
 	}
 
@@ -333,6 +335,10 @@ class DbJSON implements Iterator, Countable
 		global $log;
 
 		$this->saved= 1;
+
+		if($this->reversed){
+			$this->reverse(1);
+		}
 
 		if(empty($this->path))
 			is_object($log) && $log->add(__METHOD__.': Не указан путь записи базы',$log::BACKTRACE,['$this->path'=>$this->path]);
