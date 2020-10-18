@@ -50,6 +50,14 @@
 	background-color: #ffe8d0;
 }
 
+*[class *= 'button'] {
+	cursor: pointer;
+}
+
+*[class *= 'flex-'] {
+	display: flex;
+}
+
 @media (max-width: 450px) {
 	div.content {
 		padding: 5px;

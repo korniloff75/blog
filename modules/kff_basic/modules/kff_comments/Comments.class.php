@@ -216,45 +216,46 @@ class Comments extends BlogKff
 
 
 ############################
-	function write()
+	function c_Write_Comm($form)
 	{ # call Ajax
-		############################
-		global $H, $user, $com_count;
-		// $this->err=[];
+
+		ob_clean();
+
+		$opts= &$this->opts;
 
 		# Невидимая каптча
 		# compare without types
-		if ($_REQUEST['keyCaptcha'] != self::$captcha)
+		if ($opts['keyCaptcha'] != self::$captcha)
 			$this->err["Невидимая каптча"] = [
-				$_REQUEST['keyCaptcha'], self::$captcha, $_REQUEST['keyCaptcha'] != self::$captcha
+				$opts['keyCaptcha'], self::$captcha, $opts['keyCaptcha'] != self::$captcha
 			];
 
 		# Если превышен лимит строк
-		if ($_POST['dataCount'] > self::MAX_ENTRIES)
+		$entryLen= strlen($form['entry']);
+		if ($entryLen > self::MAX_ENTRIES)
 			$this->err[] = 'Превышено максимальное количество комментариев - ' . self::MAX_ENTRIES;
 
-		if(strlen(trim(@$_POST['entry'])) < 3)
+		if($entryLen < 3)
 			$this->err[]= "Нет сообщения.";
 
-
-		if(empty($_POST['email']))
+		if(empty($form['email']))
 			$this->err[] = "Не указан email";
 
 		if(self::is_adm())
-			$_POST = array_merge($_POST, [
-				'name' => $_POST['name'] ? $_POST['name'] : self::$cfg['admin']['name'],
+			$form = array_merge([
+				'name' => self::$cfg['admin']['name'],
 				'homepage' => \BASE_URL
-			]);
+			], $form);
 
 		$arr= [
-			"time" => date(\CF['date']['format']),
-			"name" => $_POST['name'],
-			"Post" => @$_POST['entry'],
-			"Site"=>@$_POST['homepage'],
-			"email"=>@$_POST['email'],
-			"IP"=>self::realIP(),
-			"Ответ"=>"",
-			"CMS"=>@$_POST['CMS'],
+			"time" => date(self::DATETIME_FORMAT),
+			"name" => $form['name'],
+			"Post" => @$form['entry'],
+			"Site"=> @$form['homepage'],
+			"email"=> @$form['email'],
+			"IP"=> self::realIP(),
+			"Ответ"=> "",
+			"CMS"=> @$form['CMS'],
 		];
 
 
@@ -264,9 +265,11 @@ class Comments extends BlogKff
 		# Проверяем на наличие в базе
 		if(file_exists(self::SPAM_IP))
 		{
-			if(in_array($arr['IP'], \H::json(self::SPAM_IP)))
+			if(in_array($arr['IP'], (new DbJSON(self::SPAM_IP))->get()))
 				$this->err[] = 'Попался, товарищ спамер!';
 		}
+
+		self::$log->add(__METHOD__,null,['$arr'=>$arr]);
 
 
 		# Check ERRORS
@@ -299,18 +302,21 @@ class Comments extends BlogKff
 		}
 
 
-		$this->read();
+		echo $this->read();
+		ob_end_flush();
 		die;
 
 	}  //write()
 
 
-	function Del_Comm()
+	function c_Del_Comm($num)
 
 	{
-		if(!self::adm()) return;
+		if(!self::is_adm()) return;
 
-		$ind = $_REQUEST['num'] - 1;
+		ob_clean();
+
+		$ind = $num - 1;
 
 		echo "<h2>Del_Comm</h2>" . __FILE__ . ' : ' . __LINE__ .  "<pre>\n";
 		echo $ind . "\n";
@@ -321,6 +327,7 @@ class Comments extends BlogKff
 		$this->file->clear($ind);
 
 		$this->read();
+		ob_end_flush();
 		die;
 	}
 

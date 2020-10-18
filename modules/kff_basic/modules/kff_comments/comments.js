@@ -6,6 +6,7 @@ var commFns = {
 	module: 'php/modules/comments/comments.php',
 	$comments: $('section#comments'),
 	refreshed: 0,
+	err: [],
 
 
 	refresh: function(data, sts) {
@@ -54,14 +55,6 @@ var commFns = {
 
 
 	Edit : {
-		createForm : function (resp) {
-			// commFns.$formEdit && commFns.$formEdit.remove();
-			// commFns.$formEdit = $('<div/>', { id: "com_ed" }).appendTo("body");
-			commFns.$formEdit= UIkit.modal.dialog(resp);
-			console.log('commFns.$formEdit= ', commFns.$formEdit);
-			// commFns.$formEdit.append (resp);
-		},
-
 		open : function(num) {
 			U.ajax('', {
 				method: 'POST',
@@ -71,7 +64,7 @@ var commFns = {
 					num: num
 				})
 			}).then(xhr=>{
-				commFns.Edit.createForm(xhr.response);
+				this.$formEdit= UIkit.modal.dialog(xhr.response);
 			});
 			return;
 			/* $.post('', {
@@ -99,17 +92,20 @@ var commFns = {
 
 			console.log('!!! Save !!!\n');
 			commFns.refresh(ajaxData)
-			.then(()=>{
+			.then(ok=>{
 				console.log('!!! Saved !!!\n');
-				commFns.$formEdit.hide();
+				this.$formEdit.hide();
 			}, err=>{console.info(err);});
 		},
 
 		del : function(num) {
-			if(confirm('Продолжить удаление комментария?'))
+			UIkit.modal.confirm('Продолжить удаление комментария?')
+			.then(ok=>{
 				commFns.refresh({
-					s_method:'del', num: num
+					name:'Del_Comm', value: num
 				});
+			}, err=>{console.info(err);})
+
 		}
 
 	}, // Edit
@@ -130,48 +126,55 @@ var commFns = {
 	},
 
 
-	Send: function ($form) {
-		$form = $.check($form || this.form);
-		$form = !!$form && $form[0].tagName === 'FORM' && $form;
+	Send: function (e) {
+		var $form = $(this.form);
+
 		console.log("$form = ", $form);
 
-		var ajaxData = $form.ajaxForm(),
-			err='',
+		var formData = [].reduce.call($form.find('input,select,textarea'), (a,c)=>{
+			if(!c.name) return a;
+			a[c.name]= c.value;
+			return a;
+		}, {});
+		var btn= this,
 			TO=10000;
 
-		if ($form.disabled) err += "Вы слишком часто комментируете. \nПодождите <b>" + TO/1000 + "</b> секунд\n";
+		if ($form.disabled) commFns.err.push ("Вы слишком часто комментируете. \nПодождите <b>" + TO/1000 + "</b> секунд\n");
 
-		err += _H.form.errors($form[0], {breaks: '\n'});
-
-		if(err) {
-			return alert(err);
+		if(commFns.err.length) {
+			return UIkit.modal.alert(commFns.err.split('\n\n'));
 		}
 
-		ajaxData = Object.assign({
+		var ajaxData = {
+			name: "Write_Comm",
+			value: formData,
+			opts: {
+				keyCaptcha: comm_vars.captcha,
+			}
+		}
+		/* Object.assign({
 			s_method: 'write',
 			keyCaptcha: comm_vars.captcha,
 			dataCount: comm_vars.dataCount,
 			curpage: location.href,
-		}, ajaxData);
+		}, formData); */
 
-		console.log("ajaxData= ", ajaxData);
-
+		// ?
 		if($().spam)
 			// ajaxData.entry = $f('#comments_form #entry').spam(10).trim();
-			ajaxData.entry = $($form[0].elements.entry).spam(10).trim();
+			formData.entry = $($form[0].elements.entry).spam(10).trim();
 
-		commFns.refresh(ajaxData, {
-			cb: function(response) {
-				var keystring = $('#keystring')[0];
-				$form.disabled = 1;
-				$('#entry').val('');
-				if(keystring) keystring.value="";
+		commFns.refresh(ajaxData)
+		.then(function(response) {
+			var keystring = $('#keystring')[0];
+			btn.disabled = 1;
+			$('#entry').val('');
+			if(keystring) keystring.value="";
 
-				setTimeout(function() {
-					$form.disabled = 0;
-					console.log($form);
-				}, TO);
-			}
+			setTimeout(function() {
+				btn.disabled = 0;
+				console.log($form);
+			}, TO);
 		});
 
 	},
@@ -208,7 +211,8 @@ var commFns = {
 
 		// Навешиваем отправку
 		// $form.find("#subm").e.add("click",commFns.Send);
-		$('#c_subm').on("click", gl.commFns.Send.bind(null, $form));
+		var $subm_btn= $('#c_subm');
+		$subm_btn.on("click", gl.commFns.Send);
 
 		// ajax на пагинатор
 		this.paginator();

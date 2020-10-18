@@ -41,8 +41,6 @@ class BlogKff extends Index_my_addon
 		if(!$this->_InputController())
 			self::addUIkit();
 
-		// self::$log->add('self::$cfg=',null, [self::$cfg]);
-
 	} // __construct
 
 
@@ -372,7 +370,7 @@ class BlogKff extends Index_my_addon
 	{
 		// *UIkit подключён
 		if(
-			!empty(self::$cfg['uk']['include_uikit'])
+			!empty(self::$cfgDB->uk['include_uikit'])
 		) return;
 
 		$UIKpath = '/'. self::$internalModulesPath . '/kff_uikit-3.5.5';
@@ -392,7 +390,7 @@ class BlogKff extends Index_my_addon
 		<!-- /UIkit -->
 
 		<?php
-		self::$cfg['uk']['include_uikit'] = 0;
+		self::$cfgDB->uk['include_uikit'] = 0;
 	}
 
 	public function __destruct()

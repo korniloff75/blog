@@ -25,7 +25,7 @@
 	<input name="ind" type="hidden" value="<?=$ind?>">
 	<!-- <input name="cp" type="hidden" value="<?#=$_POST['cp']?>"> -->
 
-	<p class="uk-width-children-1-2@s"> Дата: <input type="text" required="required" size="30" name="dt" value="<?=$u_date?>"> IP: <input type="text" size="30" name="ip" value="<?=$u_ip?>"></p>
+	<p><span class="uk-width-1-2@s uk-display-inline-block">Дата: <input type="text" required="required" name="dt" value="<?=$u_date?>"></span><span class="uk-width-1-2@s uk-display-inline-block">IP: <input type="text" name="ip" value="<?=$u_ip?>"></span></p>
 
 	<hr>
 
@@ -39,11 +39,12 @@
 	<p><textarea id="entry" required="required" name="entry" rows="7" style="width:100%;"><?=$u_mess?></textarea></p>
 	<p><textarea name="otvet" rows="7" style="width:100%; height:100px;" placeholder="Ответ админа"><?=$u_otvet?></textarea></p>
 
-	<div>
-		<input class="button" onclick='commFns.Edit.save()' type="button" value="Сохранить" style="font-size:1em; margin-right:3em;">
-		<input type="reset" value="Сброс">
-		ESC - <input onclick='$("#com_ed").remove()' title="Закрыть окно" type="button" value="Отмена">
-		<label class="button"><input type="checkbox" name="sendToMail" onchange="this.value = +this.checked" title="Отправить уведомление" value=0> На почту</label>
+	<div data-uk-margin class="uk-flex uk-flex-wrap uk-flex-middle uk-flex-center">
+		<input type="button" onclick='commFns.Edit.save()' class="uk-button-small uk-button-primary uk-margin-right" value="Сохранить">
+
+		ESC - <input type="button" onclick='commFns.Edit.$formEdit.hide()' title="Закрыть окно" class="uk-button-small" value="Отмена">
+
+		<label><span class="uk-button-small"><input type="checkbox" class="uk-checkbox" name="sendToMail" onchange="this.value = +this.checked" title="Отправить уведомление" value=0> На почту</span></label>
 	</div>
 
 </form>

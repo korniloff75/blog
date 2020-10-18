@@ -38,6 +38,8 @@ class Index_my_addon implements BasicClassInterface
 
 		self::$dir = self::getPathFromRoot(__DIR__) . '/kff_custom';
 
+		define('BASE_URL', (self::is('https')?'https':'http') . '://' . \HOST);
+
 		spl_autoload_register([__CLASS__,'_autoloader']);
 
 		// require_once __DIR__.'/kff_custom/Logger.php' ;
@@ -65,17 +67,13 @@ class Index_my_addon implements BasicClassInterface
 		// *Подключаем класс для админки
 		if(self::is_admPanel())
 		{
-			// require_once __DIR__.'/kff_custom/AdmPanel.class.php';
-			// AdmPanel::$cfg = &self::$cfg;
-			// AdmPanel::$cfgDB = &self::$cfgDB;
-
 			// *Корректировка системы
 			AdmPanel::fixSystem();
 
 			AdmPanel::addResponsive();
 		}
 
-		self::$log->add(__METHOD__,null, ['REQUEST_URI'=>\REQUEST_URI, __CLASS__.'::$cfg'=>self::$cfg, /* '$Config'=>self::$Config */]);
+		self::$log->add(__METHOD__,null, ['REQUEST_URI'=>\REQUEST_URI, __CLASS__.'::$cfg'=>self::$cfgDB->get(), /* '$Config'=>self::$Config */]);
 
 	}
 
@@ -153,7 +151,7 @@ class Index_my_addon implements BasicClassInterface
 		<script src="'.$kffJsPath.'/kff.js"></script>
 		';
 
-		if(!empty(self::$cfg['uk']['include_uikit']))
+		if(!empty(self::$cfgDB->uk['include_uikit']))
 		{
 			$addonsPages .= '
 			<!-- UIKit from '.$UIKitPath.' -->
@@ -162,7 +160,7 @@ class Index_my_addon implements BasicClassInterface
 			';
 
 			if(
-				!empty(self::$cfg['uk']['include_picts'])
+				!empty(self::$cfgDB->uk['include_picts'])
 				|| self::is_adm()
 			)
 			{

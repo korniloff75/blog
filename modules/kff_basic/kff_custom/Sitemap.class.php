@@ -30,7 +30,7 @@ class Sitemap extends BlogKff
 			parent::__construct();
 
 		$this->rss.= '<title>' . $GLOBALS['Config']->header . '</title>
-		<link>' . (self::is('https')?'https':'http') . '://' . \HOST . '</link>
+		<link>' . \BASE_URL . '</link>
 		<description>' . $GLOBALS['Config']->slogan . '</description>
 		<language>' . 'ru' . '</language>
 		<turbo:analytics type="LiveInternet"></turbo:analytics>'."\n";
@@ -91,7 +91,7 @@ class Sitemap extends BlogKff
 				$artData['date'] = date (self::DATE_FORMAT, $artData['ts']);
 
 				$this->sitemap .= "<url>\n"
-				. "<loc>" . (self::is('https')?'https':'http') . '://' . \HOST . "/$artPath</loc>\n"
+				. "<loc>" . \BASE_URL . "/$artPath</loc>\n"
 				. "<lastmod>{$artData['date']}</lastmod>\n"
 				. "<changefreq>weekly</changefreq>\n"
 				. "<priority>0.7</priority>\n"
@@ -108,7 +108,7 @@ class Sitemap extends BlogKff
 				// var_dump($artData);
 
 				$this->rss .= "\n".'<item turbo="true">'
-				. "\n<link>" . (self::is('https')?'https':'http') . '://' . \HOST . "/$artPath</link>\n"
+				. "\n<link>" . \BASE_URL . "/$artPath</link>\n"
 				. "<pubDate>". date ('r', $artData['ts']) ."</pubDate>"
 				. "\n<turbo:content>\n<![CDATA[\n"
 				. "<header>\n<h1>".($artData['title'] ?? $artData['name'])."</h1>\n</header>\n"
