@@ -439,8 +439,6 @@ class BlogKff_page extends BlogKff
 			echo '<p><a href="?edit"><button>EDIT</button></a></p>';
 		}
 
-		// var_dump(self::is_indexPage());
-
 		if(!self::is_indexPage()){
 			self::renderDateBlock($artData);
 		}
@@ -448,6 +446,9 @@ class BlogKff_page extends BlogKff
 		// *Comments
 		if(!empty($artData['enable-comments'])){
 			require_once DR.'/'. self::$internalModulesPath . '/kff_comments/Comments.class.php';
+
+			// self::$log->add(__METHOD__,null,['$artData'=>$artData]);
+
 			$comments= new Comments($artData);
 			$comments->Render();
 		}

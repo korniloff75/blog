@@ -55,7 +55,7 @@ class MailPlain extends PHPMailer
 			"isHTML" => true,
 		];
 
-	private $log;
+	private $log, $kff;
 
 
 	public function __construct($subject, $message, $from_mail, $from_name = null)
@@ -63,6 +63,7 @@ class MailPlain extends PHPMailer
 	{
 		global $kff, $log;
 
+		$this->kff = &$kff;
 		$this->log = &$log;
 
 		$this->setLanguage('ru', __DIR__ . '/language/');
@@ -143,14 +144,15 @@ class MailPlain extends PHPMailer
 	 * in developing ...
 	 * now use in the comments
 	 */
-	public static function collectMessage($arr)
+	public static function collectMessage(&$arr)
 
 	{
 		$message = '';
 
-		foreach($arr as $name=>$value) {
+		foreach($arr as $name=>&$value) {
+			$value= trim($value);
 			if(
-				!trim($value)
+				empty($value)
 				|| in_array($name, ['time', 'email', 'IP'], 1)
 			) continue;
 

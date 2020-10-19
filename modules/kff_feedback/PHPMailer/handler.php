@@ -7,7 +7,7 @@ $message = "{$_REQUEST['name']} пишет: \n{$_REQUEST['message']}";
 
 $mailToAdminStorage = new DbJSON(
 	// *Path to internal module folder
-	DR.'/' . $kff::$internalModulesPath.'/kff_feedback/cfg.db.dat', __DIR__
+	DR.'/' . $kff::$internalModulesPath.'/kff_feedback/cfg.db.dat'
 );
 
 $cfg = $mailToAdminStorage->get();

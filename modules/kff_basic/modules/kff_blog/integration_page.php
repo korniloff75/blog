@@ -221,6 +221,7 @@ class BlogKff_page extends BlogKff
 					if(empty(trim($v))) $v= $this->opts['artOpts']['name'];
 					break;
 				case 'not-public':
+				case 'enable-comments':
 					$v= filter_var($v,FILTER_VALIDATE_BOOLEAN);
 					break;
 			}
@@ -367,13 +368,19 @@ class BlogKff_page extends BlogKff
 
 			<span class="uk-width-1-3@s"><b>title</b></span> <input name="title" class="uk-width-expand" type="text" placeholder="title" value="<?=$artData['title'] ?? $artData['name']?>"><p class="uk-width-1 uk-margin-remove"></p>
 
-			<span class="uk-width-1-3@s"><b>description</b></span><textarea name="description" class="uk-width-expand" type="text" placeholder="description"><?=$artData['description']?></textarea><p class="uk-width-1 uk-margin-remove"></p>
+			<span class="uk-width-1-3@s"><b>description</b></span><textarea name="description" class="uk-width-expand uk-resize-vertical" type="text" placeholder="description"><?=$artData['description']?></textarea><p class="uk-width-1 uk-margin-remove"></p>
 
 			<span class="uk-width-1-3@s"><b>keywords</b> (через запятую)</span><input name="keywords" class="uk-width-expand" type="text" placeholder="keywords" value="<?=$artData['keywords']?>"><p class="uk-width-1 uk-margin-remove"></p>
 
 			<span class="uk-width-1-3@s"><b>Метки</b> (через запятую)</span><input name="tag" class="uk-width-expand" type="text" placeholder="метки" value="<?=$artData['tag']?>"><p class="uk-width-1 uk-margin-remove"></p>
 
 			<span class="uk-width-1-3@s"><b>Автор</b></span><input name="author" class="uk-width-expand" type="text" value="<?=$artData['author']?>"><p class="uk-width-1 uk-margin-remove"></p>
+
+			<span class="uk-width-1-3@s"><b>Комментарии</b></span>
+			<select name="enable-comments" value="<?=!empty($artData['enable-comments'])? 1: 0 ?>">
+				<option value="0">Отключены</option>
+				<option value="1" <?=!empty($artData['enable-comments'])? 'selected': '' ?>>Подключены</option>
+			</select>
 
 			<span class="uk-width-1-3@s"><b>Черновик</b></span>
 			<select name="not-public" value="<?=!empty($artData['not-public'])? 1: 0 ?>">
@@ -432,10 +439,18 @@ class BlogKff_page extends BlogKff
 			echo '<p><a href="?edit"><button>EDIT</button></a></p>';
 		}
 
-		// var_dump(self::is_indexPage());
-
 		if(!self::is_indexPage()){
 			self::renderDateBlock($artData);
+		}
+
+		// *Comments
+		if(!empty($artData['enable-comments'])){
+			require_once DR.'/'. self::$internalModulesPath . '/kff_comments/Comments.class.php';
+
+			// self::$log->add(__METHOD__,null,['$artData'=>$artData]);
+
+			$comments= new Comments($artData);
+			$comments->Render();
 		}
 	}
 
@@ -450,7 +465,6 @@ class BlogKff_page extends BlogKff
 
 		if(!empty($artData['author'])){
 		?>
-
 		<p>Автор: <em itemprop="author"><?=$artData['author']?></em></p>
 		<?php } ?>
 

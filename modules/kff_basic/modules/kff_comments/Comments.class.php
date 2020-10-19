@@ -14,7 +14,7 @@ class Comments extends BlogKff
 		MAX_LEN = 1500,
 		MAX_ON_PAGE = 10,
 		MAX_ENTRIES = 10000,
-		TO_EMAIL = 1,
+		TO_EMAIL = 0, // !
 		CAPTCHA_4_USERS = false,
 		TRY_AGAIN = '<button class="core note pointer" onclick="commFns.refresh(null, {hash:\'#comments_name\'});">Попробовать ещё раз</button>',
 		T_DISABLED = '<div id="comm_off" class="core warning">Комменты отключены!!!</div>',
@@ -41,7 +41,7 @@ class Comments extends BlogKff
 
 
 	###
-	function __construct($artData)
+	function __construct(array &$artData)
 
 	{
 		global $act;
@@ -53,7 +53,6 @@ class Comments extends BlogKff
 		// var_dump($act);
 
 		// if($act==='comments' && $this->_InputController()) die;
-		if($_REQUEST['act']==='comments' &&  $this->_InputController()) die;
 
 		// *При Аякс-запросе открываем сессию
 		// if(!headers_sent() && !isset($_SESSION)) session_start();
@@ -62,8 +61,12 @@ class Comments extends BlogKff
 		$this->artDB= self::getArtDB();
 		$this->artData= $artData;
 
+		// self::$log->add(__METHOD__,null,['$this->artData'=>$this->artData]);
+
+		if($_REQUEST['act']==='comments' &&  $this->_InputController()) die;
 
 
+		// ?
 		self::$captcha = self::realIP();
 
 		// ?
@@ -109,17 +112,25 @@ class Comments extends BlogKff
 
 
 ############################
-	function Enabled_Comm($bool)
-############################
-	{
-		// $data = \H::json(\DIR . 'data.json');
+	function c_Enabled_Comm($bool)
 
+	{
 		if (!self::is_adm()) die("<p class='core warning'>У тебя нет прав для данного действия!</p>");
 
 		$bool= filter_var($bool,FILTER_VALIDATE_BOOLEAN);
 
 		// \H::json(\DIR . 'data.json', $comments);
 		$this->artDB->set(['enable-comments'=>$bool]);
+
+		// *Обновляем карту
+
+		$map= self::getBlogMap();
+		$ind= $this->artDB->get('ind');
+
+		$newData= [$ind[0]=>[
+			'items'=>[$ind[1]=>$this->artDB->get()]
+		]];
+		$map->set($newData);
 
 		$this->read();
 		die;
@@ -221,13 +232,13 @@ class Comments extends BlogKff
 
 		ob_clean();
 
-		$opts= &$this->opts;
+		// $opts= &$this->opts;
 
 		# Невидимая каптча
 		# compare without types
-		if ($opts['keyCaptcha'] != self::$captcha)
+		if ($form['keyCaptcha'] != self::realIP())
 			$this->err["Невидимая каптча"] = [
-				$opts['keyCaptcha'], self::$captcha, $opts['keyCaptcha'] != self::$captcha
+				$form['keyCaptcha'], self::$captcha, $form['keyCaptcha'] != self::realIP()
 			];
 
 		# Если превышен лимит строк
@@ -275,12 +286,14 @@ class Comments extends BlogKff
 		# Check ERRORS
 		if (count($this->err))
 		{
+			self::$log->add(__METHOD__,null,['ERRORS'=>$this->err]);
 			echo '<pre class="core warning">';
 			array_walk($this->err, function(&$i) {
 				echo "<p>$i</p>\n";
 			});
 			echo '</pre>';
 			echo self::TRY_AGAIN;
+			ob_end_flush();
 			die;
 		}
 
@@ -288,7 +301,12 @@ class Comments extends BlogKff
 		# Если указан, то отсылаем на мыло
 		if(self::TO_EMAIL == true)
 		{
-			$subject = "Комментарий со страницы $this->artData['title'] - ". ($_REQUEST['curpage'] ?? \HOST);
+			$subject = "Комментарий со страницы {$this->artData['title']} - ". ($_REQUEST['curpage'] ?? \HOST);
+			self::$log->add(__METHOD__,null,['$this->artData'=>$this->artData]);
+
+			// !
+			// return;
+
 			self::sendMail($arr, $subject);
 		}
 		// var_dump($arr);
@@ -324,6 +342,8 @@ class Comments extends BlogKff
 		echo '<hr>';
 		echo '</pre>';
 
+		self::$log->add(__METHOD__,null,['$ind'=>$ind]);
+
 		$this->file->clear($ind);
 
 		$this->read();
@@ -336,12 +356,20 @@ class Comments extends BlogKff
 	public static function sendMail($arr, $subject, $to_emails = null)
 
 	{
-		require_once 'php/modules/PHPMailer/MailPlain.php';
+		require_once DR.'/'. self::$internalModulesPath. '/kff_feedback/PHPMailer/MailPlain.php';
 
 		$message = MailPlain::collectMessage($arr);
-		$email = $_REQUEST['email'];
 
-		$mailPlain = new MailPlain ($subject, $message, $email, $arr['name']);
+		// !
+		// self::$log->add(__METHOD__,null,['self::$cfgDB->admin'=>self::$cfgDB->admin, 'self::$cfgDB'=>self::$cfgDB]);
+		// return;
+
+		$mailPlain = new MailPlain ($subject, $message, $arr['email'], $arr['name']);
+
+		$mailPlain->cfg= (new DbJSON(
+			// *Path to internal module folder
+			DR.'/' . self::$internalModulesPath.'/kff_feedback/cfg.db.dat'
+		))->get();
 
 		if($send_succ = $mailPlain->TrySend())
 		{
@@ -430,8 +458,6 @@ class Comments extends BlogKff
 			<p>this->p_name= <?=$this->artData['title']?></p>
 			<p>check_no_comm(this->p_name)= <? var_dump($this->check_no_comm($this->artData['title']))?></p>
 
-			<hr>
-			<p>urldecode($_SERVER['QUERY_STRING']) <?var_dump(urldecode($_SERVER['QUERY_STRING']) )?></p>
 		</div>
 
 		<?php
@@ -539,6 +565,13 @@ class Comments extends BlogKff
 
 		</section>
 		<?php
+	}
+
+	public function __destruct()
+	{
+		return;
+		if(ob_get_level()>1)
+			ob_get_flush();
 	}
 
 } ### END class Comments ###

@@ -18,8 +18,8 @@ class BlogKff extends Index_my_addon
 		$catPath,
 		$catsDB,
 		$catDataKeys = ['name','id','items'],
-		// ?
-		$artBase= [],
+		// *Данные по текущей статье
+		$art= [],
 		$map;
 
 
@@ -90,6 +90,14 @@ class BlogKff extends Index_my_addon
 		self::$l_cfg= self::$blogDB->get();
 		if(!self::$blogDB->count())
 			self::$blogDB->replace(self::$def_cfg);
+
+		// *Define self::$art
+		self::$art= [
+			'pathname'=> self::getArtPathname()
+		];
+		$catPathname= dirname(self::$art['pathname']);
+		self::$art['catId']= basename($catPathname);
+		self::$art['id']= basename(self::$art['pathname'], self::$l_cfg['ext']);
 
 		self::$catPath = self::$storagePath.'/categories.json';
 		$catsDB= &self::$catsDB;
