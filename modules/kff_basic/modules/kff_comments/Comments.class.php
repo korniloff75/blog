@@ -14,31 +14,27 @@ class Comments extends BlogKff
 		MAX_LEN = 1500,
 		MAX_ON_PAGE = 10,
 		MAX_ENTRIES = 10000,
-<<<<<<< HEAD
 		TO_EMAIL = 0, // ! 1
-=======
-		TO_EMAIL = 0, // !
->>>>>>> 0e82862695750e3f0d2d746b64a919967fdc3ba5
 		CAPTCHA_4_USERS = false,
 		TRY_AGAIN = '<button class="core note pointer" onclick="commFns.refresh(null, {hash:\'#comments_name\'});">Попробовать ещё раз</button>',
-		T_DISABLED = '<div id="comm_off" class="core warning">Комменты отключены!!!</div>',
+		T_DISABLED = '<div id="comm_off" class="core warning uk-text-center">Комменты отключены</div>',
 		T_EMPTY = "<p class='center' style='margin:20px 0;'>Комментариев пока нет.</p>",
 		T_SUCCESS_SEND = "Ваше сообщение успешно отправлено!<br>Ожидайте ответа на указанный email",
-		T_FAIL_SEND = "<div class=\"error\">Ваше сообщение не было доставлено.<br>Просим прощения за неудобство. При следующей отправке скопируйте текст сообщения в буфер обмена или в текстовый документ.</div>",
+		T_FAIL_SEND = "<div class=\"core warning\">Ваше сообщение не было доставлено.<br>Просим прощения за неудобство. При следующей отправке скопируйте текст сообщения в буфер обмена или в текстовый документ.</div>",
 		T_SUCCESS_REMOVE = 'Комментарий успешно удалён',
 		T_FAIL_REMOVE = 'Невозможно удалить комментарий. Возможно, у вас недостаточно прав';
 
-	protected
+	private
 		$err = [],
 		# Путь к файлу комментариев
 		$path,
 		# Arr with comments
-		$file;
-
-	public
-		$artData,
+		$file,
 		$Title = 'Добавить комментарий',
 		$separator='|-|';
+
+	public
+		$artData;
 
 	static
 		$captcha;
@@ -63,7 +59,8 @@ class Comments extends BlogKff
 
 		// $this->artData= self::getArtData();
 		$this->artDB= self::getArtDB();
-		$this->artData= $artData;
+		// $this->artData= $artData;
+		$this->artData= &self::$map->get($artData['ind'][0])['items'][$artData['ind'][1]];
 
 		// self::$log->add(__METHOD__,null,['$this->artData'=>$this->artData]);
 
@@ -106,11 +103,11 @@ class Comments extends BlogKff
 	}
 
 
-	//
+	//*
 	function check_no_comm()
 
-	{ # return true - комменты отключены
-		return isset($this->artData['comments']) && !$this->artData['comments'];
+	{ # return true - комменты
+		return !filter_var($this->artDB->get('enable-comments'), FILTER_VALIDATE_BOOLEAN);
 	}
 
 
@@ -119,6 +116,7 @@ class Comments extends BlogKff
 	function c_Enabled_Comm($bool)
 
 	{
+		ob_clean();
 		if (!self::is_adm()) die("<p class='core warning'>У тебя нет прав для данного действия!</p>");
 
 		$bool= filter_var($bool,FILTER_VALIDATE_BOOLEAN);
@@ -137,6 +135,7 @@ class Comments extends BlogKff
 		$map->set($newData);
 
 		$this->read();
+		ob_end_flush();
 		die;
 	}
 
@@ -146,8 +145,6 @@ class Comments extends BlogKff
 	function c_Edit_Comm()
 
 	{
-		// ob_end_clean();
-		// ob_start();
 		ob_clean();
 		$ind = $_REQUEST['num'] - 1;
 
@@ -466,15 +463,7 @@ class Comments extends BlogKff
 
 		<?php
 		endif;
-		if(self::is_adm()) :
-		?>
 
-		<div class="core bar">
-			<label class="button" style="margin-left:50px;"><input style="width:30px;" onchange="commFns.en_com.call(this)" <?=!$this->check_no_comm($this->artData['title']) ?'checked="checked"':''?> type="checkbox"> Включить комментарии на этой странице</label>
-		</div>
-
-		<?php
-		endif;
 		// echo $this->js_vars();
 		# VIEW comments block
 		require_once 'entries.php';
@@ -487,7 +476,6 @@ class Comments extends BlogKff
 			window.comm_vars = <?= $this->js_vars(); ?>;
 		// console.log('comm_vars = ', comm_vars);
 		</script>
-		<?#= $this->js_vars(); ?>
 
 		<script type="text/javascript" src="/<?=$m_path?>/comments.js"></script>
 
@@ -505,7 +493,7 @@ class Comments extends BlogKff
 			'email' => $Config->adminEmail,
 			// 'refPage' => $_REQUEST['page'],
 			'p_name' => $this->artData['title'],
-			'check_no_comm' => $this->check_no_comm($this->artData['title']),
+			'check_no_comm' => $this->check_no_comm(),
 			'name_request' => 'p_comm',
 			'MAX_LEN' => self::MAX_LEN,
 			'captcha' =>  self::$captcha ?? null,

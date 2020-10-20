@@ -148,7 +148,7 @@ class Index_my_addon implements BasicClassInterface
 
 		$addonsPages= '
 		<!-- Start from '.__METHOD__.' -->
-		<script src="'.$kffJsPath.'/kff.js"></script>
+		<script async src="'.$kffJsPath.'/kff.js"></script>
 		';
 
 		if(!empty(self::$cfgDB->uk['include_uikit']))
@@ -156,7 +156,7 @@ class Index_my_addon implements BasicClassInterface
 			$addonsPages .= '
 			<!-- UIKit from '.$UIKitPath.' -->
 			<link rel="stylesheet" href="'.$UIKitPath.'/css/uikit.min.css" />
-			<script src="'.$UIKitPath.'/js/uikit.min.js"></script>
+			<script async src="'.$UIKitPath.'/js/uikit.min.js"></script>
 			';
 
 			if(

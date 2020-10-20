@@ -444,7 +444,7 @@ class BlogKff_page extends BlogKff
 		}
 
 		// *Comments
-		if(!empty($artData['enable-comments'])){
+		if(self::is_adm() || !empty($artData['enable-comments'])){
 			require_once DR.'/'. self::$internalModulesPath . '/kff_comments/Comments.class.php';
 
 			// self::$log->add(__METHOD__,null,['$artData'=>$artData]);
@@ -468,7 +468,7 @@ class BlogKff_page extends BlogKff
 		<p>Автор: <em itemprop="author"><?=$artData['author']?></em></p>
 		<?php } ?>
 
-		<p>Дата публикации / редактирования: <time itemprop="dateModified" data-ts="<?=$ts?>"
+		<p class="uk-text-meta">Дата публикации / редактирования: <time itemprop="dateModified" data-ts="<?=$ts?>"
 		datetime="<?=date(DATE_ISO8601, $ts)?>"><?=date(self::DATE_FORMAT, $ts)?></time></p>
 
 		</div>

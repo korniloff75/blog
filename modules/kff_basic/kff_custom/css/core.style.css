@@ -1,7 +1,8 @@
 .core{
 	color: #147;
 	background: #eef;
-	border: 2px solid;
+	border: 2px solid #147;
+	/* border-color: #147; */
 	border-left-width: 5px;
 	padding: 3px 3px 3px 7px;
 }
@@ -12,10 +13,18 @@
 
 .core.info{
 	color: #159;
+	border-color: #159;
 	background: #eef;
-	border: 2px solid;
-	border-left-width: 5px;
-	padding: 3px 3px 3px 7px;
+}
+
+.core.success{
+	color: #fff;
+	background: #383;
+}
+
+.core.warning{
+	color: #fff;
+	background: #a22;
 }
 
 [contenteditable=true]{

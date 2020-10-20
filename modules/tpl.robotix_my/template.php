@@ -13,9 +13,13 @@
 .sidebar, .aside_content{
 	background: #eee;
 }
+ul.categories a.active{
+	font-weight:700;
+	color: #147;
+}
 </style>
 
-<script src="/admin/include/windows/windows.js"></script>
+<script async src="/admin/include/windows/windows.js"></script>
 
 </head>
 
@@ -106,43 +110,6 @@
 <script>
 'use strict';
 // *top padding
-$(()=>{
-	/* document.querySelector('.container.bgcontent').style.paddingTop= getComputedStyle(
-		$('.bgheader')[0]
-	).height; */
-
-	// *AJAX nav
-	// uk-sticky
-	var targetSel = '.blog_content',
-		$sidebar = $('.aside_content>ul.categories');
-	// var blogNav = new kff.menu($('.categories'), targetSel);
-		// console.log(bm);
-
-	if($sidebar){
-		<?php
-		if($Page->module === 'kff_blog') {
-			echo 'var blogNav = new kff.menu($sidebar, targetSel)';
-		}
-		?>
-
-		// var stiky= $sidebar.attr('uk-sticky') + 'offset:' + $sidebar.prop('offsetTop') + ';';
-		var stiky= $sidebar.attr('uk-sticky') + 'offset:' + parseInt(getComputedStyle($('.bgheader')[0]).height) + ';';
-		console.log('stiky=',stiky);
-		// !
-		$sidebar.attr('uk-sticky', stiky);
-	}
-
-	/* // *AJAX history
-	window.onpopstate = function(e) {
-		if(!e.state || !e.state[targetSel]) return false;
-
-		// console.log('e=',e);
-		kff.render([targetSel], e.state[targetSel].html);
-
-		bm.setActive(e.state[targetSel].href);
-	} */
-});
-
 var $nav= $('#nav');
 
 // *burger button

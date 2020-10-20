@@ -227,7 +227,7 @@ class BlogKff_page extends BlogKff
 			}
 		});
 
-		$this->opts['artOpts']['date'] = date ('Y-m-d', filemtime($artPathname));
+		$this->opts['artOpts']['date'] = date (self::DATE_FORMAT, filemtime($artPathname));
 
 		$artDB->set($this->opts['artOpts']);
 		// self::$map->set()
@@ -468,7 +468,7 @@ class BlogKff_page extends BlogKff
 		<p>Автор: <em itemprop="author"><?=$artData['author']?></em></p>
 		<?php } ?>
 
-		<p>Дата публикации / редактирования: <time itemprop="dateModified" data-ts="<?=$ts?>"
+		<p class="uk-text-meta">Дата публикации / редактирования: <time itemprop="dateModified" data-ts="<?=$ts?>"
 		datetime="<?=date(DATE_ISO8601, $ts)?>"><?=date(self::DATE_FORMAT, $ts)?></time></p>
 
 		</div>

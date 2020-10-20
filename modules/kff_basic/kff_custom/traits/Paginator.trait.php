@@ -7,9 +7,10 @@
 
 trait Paginator
 {
-	protected
+	private
 	// *DbJSON
-		$file,
+		$file;
+	protected
 		$paginator;
 
 	public function Paginator (int $max_entries=10, string $name_request='p', $reverse=1, $hash="")

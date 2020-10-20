@@ -12,7 +12,7 @@
 
 				<div class="item-block">
 					<p>Вы можете ввести <span class=strong id="maxLen"><?=Comments::MAX_LEN?></span> символов</p>
-					<textarea name="entry" id="entry" required="required" rows="7" onkeyup="commFns.countChars.call(this, $('#maxLen')[0], event)"><?=$_POST['entry']??''?></textarea>
+					<textarea name="entry" id="entry" class="uk-resize-vertical" required="required" onkeyup="commFns.countChars.call(this, $('#maxLen')[0], event)"><?=$_POST['entry']??''?></textarea>
 				</div>
 
 				<div class="uk-flex-around">

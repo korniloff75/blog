@@ -1,13 +1,29 @@
 <?php
-if (self::is_adm() &&
-	($this->check_no_comm($this->p_name))
-) echo self::T_DISABLED;
+self::$log->add(__METHOD__,null,['$this->check_no_comm()'=>$this->check_no_comm()]);
 ?>
 
 <div id="wrapEntries">
 	<h4 id="comments_header">Комментарии<?=" ( {$this->paginator['data_count']} )"?></h4>
 
-	<?php # Comments BLOCK
+	<?php //* Comments BLOCK
+	if (
+		self::is_adm()
+		&& $this->check_no_comm()
+	) echo self::T_DISABLED;
+
+	if(self::is_adm()):
+		// self::$log->add(__METHOD__,null,['$this->artData[\'enable-comments\']'=>$this->artData['enable-comments']]);
+	?>
+
+	<div class="uk-text-center uk-margin">
+		<label class="button uk-display-inline-block">
+			<input class="uk-checkbox" onchange="commFns.en_com.call(this)" <?=!$this->check_no_comm() ?'checked="checked"':''?> type="checkbox"> Включить комментарии на этой странице
+		</label>
+	</div>
+
+	<?php
+	endif;
+
 	$cpfr = count($this->paginator['fragm']);
 	if($cpfr)
 	{

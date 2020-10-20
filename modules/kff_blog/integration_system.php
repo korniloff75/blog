@@ -17,6 +17,7 @@ class BlogKff extends Index_my_addon
 		$storagePath = \DR.'/kff_blog_data',
 		$catPath,
 		$catsDB,
+		$artDB,
 		$catDataKeys = ['name','id','items'],
 		// *Данные по текущей статье
 		$art= [],
@@ -122,6 +123,10 @@ class BlogKff extends Index_my_addon
 	{
 		global $Page;
 
+		$artDB= &self::$artDB;
+
+		if(!empty($artDB)) return $artDB;
+
 		self::_defineCatsDB();
 		// self::$log->add(__METHOD__." \$artPathname= $artPathname");
 		$artPathname= $artPathname ?? self::getArtPathname();
@@ -144,7 +149,9 @@ class BlogKff extends Index_my_addon
 
 		// self::$log->add(__METHOD__,\Logger::BACKTRACE,[/* '$Page->id'=>$Page->id,  */'$catPathname'=>$catPathname, '$artPathname'=>$artPathname]);
 
-		return new DbJSON($dbPath);
+		$artDB= new DbJSON($dbPath);
+
+		return $artDB;
 	}
 
 

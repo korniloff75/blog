@@ -2,6 +2,25 @@
 
 class BlogKff_sidebar extends BlogKff
 {
+	private function _setAJAXMenu()
+	{
+		?>
+		<!-- AJAX menu -->
+		<script>
+		(function() {
+			'use strict';
+			var targetSel = '.blog_content',
+			$sidebar = $('.aside_content>ul.categories');
+			new kff.menu($sidebar, targetSel);
+
+			var stiky= $sidebar.attr('uk-sticky') + 'offset:' + parseInt(getComputedStyle($('.bgheader')[0]).height) + ';';
+			console.log('stiky=',stiky);
+			// !
+			$sidebar.attr('uk-sticky', stiky);
+		})();
+		</script>
+	<?php
+	}
 	public function Render()
 	{
 		global $Page;
@@ -48,7 +67,9 @@ class BlogKff_sidebar extends BlogKff
 
 			</li>
 		<?php
-		}
+		} //foreach
+
+		$this->_setAJAXMenu();
 	}
 }
 

@@ -32,3 +32,16 @@ RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)/?$ /index.php [L]
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access 3 day"
+  ExpiresByType text/html "access 1 day"
+  ExpiresByType text/javascript "access 10 day"
+  ExpiresByType image/jpeg "access 30 day"
+  ExpiresByType image/png "access 30 day"
+  ExpiresByType image/gif "access 30 day"
+  ExpiresByType image/x-icon "access 30 day"
+
+  ExpiresByType text/css "access 60 day"
+</IfModule>
