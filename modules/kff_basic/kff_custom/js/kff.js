@@ -287,18 +287,19 @@ var kff = {
 	 * @param {string HTML} response
 	 */
 	render: function(sels,response) {
-		var out = {},
-			stop= 0;
+		var stop= 0;
 
 		return kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/js/uikit.min.js')
 		.then(UIkit=>{
 
+			var $dfr= $(document.createDocumentFragment()),
+				out = {$dfr: $dfr};
+
+			$dfr.html(response);
+
 			sels.forEach(i=>{
 				if(stop) return;
-				var targetNode= document.querySelector(i),
-					$dfr= $(document.createDocumentFragment());
-
-				$dfr.html(response);
+				var targetNode= document.querySelector(i);
 
 				// if(!targetNode) return;
 				if(!targetNode){

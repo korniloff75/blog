@@ -444,7 +444,7 @@ class BlogKff_page extends BlogKff
 		}
 
 		// *Comments
-		if(!empty($artData['enable-comments'])){
+		if(self::is_adm() || !empty($artData['enable-comments'])){
 			require_once DR.'/'. self::$internalModulesPath . '/kff_comments/Comments.class.php';
 
 			// self::$log->add(__METHOD__,null,['$artData'=>$artData]);
