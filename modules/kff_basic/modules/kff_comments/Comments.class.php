@@ -14,7 +14,11 @@ class Comments extends BlogKff
 		MAX_LEN = 1500,
 		MAX_ON_PAGE = 10,
 		MAX_ENTRIES = 10000,
+<<<<<<< HEAD
 		TO_EMAIL = 0, // ! 1
+=======
+		TO_EMAIL = 0, // !
+>>>>>>> 0e82862695750e3f0d2d746b64a919967fdc3ba5
 		CAPTCHA_4_USERS = false,
 		TRY_AGAIN = '<button class="core note pointer" onclick="commFns.refresh(null, {hash:\'#comments_name\'});">Попробовать ещё раз</button>',
 		T_DISABLED = '<div id="comm_off" class="core warning">Комменты отключены!!!</div>',
