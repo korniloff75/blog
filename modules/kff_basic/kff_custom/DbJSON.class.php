@@ -16,7 +16,6 @@ class DbJSON implements Iterator, Countable
 		$path;
 
 	private
-		$sequence = [],
 		$db = [];# DataBase # Array
 
 
@@ -75,7 +74,8 @@ class DbJSON implements Iterator, Countable
 	 * *Проверка в дефолтном массиве
 	 */
 	public function __get($key) {
-		if(self::$defaultDB && is_null($v= $this->db[$key])){
+		// trigger_error('$key= '. $key . " {$this->db[$key]}");
+		if(is_null($v= $this->db[$key]) && self::$defaultDB){
 			return self::$defaultDB[$key];
 		}
 		return $v;
@@ -130,7 +130,7 @@ class DbJSON implements Iterator, Countable
 	 */
 	public function clear($key=null)
 	{
-		if(!empty($key)){
+		if(!is_null($key)){
 			unset($this->db[$key]);
 			// *Удаляем null
 			$this->db= array_filter($this->db);
@@ -165,25 +165,6 @@ class DbJSON implements Iterator, Countable
 	public function getKeys($id=null)
 	{
 		return array_keys($this->get());
-	}
-
-	/**
-	 * @param sequence - массив с последовательностью ключей
-	 * ???
-	 * todo ...
-	 */
-	public function getSequence(array $sequence)
-	{
-		$db=[];
-		if(count($sequence) !== count($this->get())){
-			// return false;
-		}
-
-		foreach($sequence as $i){
-			if(empty($this->db[$i])) continue;
-			$db[$i]= &$this->db[$i];
-		}
-		return $db;
 	}
 
 

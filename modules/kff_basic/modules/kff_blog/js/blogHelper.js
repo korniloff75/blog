@@ -1,5 +1,10 @@
 'use strict';
 var BH = {
+	contentSelector: '.content',
+	get content$obj(){
+		return $(this.contentSelector);
+	},
+	logSelector: '.log',
 	get pageInfo(){
 		var uri= kff.URI;
 		return {
@@ -59,7 +64,7 @@ var U = U || window.UIkit && UIkit.util;
 
 // *Events
 // *Удаление категории
-$('.content').on('click', '.removeCategory', $e=>{
+BH.content$obj.on('click', '.removeCategory', $e=>{
 	var $t= $($e.currentTarget);
 	$e.stopPropagation();
 
@@ -69,7 +74,7 @@ $('.content').on('click', '.removeCategory', $e=>{
 	.then(success=> kff.request('',{
 			name: 'removeCategory',
 			value: $t.data('del'),
-		},['.content','.log'])
+		},[BH.contentSelector,BH.logSelector])
 	).then(()=>{
 		UIkit.notification( "Категория "+ $t.data('del') + " успешно удалена",'success');
 	});
@@ -77,7 +82,7 @@ $('.content').on('click', '.removeCategory', $e=>{
 
 
 // *.delArticle
-$('.content').on('click', '.delArticle', $e=>{
+BH.content$obj.on('click', '.delArticle', $e=>{
 	var $t= $($e.currentTarget);
 
 	$e.stopPropagation();
@@ -89,7 +94,7 @@ $('.content').on('click', '.delArticle', $e=>{
 		kff.request('',{
 			name: 'removeArticle',
 			value: $t.data('del'),
-		},['.content','.log']);
+		},[BH.contentSelector,BH.logSelector]);
 	}).then(()=>{
 		UIkit.notification( "Статья "+ $t.data('del') + " успешно удалена",'success');
 	});
@@ -98,7 +103,7 @@ $('.content').on('click', '.delArticle', $e=>{
 
 
 // *Создание новых категорий и статей
-$('.content').on('click', 'button.addCategory, button.addArticle', $e=>{
+BH.content$obj.on('click', 'button.addCategory, button.addArticle', $e=>{
 	var $t = $($e.target).prev(),
 		$inners = $t.find('input'),
 		data = {opts:{}};
@@ -129,7 +134,7 @@ $('.content').on('click', 'button.addCategory, button.addArticle', $e=>{
 	if(!data.value.trim()){
 		UIkit.notification( "Заполните название элемента!",'warning');
 	}
-	else kff.request('',data,['.content','.log'])
+	else kff.request('',data,[BH.contentSelector,BH.logSelector])
 	.then(()=>{
 		UIkit.notification( "Новый элемент успешно добавлен",'success');
 	});
@@ -137,7 +142,7 @@ $('.content').on('click', 'button.addCategory, button.addArticle', $e=>{
 
 
 // *Сохраняем сортировку страниц
-$('.content').on('click', '#save_sts', $e=>{
+BH.content$obj.on('click', '#save_sts', $e=>{
 	var
 		out={},
 		err=[],

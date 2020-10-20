@@ -320,7 +320,7 @@ var kff = {
 
 				out[i]= $(targetNode).html(newContent).html();
 			});
-			
+
 			// *Подсвечиваем лог
 			sels.includes('.log') && this.highlight('.log');
 			// *title
@@ -356,7 +356,7 @@ kff.menu.prototype.clickHahdler = function ($e) {
 	this.setActive(t.href);
 
 	// todo
-	kff.request(t.href,null,[mainSelector,'h1#title','.core.info','.log'])
+	kff.request(t.href,null,[mainSelector,'h1#title','.core.info','.log','#wrapEntries'])
 	.then(r=>{
 		if(!r[mainSelector]){
 			console.warn(r)

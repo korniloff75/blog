@@ -1,5 +1,3 @@
-<h4 id="comments_header">Комментарии<?=" ( {$this->paginator['data_count']} )"?></h4>
-
 <?php
 if (self::is_adm() &&
 	($this->check_no_comm($this->p_name))
@@ -7,6 +5,8 @@ if (self::is_adm() &&
 ?>
 
 <div id="wrapEntries">
+	<h4 id="comments_header">Комментарии<?=" ( {$this->paginator['data_count']} )"?></h4>
+
 	<?php # Comments BLOCK
 	$cpfr = count($this->paginator['fragm']);
 	if($cpfr)

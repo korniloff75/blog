@@ -29,7 +29,8 @@ var commFns = {
 		return kff.request(
 			sts.handler,
 			data,
-			['#entries']
+			// ['#entries']
+			['#wrapEntries']
 		)
 		.then(
 			out=>{
@@ -135,7 +136,8 @@ var commFns = {
 			if(!c.name) return a;
 			a[c.name]= c.value;
 			return a;
-		}, {});
+		}, {keyCaptcha: comm_vars.captcha});
+
 		var btn= this,
 			TO=10000;
 
@@ -148,16 +150,7 @@ var commFns = {
 		var ajaxData = {
 			name: "Write_Comm",
 			value: formData,
-			opts: {
-				keyCaptcha: comm_vars.captcha,
-			}
 		}
-		/* Object.assign({
-			s_method: 'write',
-			keyCaptcha: comm_vars.captcha,
-			dataCount: comm_vars.dataCount,
-			curpage: location.href,
-		}, formData); */
 
 		// ?
 		if($().spam)
@@ -167,13 +160,13 @@ var commFns = {
 		commFns.refresh(ajaxData)
 		.then(function(response) {
 			var keystring = $('#keystring')[0];
-			btn.disabled = 1;
+			$form.disabled = 1;
 			$('#entry').val('');
 			if(keystring) keystring.value="";
 
 			setTimeout(function() {
-				btn.disabled = 0;
-				console.log($form);
+				$form.disabled = 0;
+				console.log($form, btn);
 			}, TO);
 		});
 
@@ -183,7 +176,8 @@ var commFns = {
 	en_com: function (c) {
 		//== enaible / disable on page
 		commFns.refresh({
-			enable_comm: this.checked, p_name : decodeURIComponent(comm_vars.pageName), s_method : 'enable_comm'
+			name: 'Enabled_Comm',
+			value: this.checked,
 		});
 
 		/* $.post(comm_vars.ajaxPath, {
