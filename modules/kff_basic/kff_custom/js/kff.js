@@ -248,6 +248,7 @@ var kff = {
 			// touch: self.clickHahdler,
 		}); */
 
+		// todo
 		// *AJAX history
 		$(window).on('popstate', function($e) {
 			var e= $e.originalEvent;

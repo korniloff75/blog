@@ -47,7 +47,7 @@ class BlogKff_page extends BlogKff
 
 			$catId= $artData['catId'] ?? basename(dirname($artPathname));
 			$catName= $artData['catName'] ?? $catId;
-			$artId= basename($artPathname, self::$l_cfg['ext']);
+			$artId= basename($artPathname, self::$blogDB->ext);
 
 			$xpath = new DOMXpath($doc);
 			$imgs = $xpath->query("//img[1]");
@@ -141,14 +141,14 @@ class BlogKff_page extends BlogKff
 
 		/* $iterator = new RegexIterator(
 			$storageIterator->getChildren(),
-			'~\\' . self::$l_cfg['ext'] . '$~'
+			'~\\' . self::$blogDB->ext . '$~'
 		); */
 
 		// foreach(new RecursiveIteratorIterator($storageIterator) as $c=>$FI){
 		foreach(new RecursiveIteratorIterator($storageIterator) as $c=>$FI){
 			if(
 				$FI->isDir()
-				|| $FI->getExtension() !== substr(self::$l_cfg['ext'], 1)
+				|| $FI->getExtension() !== substr(self::$blogDB->ext, 1)
 				|| !$ts= $FI->getMTime()
 			) continue;
 
@@ -235,7 +235,7 @@ class BlogKff_page extends BlogKff
 		$html= htmlspecialchars_decode(str_replace(['#+#','#-#'], ['<?','?>'], trim($html)));
 		$html= preg_replace(['~^[\s\n'.PHP_EOL.']+?~','~\n{2,}~'], ['',"\n\n"], $html);
 
-		file_put_contents(self::$storagePath . "/{$this->opts['cat']}/{$this->opts['art']}" . self::$l_cfg['ext'], $html);
+		file_put_contents(self::$storagePath . "/{$this->opts['cat']}/{$this->opts['art']}" . self::$blogDB->ext, $html);
 
 		// *Обновляем карту
 

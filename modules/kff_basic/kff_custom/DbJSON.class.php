@@ -162,9 +162,17 @@ class DbJSON implements Iterator, Countable
 	/**
 	 * Получаем ключи базы
 	 */
-	public function getKeys($id=null)
+	public function getKeys()
 	{
 		return array_keys($this->get());
+	}
+
+	/**
+	 * Проверяем наличие ключа
+	 */
+	public function key_exists($key)
+	{
+		return array_key_exists($key, $this->get());
 	}
 
 

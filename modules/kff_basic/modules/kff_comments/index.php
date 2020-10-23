@@ -1,5 +1,5 @@
 <?php
-
+// note old
 // $Comments = $Comments ?? new Comments;
 
 /*== Сохранение, редактирование и удаление комментариев по AJAX-запросу ==*/

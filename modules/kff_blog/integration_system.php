@@ -93,12 +93,13 @@ class BlogKff extends Index_my_addon
 			self::$blogDB->replace(self::$def_cfg);
 
 		// *Define self::$art
-		self::$art= [
+		// ?
+		/* self::$art= [
 			'pathname'=> self::getArtPathname()
 		];
 		$catPathname= dirname(self::$art['pathname']);
 		self::$art['catId']= basename($catPathname);
-		self::$art['id']= basename(self::$art['pathname'], self::$l_cfg['ext']);
+		self::$art['id']= basename(self::$art['pathname'], self::$blogDB->ext); */
 
 		self::$catPath = self::$storagePath.'/categories.json';
 		$catsDB= &self::$catsDB;
@@ -120,23 +121,29 @@ class BlogKff extends Index_my_addon
 	 * если не передан - вычисляем текущую из URI
 	 */
 	public static function getArtDB($artPathname=null)
+	:?DbJSON
 	{
 		global $Page;
 
 		$artDB= &self::$artDB;
 
-		if(!empty($artDB)) return $artDB;
+		if(empty($artPathname)){
+			if(!empty($artDB))
+				return $artDB;
+
+			$artPathname= self::getArtPathname();
+		}
 
 		self::_defineCatsDB();
 		// self::$log->add(__METHOD__." \$artPathname= $artPathname");
-		$artPathname= $artPathname ?? self::getArtPathname();
+
 		$catPathname= dirname($artPathname);
 		$catId= basename($catPathname);
-		$artId= basename($artPathname, self::$l_cfg['ext']);
+		$artId= basename($artPathname, self::$blogDB->ext);
 
 		if(empty(trim($catId))){
 			self::$log->add(__METHOD__ . "\$catId is EMPTY!" ,E_USER_WARNING,['$artPathname='=>$artPathname, '$artId'=>$artId]);
-			return;
+			return null;
 		}
 
 		if( $catPathname === \DR ){
@@ -164,7 +171,7 @@ class BlogKff extends Index_my_addon
 		$artPathname= $artPathname ?? self::getArtPathname();
 		$catPathname= dirname($artPathname);
 		$catId= basename($catPathname);
-		$artId= basename($artPathname, self::$l_cfg['ext']);
+		$artId= basename($artPathname, self::$blogDB->ext);
 
 		if(empty(trim($catId))){
 			self::$log->add(__METHOD__ . "\$catId is EMPTY!" ,E_USER_WARNING,['$artPathname='=>$artPathname, '$artId'=>$artId]);
@@ -201,7 +208,7 @@ class BlogKff extends Index_my_addon
 	{
 		$catPathname = $catFI->getPathname();
 
-		// self::$log->add($catFI->getPathname() . "/*" . self::$l_cfg['ext']);
+		// self::$log->add($catFI->getPathname() . "/*" . self::$blogDB->ext);
 
 		$catId= $catFI->getFilename();
 		$catDB = new DbJSON($catPathname . "/data.json");
@@ -209,7 +216,7 @@ class BlogKff extends Index_my_addon
 		// $catDB->append(['name'=>$catFilename]);
 		$nameFixed= is_string($catDB->get('name'));
 
-		foreach(glob($catPathname . "/*" . self::$l_cfg['ext']) as $ind=>&$artPathname) {
+		foreach(glob($catPathname . "/*" . self::$blogDB->ext) as $ind=>&$artPathname) {
 			// *без расширения
 			$artId = pathinfo($artPathname, PATHINFO_FILENAME);
 			// todo Перевести на artData
@@ -285,7 +292,7 @@ class BlogKff extends Index_my_addon
 		global $Page;
 
 		return is_object($Page)?
-		str_replace($Page->id, basename(self::$storagePath), DR.explode('?',REQUEST_URI)[0]) . self::$l_cfg['ext']
+		str_replace($Page->id, basename(self::$storagePath), DR.explode('?',REQUEST_URI)[0]) . self::$blogDB->ext
 		: null;
 	}
 

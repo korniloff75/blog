@@ -10,7 +10,6 @@ class Comments extends BlogKff
 	use Paginator;
 
 	const
-		SPAM_IP = __DIR__.'/../db/badIP.json',
 		MAX_LEN = 1500,
 		MAX_ON_PAGE = 10,
 		MAX_ENTRIES = 10000,
@@ -37,6 +36,7 @@ class Comments extends BlogKff
 		$artData;
 
 	static
+		$SPAM_IP,
 		$captcha;
 
 
@@ -50,6 +50,8 @@ class Comments extends BlogKff
 
 		$this->file = new DbJSON($this->path);
 
+		self::$SPAM_IP = self::$dir.'/db/badIP.json';
+
 		// var_dump($act);
 
 		// if($act==='comments' && $this->_InputController()) die;
@@ -58,7 +60,7 @@ class Comments extends BlogKff
 		// if(!headers_sent() && !isset($_SESSION)) session_start();
 
 		// $this->artData= self::getArtData();
-		$this->artDB= self::getArtDB();
+		self::$artDB= self::$artDB ?? self::getArtDB();
 		// $this->artData= $artData;
 		$this->artData= &self::$map->get($artData['ind'][0])['items'][$artData['ind'][1]];
 
@@ -107,7 +109,7 @@ class Comments extends BlogKff
 	function check_no_comm()
 
 	{ # return true - комменты
-		return !filter_var($this->artDB->get('enable-comments'), FILTER_VALIDATE_BOOLEAN);
+		return !filter_var(self::$artDB->get('enable-comments'), FILTER_VALIDATE_BOOLEAN);
 	}
 
 
@@ -122,15 +124,15 @@ class Comments extends BlogKff
 		$bool= filter_var($bool,FILTER_VALIDATE_BOOLEAN);
 
 		// \H::json(\DIR . 'data.json', $comments);
-		$this->artDB->set(['enable-comments'=>$bool]);
+		self::$artDB->set(['enable-comments'=>$bool]);
 
 		// *Обновляем карту
 
 		$map= self::getBlogMap();
-		$ind= $this->artDB->get('ind');
+		$ind= self::$artDB->get('ind');
 
 		$newData= [$ind[0]=>[
-			'items'=>[$ind[1]=>$this->artDB->get()]
+			'items'=>[$ind[1]=>self::$artDB->get()]
 		]];
 		$map->set($newData);
 
@@ -275,9 +277,9 @@ class Comments extends BlogKff
 			$this->err[]= "Нет IP-адреса.";
 
 		# Проверяем на наличие в базе
-		if(file_exists(self::SPAM_IP))
+		if(file_exists(self::$SPAM_IP))
 		{
-			if(in_array($arr['IP'], (new DbJSON(self::SPAM_IP))->get()))
+			if(in_array($arr['IP'], (new DbJSON(self::$SPAM_IP))->get()))
 				$this->err[] = 'Попался, товарищ спамер!';
 		}
 
