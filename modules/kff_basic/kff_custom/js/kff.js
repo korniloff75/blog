@@ -248,18 +248,17 @@ var kff = {
 			// touch: self.clickHahdler,
 		}); */
 
-		// todo
 		// *AJAX history
 		$(window).on('popstate', function($e) {
-			var e= $e.originalEvent;
+			var e= $e.originalEvent,
+				state= e.state && e.state[mainSelector];
 
-			if(!e.state || !e.state[mainSelector]) return false;
+			if(!state) return false;
 
-			console.log(e.state, 'e.state[mainSelector].html=', e.state[mainSelector].html);
+			// console.log(state, /* state.html */);
 
-			kff.render([mainSelector], e.state[mainSelector].html);
-			kff.render(['h1#title'], e.state[mainSelector].title);
-			self.setActive(e.state[mainSelector].href);
+			kff.request(state.href,null,state.sels)
+			.then(r=>self.setActive(state.href));
 		});
 	},
 
@@ -358,7 +357,8 @@ kff.menu.prototype.clickHahdler = function ($e) {
 	this.setActive(t.href);
 
 	// todo
-	kff.request(t.href,null,[mainSelector,'h1#title','.core.info','.log','#wrapEntries'])
+	var sels= [mainSelector,'h1#title','.core.info','.log','#wrapEntries'];
+	kff.request(t.href,null,sels)
 	.then(r=>{
 		if(!r[mainSelector]){
 			console.warn(r)
@@ -369,6 +369,7 @@ kff.menu.prototype.clickHahdler = function ($e) {
 		state[mainSelector]= {
 			href: t.href,
 			title: $('h1#title').html(),
+			sels: sels,
 			html: r[mainSelector]
 		};
 		console.info('state=',state);

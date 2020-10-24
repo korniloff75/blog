@@ -135,7 +135,8 @@ BH.content$obj.on('click', 'button.addCategory, button.addArticle', $e=>{
 		UIkit.notification( "Заполните название элемента!",'warning');
 	}
 	else kff.request('',data,[BH.contentSelector,BH.logSelector])
-	.then(()=>{
+	.then(r=>{
+		console.log(r);
 		UIkit.notification( "Новый элемент успешно добавлен",'success');
 	});
 });
