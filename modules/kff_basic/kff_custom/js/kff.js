@@ -319,6 +319,8 @@ var kff = {
 
 				var newContent= $sourceNode.html();
 
+				if($sourceNode[0].classList) targetNode.classList= $sourceNode[0].classList;
+
 				out[i]= $(targetNode).html(newContent).html();
 			});
 

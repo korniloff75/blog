@@ -31,7 +31,7 @@ ob_start();
 $Templater['coreHead']= ob_get_clean();
 
 // *если нет {{coreHead}} - вставляем в head
-if(!strpos($buf,'{{coreHead}}')){
+if(!stripos($buf,'{{coreHead}}')){
 	$buf= str_replace('</head>', "<!-- coreHead -->\n{{coreHead}}\n</head>", $buf, $cb);
 	$log->add("{{coreHead}} is EMPTY! ",null,[$cb]);
 }

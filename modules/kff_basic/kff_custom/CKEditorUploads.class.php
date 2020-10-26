@@ -9,17 +9,28 @@ class CKEditorUploads extends Uploads
 		$allow = ['jpg','jpeg','png','gif'],
 		$input_name = 'files';
 
-	public static function scanImgs()
+	private static $explorer= '<input /><button class="uk-button uk-button-small" onclick="kff.request(\'\',{name: \'addImgFolder\', value: this.previousElementSibling.value},[\'#explorer\'])">New folder</button>
+	<span class="uk-button" onclick="kff.request(\'\',{name: \'createCKEditorBrowser\'}, [\'#existsImg\']);">/</span>';
+
+
+	public static function scanImgs($pathname=null)
 	{
-		if(!file_exists(static::$pathname))
+		$pathname= $pathname ?? static::$pathname;
+
+		if(!file_exists($pathname))
 			return;
 
 		$Imgs= '';
 
 		foreach(
-			new FilesystemIterator(static::$pathname, FilesystemIterator::SKIP_DOTS|FilesystemIterator::UNIX_PATHS) as $imgFI
+			new FilesystemIterator($pathname, FilesystemIterator::SKIP_DOTS|FilesystemIterator::UNIX_PATHS) as $imgFI
 		){
-			if(!$imgFI->isFile() || !in_array($imgFI->getExtension(),self::$allow))
+			if($imgFI->isDir()){
+				self::$explorer.= '<span class="uk-button" onclick="kff.request(\'\',{name: \'createCKEditorBrowser\', opts:{folder:'. $imgFI->getFilename() .'}}, [\'#existsImg\']);">'. $imgFI->getFilename() .'</span>';
+				continue;
+			}
+
+			if(!in_array($imgFI->getExtension(),self::$allow))
 				continue;
 
 			$src= '/'. Index_my_addon::getPathFromRoot($imgFI->getPathname());
@@ -31,6 +42,10 @@ class CKEditorUploads extends Uploads
 
 	public static function RenderBrowser()
 	{
+		global $Page;
+
+		Index_my_addon::headHtml();
+
 		$UIKpath = '/'. Index_my_addon::$internalModulesPath . '/kff_uikit-3.5.5';
 		?>
 
@@ -38,8 +53,10 @@ class CKEditorUploads extends Uploads
 		<html lang="en">
 		<head>
 			<meta charset="UTF-8">
+			<?php $Page->get_headhtml()?>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
 			<title><?=__CLASS__?></title>
+			<!-- <script async src="/<?=Index_my_addon::$dir?>/js/kff.js"></script> -->
 			<!-- UIkit CSS -->
 			<link rel="stylesheet" href="<?=$UIKpath?>/css/uikit.min.css" />
 
@@ -66,8 +83,15 @@ class CKEditorUploads extends Uploads
 		<progress id="js-progressbar" class="uk-progress uk-width-1" value="0" max="100" hidden></progress>
 
 		<!-- Существующие изображения -->
-		<div id="existsImg">
-			<?=self::scanImgs();?>
+		<div class="uk-flex uk-flex-wrap">
+			<div id="existsImg" class="uk-width-expand@s">
+				<?=self::scanImgs();?>
+			</div>
+
+			<div id="explorer" class="uk-width-1-4@s uk-flex uk-flex-column">
+				<h4>Explorer</h4>
+				<?=self::$explorer?>
+			</div>
 		</div>
 
 		<script>
@@ -101,7 +125,7 @@ class CKEditorUploads extends Uploads
 			loadStart: function (e) {
 					// console.log('loadStart', arguments);
 
-					bar.removeAttribute('hidden');
+					bar.hidden= 0;
 					bar.max = e.total;
 					bar.value = e.loaded;
 			},
@@ -124,15 +148,12 @@ class CKEditorUploads extends Uploads
 				// console.log('completeAll', arguments);
 
 				setTimeout(function () {
-					bar.setAttribute('hidden', 'hidden');
+					bar.hidden= 1;
 
 				}, 3000);
 
-				UIkit.modal.alert('Загрузка завершена')
-				.then(()=>location.reload());
-
-				// *Обновляем страницу
-				document.documentElement.innerHTML= xhr.response;
+				setTimeout(location.reload.bind(location), UIkit.notification('Загрузка завершена', 'success').timeout);
+				// .then(()=>location.reload());
 
 			}
 

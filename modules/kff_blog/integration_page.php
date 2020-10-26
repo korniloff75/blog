@@ -335,11 +335,14 @@ class BlogKff_page extends BlogKff
 	protected function c_createCKEditorBrowser($upload=null)
 	{
 		global $Page, $URI;
-		$pathToFiles = "/CKeditor";
-		CKEditorUploads::$pathname .= $pathToFiles;
+
+		$folder= $this->opts['folder'] ?? null;
+
+		CKEditorUploads::$pathname .= "/CKeditor/$folder";
 		self::$log->add('CKEditorUploads::$pathname= ' . CKEditorUploads::$pathname);
 
 		CKEditorUploads::RenderBrowser();
+
 		if(self::is_adm() && !empty($upload))
 			new CKEditorUploads;
 
@@ -353,6 +356,18 @@ class BlogKff_page extends BlogKff
 	{
 		// *Upload
 		$this->c_createCKEditorBrowser('upload');
+	}
+
+	/**
+	 * Создаем папку
+	 */
+	protected function c_addImgFolder(string $name)
+	{
+		ob_clean();
+		if(empty($name)) self::$log->add(__METHOD__. 'folder name is EMPTY!', E_USER_ERROR);
+		elseif(self::is_adm()) mkdir(CKEditorUploads::$pathname . "/CKeditor/$name", 0775, 1);
+		$this->c_createCKEditorBrowser();
+		die;
 	}
 
 
