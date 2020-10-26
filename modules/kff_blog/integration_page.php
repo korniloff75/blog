@@ -105,7 +105,7 @@ class BlogKff_page extends BlogKff
 			}
 
 			$o.="<div class='info uk-float-left'>
-			<p class='uk-margin-small-bottom'>Категория: <b onclick='BH.getCategoryList(\"$catId\",\"$catName\")' style='cursor:pointer;'>$catName</b></p>";
+			<p class='uk-margin-small-bottom'>Категория: <a href='?name=getCategoryList&value=$catId' onclick='BH.getCategoryList(\"$catId\",\"$catName\", event)' style='cursor:pointer;'>$catName</a></p>";
 
 			ob_start();
 			self::renderDateBlock($artData);
@@ -169,13 +169,12 @@ class BlogKff_page extends BlogKff
 
 	/**
 	 * *Список статей из категории
-	 * @param quantity - кол-во элементов
-	 * todo...
+	 * @param catId -
 	 */
-	protected function c_getCategoryList($catId, $quantity=5)
+	protected function c_getCategoryList($catId)
 	{
 		global $Page;
-		ob_start();
+		ob_clean();
 		/* echo '<pre>';
 		var_dump(self::getCategoryData($catId)['items'] );
 		echo '</pre>'; */
@@ -183,6 +182,30 @@ class BlogKff_page extends BlogKff
 		foreach(self::getCategoryData($catId)['items'] as $artData){
 			echo "<li><a href='/{$Page->id}/$catId/".$artData['id']."'>{$artData['name']}</a></li>";
 		}
+		echo '</ul>';
+		ob_end_flush();
+		die;
+	}
+
+	/**
+	 * *Список статей по #тэгу
+	 * @param hashtag -
+	 */
+	protected function c_getHashList($hashtag)
+	{
+		global $Page;
+		ob_clean();
+
+		echo '<ul>';
+
+		foreach(self::getBlogMap() as $catData){
+			foreach($catData['items'] as &$artData){
+				if(stripos($artData['tag'], $hashtag) === false) continue;
+
+				echo "<li><a href=\"/{$Page->id}/{$catData['id']}/{$artData['id']}\">{$artData['name']}</a></li>";
+			}
+		}
+
 		echo '</ul>';
 		ob_end_flush();
 		die;
@@ -215,7 +238,7 @@ class BlogKff_page extends BlogKff
 			switch ($k) {
 				case 'tag':
 				case 'keywords':
-					$v= preg_replace('~\s*(,)\s*~u', '$1', $v);
+					$v= preg_replace(['~\s*(,)\s*~u','~\s+~u'], ['$1', '_'], $v);
 					break;
 				case 'title':
 					if(empty(trim($v))) $v= $this->opts['artOpts']['name'];
@@ -295,7 +318,7 @@ class BlogKff_page extends BlogKff
 				if(!trim($tag)) continue;
 				if(substr($tag,0,1)!=='#') $tag= "#$tag";
 			?>
-				<span itemprop="name" class="uk-button uk-button-small"><?=$tag?></span>
+				<a href="?name=getHashList&value=<?=trim($tag, '#')?>" itemprop="name" class="uk-button uk-button-small" onclick="BH.getHashList('<?=trim($tag, '#')?>', event);"><?=$tag?></a>
 
 			<?php
 			}

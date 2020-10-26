@@ -23,14 +23,14 @@ class BlogKff_adm extends BlogKff
 	/**
 	 * *Сохрааняем сортировку статей
 	 */
-	function c_sortCategories($catsAllJson)
+	function c_sortCategories($catsAll)
 	{
-		$catsAll = json_decode($catsAllJson, 1);
-		$cats = array_keys($catsAll);
-		$oldMap= clone $map= self::getBlogMap();
-		// $map->clear();
+		if(is_string($catsAll))
+			$catsAll = json_decode($catsAllJson, 1);
 
-		self::$log->add(__METHOD__,null,['$oldMap'=>$oldMap, '$cats'=>$cats, /* '$catsAll'=>$catsAll */]);
+		$cats = array_keys($catsAll);
+
+		// self::$log->add(__METHOD__,null,['$cats'=>$cats, '$catsAll'=>$catsAll]);
 
 		self::$catsDB->replace($cats);
 
@@ -40,65 +40,46 @@ class BlogKff_adm extends BlogKff
 			$items = &$catsAll[$catId];
 
 			$catDB = new DbJSON($catPathname . "/data.json");
+			$catDB->set(['ind'=>$catInd]);
+
 			$catDB->clear('items');
 
-
-			// $map->set([$catInd=>['items'=>null]]);
-
-			// self::$log->add(__METHOD__,null,['$catId'=>$catId,'$oldItems'=>$oldItems, "\$map->get($catInd)"=>$map->get($catInd)]);
+			self::$log->add(__METHOD__,null,['$catId'=>$catId,/* '$items'=>$items, */]);
 
 			// *Перебираем элементы
 			foreach($items as $ind=>&$item) {
-				$artPathname= "$catPathname/{$item['id']}" . self::$l_cfg['ext'];
-
-				$oldItems= $oldMap->find('id',$item['oldCatId'])['items'];
+				$artPathname= "$catPathname/{$item['id']}" . self::$blogDB->ext;
 
 				// *Элемент перемещён в другую категорию
 				if($item['oldCatId'] !== $catId)
 				{
 					$oldCatPath = self::$storagePath . "/{$item['oldCatId']}";
-					rename("{$oldCatPath}/{$item['id']}" . self::$l_cfg['ext'], $artPathname);
+					rename("{$oldCatPath}/{$item['id']}" . self::$blogDB->ext, $artPathname);
 					rename("{$oldCatPath}/{$item['id']}.json", "$catPathname/{$item['id']}.json");
 
 					// *Перезаписываем данные в базе статьи
 					// $artDB = new DbJSON("$catPathname/{$item['id']}.json");
 					$artDB = self::getArtDB($artPathname);
-					$artDB->set(['ind'=>[$catInd,$ind],'catId'=>$catId, 'catName'=>$catDB->get('name')]);
+					$item = array_replace($item, ['ind'=>[$catInd,$ind],'catId'=>$catId, 'oldCatId'=>$catId, 'catName'=>$catDB->get('name')]);
+					$artDB->set($item);
+					$artDB->save();
 
-					unset($item['oldCatId']);
+					// unset($item['oldCatId']);
 				}
 
 				// *Обновляем базу элементов категории
 				$catDB->append(['items'=>[$item]]);
 
-				// $artData = self::getArtData($artPathname);
-
-				foreach($oldItems as &$oldItem){
-					if($oldItem['id'] !== $item['id']) continue;
-					$oldItem['ind']= [$catInd,$ind];
-					break;
-				}
-
-				// self::$log->add(__METHOD__,null,['$oldItem'=>$oldItem, '$artData'=>$artData]);
-
-				// *Обновляем карту
-				$map->set([$catInd=>['items'=>[
-					$ind=> $oldItem
-				]]]);
-				unset($oldItem);
-				$oldItems= array_filter($oldItems);
-
 			} //foreach
 
 			if(!empty($oldCatPath))
 				self::_updateCatDB(new SplFileInfo($oldCatPath));
+			else $catDB->save();
 
-			$catDB->__destruct();
-			$catDB->__destruct= null;
+			// *Обновляем карту
+			self::_createBlogMap(1);
 
 		} //foreach
-
-		$map->__destruct();
 
 		return $cats;
 	}
@@ -125,7 +106,7 @@ class BlogKff_adm extends BlogKff
 		self::$log->add("Удаление статьи $removePath");
 
 		unlink("$removePath.json");
-		unlink("$removePath" . self::$l_cfg['ext']);
+		unlink("$removePath" . self::$blogDB->ext);
 
 		self::_updateCatDB(new SplFileInfo($catPath));
 
@@ -208,7 +189,7 @@ class BlogKff_adm extends BlogKff
 		$catName = $cfg['catName']= $this->opts['catName'];
 		$catPath = self::$storagePath."/$catId";
 		$cfg['path'] = Index_my_addon::getPathFromRoot($catPath);
-		$artPathname = "{$catPath}/{$new_article}" . self::$l_cfg['ext'];
+		$artPathname = "{$catPath}/{$new_article}" . self::$blogDB->ext;
 
 		self::$log->add(__METHOD__,null,['$cfg'=>$cfg]);
 
@@ -237,8 +218,8 @@ class BlogKff_adm extends BlogKff
 				$cfg['ind'][1]=> $artDB->get()
 			]]]);
 
-			$artDB->__destruct();
-			$artDB->__destruct = null;
+			$artDB->save();
+
 			self::_updateCatDB(new SplFileInfo($catPath), $cfg['name']);
 		}
 		else {

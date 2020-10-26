@@ -40,6 +40,8 @@ class BlogKff_adm extends BlogKff
 			$items = &$catsAll[$catId];
 
 			$catDB = new DbJSON($catPathname . "/data.json");
+			$catDB->set(['ind'=>$catInd]);
+
 			$catDB->clear('items');
 
 			self::$log->add(__METHOD__,null,['$catId'=>$catId,/* '$items'=>$items, */]);

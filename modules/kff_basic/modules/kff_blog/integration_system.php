@@ -2,6 +2,8 @@
 class BlogKff extends Index_my_addon
 {
 	protected static
+		$inputData,
+		$AJAX= false,
 		$modDir,
 		// *default
 		$def_cfg = [
@@ -15,9 +17,10 @@ class BlogKff extends Index_my_addon
 		$storagePath = \DR.'/kff_blog_data',
 		$catPath,
 		$catsDB,
+		$artDB,
 		$catDataKeys = ['name','id','items'],
-		// ?
-		$artBase= [],
+		// *Данные по текущей статье
+		$art= [],
 		$map;
 
 
@@ -39,8 +42,6 @@ class BlogKff extends Index_my_addon
 		if(!$this->_InputController())
 			self::addUIkit();
 
-		// self::$log->add('self::$cfg=',null, [self::$cfg]);
-
 	} // __construct
 
 
@@ -51,8 +52,22 @@ class BlogKff extends Index_my_addon
 	protected function _InputController()
 	{
 		// if(!self::is_adm()) return false;
+		;
 
 		$r = &$_REQUEST;
+
+		// *get AJAX
+		if(
+			empty(self::$inputData)
+			&& is_string(self::$inputData= file_get_contents('php://input'))
+			&& !empty(self::$inputData= json_decode(self::$inputData, 1))
+		){
+			$r= array_merge($r, self::$inputData);
+			self::$AJAX = true;
+		}
+
+		// self::$log->add(__METHOD__,null,['$r'=>$r, 'method_exists($this, ($m_name = "c_{$r[\'name\']}"))'=>method_exists($this, ($m_name = "c_{$r['name']}")), '$this'=>$this]);
+
 		if(!empty($r['name']) && method_exists($this, ($m_name = "c_{$r['name']}")))
 		{
 			if(is_string($r['opts']))
@@ -72,14 +87,19 @@ class BlogKff extends Index_my_addon
 	{
 		if(self::$catsDB) return;
 
-		// self::$blogDB = new DbJSON(__DIR__.'/cfg.json');
-		self::$blogDB = new DbJSON(DR.'/data/cfg/kff.json', 'blog');
-
-		if(!self::$blogDB->count())
-			// self::$blogDB->replace(self::$def_cfg);
-			self::$blogDB->replace(array_merge(self::$def_cfg, (new DbJSON(__DIR__.'/cfg.json'))->get()));
-
+		self::$blogDB = new DbJSON(DR.'/data/cfg/kff_blog.json');
 		self::$l_cfg= self::$blogDB->get();
+		if(!self::$blogDB->count())
+			self::$blogDB->replace(self::$def_cfg);
+
+		// *Define self::$art
+		// ?
+		/* self::$art= [
+			'pathname'=> self::getArtPathname()
+		];
+		$catPathname= dirname(self::$art['pathname']);
+		self::$art['catId']= basename($catPathname);
+		self::$art['id']= basename(self::$art['pathname'], self::$blogDB->ext); */
 
 		self::$catPath = self::$storagePath.'/categories.json';
 		$catsDB= &self::$catsDB;
@@ -101,19 +121,29 @@ class BlogKff extends Index_my_addon
 	 * если не передан - вычисляем текущую из URI
 	 */
 	public static function getArtDB($artPathname=null)
+	:?DbJSON
 	{
 		global $Page;
 
+		$artDB= &self::$artDB;
+
+		if(empty($artPathname)){
+			if(!empty($artDB))
+				return $artDB;
+
+			$artPathname= self::getArtPathname();
+		}
+
 		self::_defineCatsDB();
 		// self::$log->add(__METHOD__." \$artPathname= $artPathname");
-		$artPathname= $artPathname ?? self::getArtPathname();
+
 		$catPathname= dirname($artPathname);
 		$catId= basename($catPathname);
-		$artId= basename($artPathname, self::$l_cfg['ext']);
+		$artId= basename($artPathname, self::$blogDB->ext);
 
 		if(empty(trim($catId))){
 			self::$log->add(__METHOD__ . "\$catId is EMPTY!" ,E_USER_WARNING,['$artPathname='=>$artPathname, '$artId'=>$artId]);
-			return;
+			return null;
 		}
 
 		if( $catPathname === \DR ){
@@ -126,7 +156,9 @@ class BlogKff extends Index_my_addon
 
 		// self::$log->add(__METHOD__,\Logger::BACKTRACE,[/* '$Page->id'=>$Page->id,  */'$catPathname'=>$catPathname, '$artPathname'=>$artPathname]);
 
-		return new DbJSON($dbPath);
+		$artDB= new DbJSON($dbPath);
+
+		return $artDB;
 	}
 
 
@@ -139,7 +171,7 @@ class BlogKff extends Index_my_addon
 		$artPathname= $artPathname ?? self::getArtPathname();
 		$catPathname= dirname($artPathname);
 		$catId= basename($catPathname);
-		$artId= basename($artPathname, self::$l_cfg['ext']);
+		$artId= basename($artPathname, self::$blogDB->ext);
 
 		if(empty(trim($catId))){
 			self::$log->add(__METHOD__ . "\$catId is EMPTY!" ,E_USER_WARNING,['$artPathname='=>$artPathname, '$artId'=>$artId]);
@@ -176,7 +208,7 @@ class BlogKff extends Index_my_addon
 	{
 		$catPathname = $catFI->getPathname();
 
-		// self::$log->add($catFI->getPathname() . "/*" . self::$l_cfg['ext']);
+		// self::$log->add($catFI->getPathname() . "/*" . self::$blogDB->ext);
 
 		$catId= $catFI->getFilename();
 		$catDB = new DbJSON($catPathname . "/data.json");
@@ -184,9 +216,10 @@ class BlogKff extends Index_my_addon
 		// $catDB->append(['name'=>$catFilename]);
 		$nameFixed= is_string($catDB->get('name'));
 
-		foreach(glob($catPathname . "/*" . self::$l_cfg['ext']) as $ind=>&$artPathname) {
+		foreach(glob($catPathname . "/*" . self::$blogDB->ext) as $ind=>&$artPathname) {
 			// *без расширения
 			$artId = pathinfo($artPathname, PATHINFO_FILENAME);
+			// todo Перевести на artData
 			$artDB = self::getArtDB($artPathname);
 
 			// if(empty($artDB->get('title')))
@@ -206,7 +239,9 @@ class BlogKff extends Index_my_addon
 				$nameFixed=1;
 			}
 
-		}
+		} //foreach
+
+		$catDB->save();
 
 		// *Заносим в $map
 		self::$map->setInd($catDB->get(), 'id', $catId);
@@ -257,7 +292,7 @@ class BlogKff extends Index_my_addon
 		global $Page;
 
 		return is_object($Page)?
-		str_replace($Page->id, basename(self::$storagePath), DR.explode('?',REQUEST_URI)[0]) . self::$l_cfg['ext']
+		str_replace($Page->id, basename(self::$storagePath), DR.explode('?',REQUEST_URI)[0]) . self::$blogDB->ext
 		: null;
 	}
 
@@ -357,7 +392,7 @@ class BlogKff extends Index_my_addon
 	{
 		// *UIkit подключён
 		if(
-			!empty(self::$cfg['uk']['include_uikit'])
+			!empty(self::$cfgDB->uk['include_uikit'])
 		) return;
 
 		$UIKpath = '/'. self::$internalModulesPath . '/kff_uikit-3.5.5';
@@ -377,7 +412,7 @@ class BlogKff extends Index_my_addon
 		<!-- /UIkit -->
 
 		<?php
-		self::$cfg['uk']['include_uikit'] = 0;
+		self::$cfgDB->uk['include_uikit'] = 0;
 	}
 
 	public function __destruct()

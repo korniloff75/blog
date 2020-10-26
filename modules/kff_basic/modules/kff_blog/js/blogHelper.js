@@ -40,8 +40,11 @@ var BH = {
 	},
 
 	// *Список статей в категории
-	getCategoryList: function(catId, catName){
+	getCategoryList: function(catId, catName, e){
 		// UIkit.modal.alert('OPA!');
+		e.preventDefault();
+		e.stopPropagation();
+
 		kff.request('',{
 			name: 'getCategoryList',
 			value: catId,
@@ -51,6 +54,27 @@ var BH = {
 			// console.log(response);
 			UIkit.modal.dialog(
 				'<h3 class="uk-text-center">' + catName + '</h3>'
+				+ response
+			);
+
+		});
+	},
+
+	// *Список по #тэгу
+	getHashList: function(hashtag, e){
+		// UIkit.modal.alert('OPA!');
+		e.preventDefault();
+		e.stopPropagation();
+
+		kff.request('',{
+			name: 'getHashList',
+			value: hashtag,
+			opts: null,
+		})
+		.then(response=>{
+			// console.log(response);
+			UIkit.modal.dialog(
+				'<h3 class="uk-text-center">#' + hashtag + '</h3>'
 				+ response
 			);
 
@@ -135,7 +159,8 @@ BH.content$obj.on('click', 'button.addCategory, button.addArticle', $e=>{
 		UIkit.notification( "Заполните название элемента!",'warning');
 	}
 	else kff.request('',data,[BH.contentSelector,BH.logSelector])
-	.then(()=>{
+	.then(r=>{
+		console.log(r);
 		UIkit.notification( "Новый элемент успешно добавлен",'success');
 	});
 });

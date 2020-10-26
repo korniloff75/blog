@@ -40,8 +40,11 @@ var BH = {
 	},
 
 	// *Список статей в категории
-	getCategoryList: function(catId, catName){
+	getCategoryList: function(catId, catName, e){
 		// UIkit.modal.alert('OPA!');
+		e.preventDefault();
+		e.stopPropagation();
+
 		kff.request('',{
 			name: 'getCategoryList',
 			value: catId,
@@ -51,6 +54,27 @@ var BH = {
 			// console.log(response);
 			UIkit.modal.dialog(
 				'<h3 class="uk-text-center">' + catName + '</h3>'
+				+ response
+			);
+
+		});
+	},
+
+	// *Список по #тэгу
+	getHashList: function(hashtag, e){
+		// UIkit.modal.alert('OPA!');
+		e.preventDefault();
+		e.stopPropagation();
+
+		kff.request('',{
+			name: 'getHashList',
+			value: hashtag,
+			opts: null,
+		})
+		.then(response=>{
+			// console.log(response);
+			UIkit.modal.dialog(
+				'<h3 class="uk-text-center">#' + hashtag + '</h3>'
 				+ response
 			);
 

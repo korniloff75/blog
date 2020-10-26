@@ -1,2 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /kff_blog_data/
+Disallow: /user
+Host: http://blog.JS-master.ru

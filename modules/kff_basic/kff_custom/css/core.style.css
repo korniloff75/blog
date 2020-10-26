@@ -45,7 +45,7 @@
 }
 
 /* #тэги */
-.tags>span {
+.tags>*[class*=button] {
 	display: inline-block;
 	box-sizing: border-box;
 	text-overflow: ellipsis;
@@ -55,7 +55,7 @@
 	color: #333;
 	border: none;
 }
-.tags>span:hover {
+.tags>*[class*=button]:hover {
 	background-color: #ffe8d0;
 }
 
