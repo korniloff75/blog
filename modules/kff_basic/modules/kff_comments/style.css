@@ -154,13 +154,13 @@ section#comments .name {
 	padding: 2px 5px
 }
 
-#form-container div > label:first-child {
+/* #form-container div > label:first-child {
 	flex: 1 1 50%;
 }
 
 #form-container div > [value] {
 	flex: 1 1 50%;
-}
+} */
 
 #form-container div > input[type=submit] {
 	flex-grow: 7;

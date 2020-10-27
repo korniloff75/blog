@@ -7,10 +7,35 @@ class CKEditorUploads extends Uploads
 	public static
 		// Разрешенные расширения файлов.
 		$allow = ['jpg','jpeg','png','gif'],
-		$input_name = 'files';
+		$input_name = 'files',
+		$root,
+		$folder;
 
-	private static $explorer= '<input /><button class="uk-button uk-button-small" onclick="kff.request(\'\',{name: \'addImgFolder\', value: this.previousElementSibling.value},[\'#explorer\'])">New folder</button>
-	<span class="uk-button" onclick="kff.request(\'\',{name: \'createCKEditorBrowser\'}, [\'#existsImg\']);">/</span>';
+
+	private static function _getExplorer()
+	{
+		global $log;
+		self::$folder= Index_my_addon::$State->get('CKEfolder');
+		self::$root= str_replace(self::$folder, '', self::$pathname);
+
+		$log->add(__METHOD__, null, ['self::$root'=>self::$root, ]);
+		$explorer= '<input /><button class="uk-button uk-button-small" onclick="kff.request(\'\',{name: \'addImgFolder\', value: this.previousElementSibling.value},[\'#explorer\'])">New folder</button>
+		<span class="uk-button" data-folder="">=/=</span>';
+
+		foreach(
+			new FilesystemIterator(self::$root, FilesystemIterator::SKIP_DOTS|FilesystemIterator::UNIX_PATHS) as $imgFI
+		){
+			if($imgFI->isDir()){
+				$dirname= $imgFI->getFilename();
+
+				$log->add(__METHOD__, null, ['self::$folder'=>self::$folder, '$dirname'=>$dirname]);
+
+				$explorer.= '<span class="uk-button '. ($dirname == self::$folder? 'active': '') .'" data-folder="'. $dirname .'">'. $dirname .'</span>';
+				continue;
+			}
+		}
+		return $explorer;
+	}
 
 
 	public static function scanImgs($pathname=null)
@@ -25,11 +50,6 @@ class CKEditorUploads extends Uploads
 		foreach(
 			new FilesystemIterator($pathname, FilesystemIterator::SKIP_DOTS|FilesystemIterator::UNIX_PATHS) as $imgFI
 		){
-			if($imgFI->isDir()){
-				self::$explorer.= '<span class="uk-button" onclick="kff.request(\'\',{name: \'createCKEditorBrowser\', opts:{folder:'. $imgFI->getFilename() .'}}, [\'#existsImg\']);">'. $imgFI->getFilename() .'</span>';
-				continue;
-			}
-
 			if(!in_array($imgFI->getExtension(),self::$allow))
 				continue;
 
@@ -66,6 +86,7 @@ class CKEditorUploads extends Uploads
 			<!-- /UIkit -->
 			<style>
 				#existsImg img{height:100px; cursor:pointer;}
+				.active {background:#efe;}
 			</style>
 		</head>
 
@@ -82,29 +103,66 @@ class CKEditorUploads extends Uploads
 
 		<progress id="js-progressbar" class="uk-progress uk-width-1" value="0" max="100" hidden></progress>
 
-		<!-- Существующие изображения -->
 		<div class="uk-flex uk-flex-wrap">
+			<!-- Существующие изображения -->
 			<div id="existsImg" class="uk-width-expand@s">
 				<?=self::scanImgs();?>
+
+				<?=self::updScript();?>
 			</div>
 
+			<!-- Навигация -->
 			<div id="explorer" class="uk-width-1-4@s uk-flex uk-flex-column">
 				<h4>Explorer</h4>
-				<?=self::$explorer?>
+				<?=self::_getExplorer();?>
 			</div>
 		</div>
 
 		<script>
+			'use strict';
+			// *Статичный скрипт
+			U.on('#explorer', 'click', '.uk-button[data-folder]', e=>{
+				var t= e.target,
+					folder= t.getAttribute('data-folder');
+
+				// console.log(folder,t,e);
+
+				kff.request('',{
+					name: 'createCKEditorBrowser',
+					opts:{folder:folder}
+				}, ['#existsImg','#explorer']);
+			});
+		</script>
+
+		</body>
+		</html>
+		<?php
+	}
+
+
+	/**
+	 * *Обновляем скрипт при каждом AJAX
+	 */
+	static function updScript()
+	{
+		?>
+		<script>
 		'use strict';
-		var bar = document.getElementById('js-progressbar');
+
+		var U = window.U || window.UIkit && UIkit.util,
+			bar = window.bar || document.getElementById('js-progressbar'),
+			params= {
+				act: 'upload',
+				opts: JSON.stringify({folder:'<?=Index_my_addon::$State->get('CKEfolder')?>'})
+			};
+
+		console.log('params= ', params);
 
 		UIkit.upload('.js-upload', {
 
 			url: '?name=CKEditorUpload',
 			multiple: true,
-			params: {
-				act: 'upload'
-			},
+			params: params,
 
 			beforeSend: function () {
 					// console.log('beforeSend', arguments);
@@ -152,8 +210,9 @@ class CKEditorUploads extends Uploads
 
 				}, 3000);
 
-				setTimeout(location.reload.bind(location), UIkit.notification('Загрузка завершена', 'success').timeout);
-				// .then(()=>location.reload());
+				UIkit.notification('Загрузка завершена', 'success');
+
+				kff.request('',{name: 'createCKEditorBrowser', opts:{folder:'<?=Index_my_addon::$State->get('CKEfolder')?>'}}, ['#existsImg']);
 
 			}
 
@@ -181,7 +240,7 @@ class CKEditorUploads extends Uploads
 			closeBrowser();
 		};
 
-		UIkit.util.on('#existsImg','click',function(e) {
+		U.on('#existsImg','click',function(e) {
 			// console.log(e);
 			var t= e.target,
 				relPath= t.getAttribute('data-src');
@@ -199,9 +258,6 @@ class CKEditorUploads extends Uploads
 		UIkit.util.on(document, 'keydown', e=>e.keyCode === 27 && closeBrowser());
 
 		</script>
-
-		</body>
-		</html>
 		<?php
 	}
 }

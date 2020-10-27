@@ -249,6 +249,7 @@ class DbJSON implements Iterator, Countable
 		return $this->set($data, true);
 	}
 
+
 	public function push($item, $key=null)
 	{
 		if($key){
@@ -258,6 +259,31 @@ class DbJSON implements Iterator, Countable
 			$this->db[]= $item;
 		}
 		$this->changed= 1;
+		return $this;
+	}
+
+
+	/**
+	 * Сравниваем $item с элементом в базе. При расхождении - перезаписываем
+	 */
+	public function upd($item, $key, $val=null, $strict=1)
+	{
+		$ind= $val? $this->getInd($key,$val,$strict): $key;
+		$cur= $this->get($ind);
+
+		if(is_array($item)){
+			$diff= count(array_diff_assoc($item, $cur));
+		}
+		else{
+			$diff= $strict? ($cur !== $item): ($cur != $item);
+		}
+
+		// trigger_error('$diff= ' . $diff);
+
+		if($diff){
+			$this->set([$ind=>$item]);
+		}
+
 		return $this;
 	}
 

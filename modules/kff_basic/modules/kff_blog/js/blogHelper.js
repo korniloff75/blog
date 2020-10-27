@@ -83,7 +83,7 @@ var BH = {
 }
 
 // ?
-var U = U || window.UIkit && UIkit.util;
+var U = window.U || window.UIkit && UIkit.util;
 
 
 // *Events
@@ -188,10 +188,10 @@ BH.content$obj.on('click', '#save_sts', $e=>{
 			var
 				data= JSON.parse(i.getAttribute('data-artData'));
 
-			if(out[$i.data('id')].filter(
+			if(out[$i.data('id')].some(
 				function(i){return i.id === data.id}
-			).length) {
-				err.push('Элемент ' + id + ' не может дублироваться в одной категории!');
+			)) {
+				err.push('Элемент не может дублироваться в одной категории!');
 			}
 			/* out[$i.data('id')].push({
 				id: id, ind:[catInd,ind], name: name, oldCatId: oldCatId, tag: i.getAttribute('data-tag'),
@@ -208,7 +208,7 @@ BH.content$obj.on('click', '#save_sts', $e=>{
 
 	if(err.length) {
 		UIkit.modal.alert(err.join("\n\n"))
-		.then(location.reload);
+		.then(location.reload.bind(location));
 
 		// setTimeout(()=>{location.reload()}, 2000);
 	} else {

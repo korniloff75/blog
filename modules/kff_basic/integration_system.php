@@ -11,14 +11,14 @@ class Index_my_addon implements BasicClassInterface
 	const ADM_FOLDER_NAME= 'admin';
 
 	public static
-		// $log = false,
 		$tmp,
-		// *Путь к kff_custom
-		$dir,
+		$dir, // *Путь к kff_custom
 		$internalModulesPath,
 		$modulesPath,
+		$Storage= DR.'/data/cfg',
 		$Config,
 		$cfgDB,
+		$State, // *DbJSON с состояниями
 		$cfg;
 
 	protected static $log = false;
@@ -50,7 +50,10 @@ class Index_my_addon implements BasicClassInterface
 		self::$Config= self::getSystemConfig();
 
 		// require_once DR .'/'. self::$dir.'/DbJSON.php';
-		self::$cfgDB = new DbJSON(DR.'/data/cfg/kff.json');
+		self::$cfgDB = new DbJSON(self::$Storage . '/kff.json');
+		self::$State = new DbJSON(self::$Storage . '/kff_State.json');
+
+		// note tmp
 		if(!self::$cfgDB->count()){
 			self::$cfgDB->set((new DbJSON(__DIR__.'/cfg.json'))->get());
 		}

@@ -335,13 +335,19 @@ class BlogKff_page extends BlogKff
 	protected function c_createCKEditorBrowser($upload=null)
 	{
 		global $Page, $URI;
-		$pathToFiles = "/CKeditor";
-		CKEditorUploads::$pathname .= $pathToFiles;
-		self::$log->add('CKEditorUploads::$pathname= ' . CKEditorUploads::$pathname);
 
-		CKEditorUploads::RenderBrowser();
+		$folder= $this->opts['folder'] ?? self::$State->get('CKEfolder');
+
+		CKEditorUploads::$pathname .= "/CKeditor/$folder";
+
+		self::$State->upd($folder, 'CKEfolder');
+
+		self::$log->add(__METHOD__, null, ['CKEditorUploads::$pathname'=>CKEditorUploads::$pathname, 'self::$State->get(\'CKEfolder\')'=>Index_my_addon::$State->get('CKEfolder')]);
+
 		if(self::is_adm() && !empty($upload))
 			new CKEditorUploads;
+
+		CKEditorUploads::RenderBrowser();
 
 		die;
 	}
@@ -351,8 +357,21 @@ class BlogKff_page extends BlogKff
 	 */
 	protected function c_CKEditorUpload()
 	{
+		$this->opts['folder']= self::$State->get('CKEfolder');
 		// *Upload
 		$this->c_createCKEditorBrowser('upload');
+	}
+
+	/**
+	 * Создаем папку
+	 */
+	protected function c_addImgFolder(string $name)
+	{
+		ob_clean();
+		if(empty($name)) self::$log->add(__METHOD__. 'folder name is EMPTY!', E_USER_ERROR);
+		elseif(self::is_adm()) mkdir(CKEditorUploads::$pathname . "/CKeditor/$name", 0775, 1);
+		$this->c_createCKEditorBrowser();
+		die;
 	}
 
 
@@ -443,6 +462,7 @@ class BlogKff_page extends BlogKff
 
 			// *Запускаем редактор с файловым браузером
 			CKEDITOR.replace( 'editor1', {
+				// filebrowserBrowseUrl: '?name=createCKEditorBrowser&opts=' + JSON.stringify({folder:'<?=self::$State->get('CKEfolder')?>'}),
 				filebrowserBrowseUrl: '?name=createCKEditorBrowser',
 				disallowedContent : 'img{width,height}',
 				image_removeLinkByEmptyURL: true,

@@ -7,14 +7,14 @@
 	padding: 3px 3px 3px 7px;
 }
 
-.info p {
-	margin: 0 0 5px !important;
-}
-
 .core.info{
 	color: #159;
 	border-color: #159;
 	background: #eef;
+}
+
+.core.info p {
+	margin: 0 0 5px !important;
 }
 
 .core.success{
@@ -67,6 +67,10 @@
 	display: flex;
 }
 
+input, select, textarea {
+	max-width: 100%;
+}
+
 @media (max-width: 450px) {
 	div.content {
 		padding: 5px;
@@ -74,7 +78,6 @@
 	}
 	/* Убираем */
 	img[data-src][src*='data:image']{
-		width:0;
-		height:0;
+		display: none;
 	}
 }
