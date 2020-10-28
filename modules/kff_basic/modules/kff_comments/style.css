@@ -149,7 +149,7 @@ section#comments .name {
 } */
 
 #form-container div > input,
-#form-container div > textarea, {
+#form-container div > textarea {
 	flex: 4 1;
 	padding: 2px 5px
 }

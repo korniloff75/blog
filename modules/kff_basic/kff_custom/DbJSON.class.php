@@ -12,6 +12,7 @@ class DbJSON implements Iterator, Countable
 		$position = 0,
 		$changed = 0,
 		$reversed = false,
+		$keys,
 		$values,
 		$path;
 
@@ -86,7 +87,13 @@ class DbJSON implements Iterator, Countable
 		// return $this;
 	}
 
-	public function values() {
+	/* public function getValues() {
+		$this->values= $this->values ?? array_values($this->db);
+		return $this->values;
+	} */
+
+	public function getValues() {
+		$this->keys= $this->keys ?? $this->getKeys();
 		$this->values= $this->values ?? array_values($this->db);
 		return $this->values;
 	}
@@ -94,29 +101,29 @@ class DbJSON implements Iterator, Countable
 	public function current() {
 		// *Если строковые ключи
 		if(empty($cur= &$this->db[$this->position])){
-			$cur= &$this->values()[$this->position];
+			$cur= &$this->getValues()[$this->position];
 		}
 		// self::$log->add(__METHOD__,null,['position'=>$this->position, 'cur'=>$cur,]);
 		return $cur;
 	}
 
 	public function key() {
-		return $this->position;
+		return $this->keys? $this->keys[$this->position]: $this->position;
 	}
 
 	public function next() {
 		++$this->position;
 		// self::$log->add(__METHOD__,null,[ '$this->position'=>$this->position]);
-		// return $this->db[$this->position] ?? $this->values()[$this->position] ?? null;
+		// return $this->db[$this->position] ?? $this->getValues()[$this->position] ?? null;
 	}
 
 	public function valid() {
 		/* self::$log->add(__METHOD__,null,['bool'=>(
-			isset($this->db[$this->position]) || isset($this->values()[$this->position])
+			isset($this->db[$this->position]) || isset($this->getValues()[$this->position])
 		), '$this->db[$this->position]'=>$this->db[$this->position], '$this->position'=>$this->position]); */
 		return
 			isset($this->db[$this->position])
-			|| isset($this->values()[$this->position]);
+			|| isset($this->getValues()[$this->position]);
 	}
 
 	public function count($mode=null)

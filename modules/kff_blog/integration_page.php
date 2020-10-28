@@ -454,11 +454,14 @@ class BlogKff_page extends BlogKff
 		<script type="text/javascript" src="/modules/ckeditor_4.5.8_standard/ckeditor/ckeditor.js"></script>
 
 		<script>
-			document.querySelector('#saveEdit')
-			.addEventListener('click', BH.editRequest.bind(null, <?=DbJSON::toJSON($artData)?>));
+			'use strict';
+
+			// *saveEdit
+			U.on('#saveEdit', 'click', BH.editRequest.bind(null, <?=DbJSON::toJSON($artData)?>));
 
 			// *Удаляем теги
-			$('#editor1').find('[itemprop="about"]').remove();
+			// $('#editor1').find('[itemprop="about"]').remove();
+			U.$$('[itemprop="about"]', U.$('#editor1')).forEach(i=>i.remove());
 
 			// *Запускаем редактор с файловым браузером
 			CKEDITOR.replace( 'editor1', {

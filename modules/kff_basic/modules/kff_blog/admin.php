@@ -11,6 +11,10 @@ if(!$kff::is_adm()) die('Access denied!');
 
 class BlogKff_adm extends BlogKff
 {
+	protected static
+	// *Extended
+		// $modDir;
+
 	/* public function __construct()
 	{
 		parent::__construct();
@@ -240,6 +244,7 @@ class BlogKff_adm extends BlogKff
 		</div>
 
 		<script src="/<?=self::$modDir?>/js/blogHelper.js" defer></script>
+		<script src="/<?=self::$modDir?>/js/blogAdmin.js" defer></script>
 
 		<div class="content">
 

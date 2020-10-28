@@ -88,7 +88,7 @@ if($kff::is_adm())
 // *Финишная замена кодов шаблона на HTML
 $buf = preg_replace(
 	array_map(function(&$i){
-		return "~\{\{$i\}\}~i";
+		return "~\{\{\s*?$i\s*?\}\}~i";
 	},array_keys($Templater)),
 	array_values($Templater),
 	$buf, 1, $count

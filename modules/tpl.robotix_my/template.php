@@ -6,7 +6,7 @@
 
 <style>
 <?= file_get_contents($kff::getPathFromRoot(__DIR__).'/style.min.css');?>
-<?= file_get_contents('admin/include/windows/windows.css');?>
+
 * {
 	box-sizing: border-box;
 }
@@ -19,7 +19,14 @@ ul.categories a.active{
 }
 </style>
 
-<script async src="/admin/include/windows/windows.js"></script>
+<?php
+if($kff::is_adm()){
+?>
+	<link rel="stylesheet" href="/admin/include/windows/windows.css">
+	<script async src="/admin/include/windows/windows.js"></script>
+<?php
+}
+?>
 
 </head>
 

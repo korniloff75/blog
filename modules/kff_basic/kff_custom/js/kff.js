@@ -319,7 +319,7 @@ var kff = {
 
 				var newContent= $sourceNode.html();
 
-				if($sourceNode[0].classList.length > targetNode.classList.length) targetNode.classList= $sourceNode[0].classList;
+				if($sourceNode[0].classList && $sourceNode[0].classList.length > targetNode.classList.length) targetNode.classList= $sourceNode[0].classList;
 
 				out[i]= $(targetNode).html(newContent).html();
 			});

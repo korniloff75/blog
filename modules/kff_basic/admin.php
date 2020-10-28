@@ -225,13 +225,13 @@ class Basic
 	static function scanModules()
 	{
 		$mds = glob(realpath(__DIR__.'/..')."/".self::$cfg['mds_prefix']."*");
-		/* $mds= array_filter(
+		$mds= array_filter(
 			$mds,
 			function(&$i){
-				return stripos($i, 'basic') === false;
+				return strpos($i, '__') === false;
 			}
-		); */
-		// self::$log->add('kff modules',null,[$mds]);
+		);
+		self::$log->add(__METHOD__,null,['$mds'=>$mds]);
 
 		return $mds;
 	}
@@ -285,6 +285,7 @@ class Basic
 
 			if(
 				!file_exists($fileInfo->getPathname().'/admin.php')
+				|| strpos($name, '__') !== false
 			) continue;
 
 			if(empty($info[$name]) && file_exists($ini_path = $fileInfo->getPathname()."/info.ini"))

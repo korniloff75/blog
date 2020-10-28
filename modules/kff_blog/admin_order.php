@@ -59,7 +59,7 @@ foreach(self::getBlogMap() as $catInd=>$catData) {
 	</ul>
 </li>
 <?php
-}
+} //foreach
 ?>
 
 </ul><!-- #categories -->
