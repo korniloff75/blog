@@ -83,6 +83,12 @@ class BlogKff extends Index_my_addon
 	}
 
 
+	public static function is_edit()
+	{
+		return self::is_adm() && isset($_GET['edit']);
+	}
+
+
 	protected static function _defineCatsDB()
 	{
 		if(self::$catsDB) return;

@@ -28,7 +28,7 @@ CKEDITOR.editorConfig = function (config) {
 	// *Не кодировать спецсимволы в decimal
 	config.entities = false;
 	// *Сохранять переводы строк
-	config.protectedSource.push( /\n/g );
+	// config.protectedSource.push( /\n{1}/g );
 
 	config.toolbarGroups = [
 		{ name: 'clipboard', groups: ['clipboard'] },

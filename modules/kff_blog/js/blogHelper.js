@@ -80,44 +80,26 @@ var BH = {
 
 		});
 	}
-}
+} //BH
 
-// ?
-var U = window.U || window.UIkit && UIkit.util;
+// *
+kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/js/uikit.min.js').then(UIkit=>{
+	window.U = window.U || window.UIkit && UIkit.util;
 
-// *Copy from CODE
-U.on(BH.contentSelector, 'click', 'code', $e=>{
-	var t= $e.current;
-	// console.log(U.closest(t, 'pre'), t);
-	if(U.closest(t, 'pre')) return;
+	// *Copy from CODE
+	U.on(BH.contentSelector, 'click', 'code', $e=>{
+		var t= $e.current;
+		// console.log(U.closest(t, 'pre'), t);
+		if(U.closest(t, 'pre')) return;
 
-	U.css(t,{cursor:'pointer'});
-	var r = document.createRange();
-	r.selectNode(t);
-	document.getSelection().addRange(r);
-	document.execCommand('copy');
-	UIkit.notification('Текст скопирован в буфер обмена','success');
-})
-
-// *AJAX nav old
-/* $(()=>{
-	$('article #categories').on('click', 'a', $e=>{
-		var link = $e.target,
-			href = link.href;
-
-		if(!href || href === '#') return;
-
-			$e.stopPropagation();
-			$e.preventDefault();
-
-			console.log(link);
-			kff.request(href,null,['.blog_content','.log'])
-			.then((response)=>{
-				// console.log(response);
-				UIkit.dropdown($e.target.closest('.uk-open')).hide();
-			});
+		U.css(t,{cursor:'pointer'});
+		var r = document.createRange();
+		r.selectNode(t);
+		document.getSelection().addRange(r);
+		document.execCommand('copy');
+		UIkit.notification('Текст скопирован в буфер обмена','success');
 	})
-}) */
+});
 
 
 
