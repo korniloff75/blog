@@ -234,9 +234,15 @@ class BlogKff_page extends BlogKff
 
 		self::$log->add(__METHOD__,null,['$this->opts[\'artOpts\']'=>$this->opts['artOpts']]);
 
-		array_walk($this->opts['artOpts'], function(&$v, $k){
+		array_walk($this->opts['artOpts'], function(&$v, $k) use($html){
 			switch ($k) {
 				case 'tag':
+					// *Вытаскиваем #тэги
+					preg_match_all('~[\s\W]#(\D.+?\b)~u', $html, $matchTags);
+					self::$log->add(__METHOD__,null,['$matchTags[1]'=>$matchTags[1], '$html'=>$html]);
+					if(count($matchTags[1])){
+						$v= implode(',', array_unique(array_merge($matchTags[1], array_filter(explode(',', $v)))));
+					}
 				case 'keywords':
 					$v= preg_replace(['~\s*(,)\s*~u','~\s+~u'], ['$1', '_'], $v);
 					break;
@@ -256,7 +262,7 @@ class BlogKff_page extends BlogKff
 		// self::$map->set()
 
 		$html= htmlspecialchars_decode(str_replace(['#+#','#-#'], ['<?','?>'], trim($html)));
-		$html= preg_replace(['~^[\s\n'.PHP_EOL.']+?~','~\n{2,}~'], ['',"\n\n"], $html);
+		// $html= preg_replace(['~^[\s\n'.PHP_EOL.']+?~','~\n{2,}~'], ['',"\n\n"], $html);
 
 		file_put_contents(self::$storagePath . "/{$this->opts['cat']}/{$this->opts['art']}" . self::$blogDB->ext, $html);
 
@@ -278,31 +284,25 @@ class BlogKff_page extends BlogKff
 	/**
 	 * *Вывод контента по /$Page->id/catName/artName
 	 */
-	private function _printArticle($edit=null)
+	private function _printArticle()
 	{
 		global $URI, $Page;
 
-		if(	!is_object($Page)	) {
-			self::$log->add(__METHOD__.': Отключаем в админке', null,['$Page'=>$Page]);
+		if(
+			!is_object($Page)
+			|| !($artDB= self::getArtDB())->count()
+		) {
+			self::$log->add(__METHOD__.': Отключаем в админке', null,['$Page'=>$Page, '$artDB'=>$artDB]);
 			return;
 		}
 
 		$path = self::getArtPathname();
-
-		self::$log->add(__METHOD__,null,['$path'=>$path,'file_exists($path)'=> file_exists($path), '$URI'=>$URI]);
-
 		if( !file_exists($path) ) return;
 
-		$article= file_get_contents($path);
+		self::$log->add(__METHOD__,null,['$path'=>$path, '$URI'=>$URI]);
 
-		// *Вытаскиваем #тэги
-		preg_match_all('~[\s\W](#\D.+?\b)~u', $article, $matchTags);
-
-		// self::$log->add(__METHOD__,null,['$tag'=>$matchTags]);
-
-		$this->artData['tag']= array_unique(array_merge($matchTags[1], explode(',', $this->artData['tag'])));
-
-		if($edit){
+		if(self::is_edit()){
+			$article= file_get_contents($path);
 			// echo htmlentities($article);
 			echo str_replace(['<?','?>'], ['#+#','#-#'],$article);
 		}
@@ -311,11 +311,10 @@ class BlogKff_page extends BlogKff
 		}
 
 
-		if(!empty($this->artData['tag'])){
+		if(!empty($tags= array_filter(explode(',', $artDB->tag)))){
 			echo '<div class="tags uk-margin" itemprop="about" itemscope itemtype="https://schema.org/Thing">';
 
-			foreach($this->artData['tag'] as $tag){
-				if(!trim($tag)) continue;
+			foreach($tags as $tag){
 				if(substr($tag,0,1)!=='#') $tag= "#$tag";
 			?>
 				<a href="?name=getHashList&value=<?=trim($tag, '#')?>" itemprop="name" class="uk-button uk-button-small" onclick="BH.getHashList('<?=trim($tag, '#')?>', event);"><?=$tag?></a>
@@ -380,8 +379,6 @@ class BlogKff_page extends BlogKff
 	 */
 	public function Render()
 	{
-		$edit= isset($_GET['edit']);
-
 		$artData= &$this->artData;
 		$artData= self::getArtData(self::getArtPathname());
 
@@ -402,7 +399,7 @@ class BlogKff_page extends BlogKff
 
 		<?php
 		// *Редактирование
-		if($edit)
+		if(self::is_edit())
 		{
 		?>
 		<div id="artOpts" class="uk-flex uk-flex-wrap uk-flex-middle">
@@ -437,13 +434,13 @@ class BlogKff_page extends BlogKff
 		?>
 
 
-		<div id='editor1' class="blog_content" <?=$edit?'contenteditable=true':''?> itemprop="articleBody">
-			<?php $this->_printArticle($edit) ?>
+		<div id='editor1' class="blog_content" <?=self::is_edit()?'contenteditable=true':''?> itemprop="articleBody">
+			<?php $this->_printArticle() ?>
 		</div><!-- .blog_content -->
 
 
 		<?php
-		if($edit)
+		if(self::is_edit())
 		{
 		?>
 		<div class="uk-margin-vertical">
@@ -465,7 +462,6 @@ class BlogKff_page extends BlogKff
 
 			// *Запускаем редактор с файловым браузером
 			CKEDITOR.replace( 'editor1', {
-				// filebrowserBrowseUrl: '?name=createCKEditorBrowser&opts=' + JSON.stringify({folder:'<?=self::$State->get('CKEfolder')?>'}),
 				filebrowserBrowseUrl: '?name=createCKEditorBrowser',
 				disallowedContent : 'img{width,height}',
 				image_removeLinkByEmptyURL: true,

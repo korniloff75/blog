@@ -85,6 +85,14 @@ if($kff::is_adm())
 } // *$kff::is_adm()
 
 
+// *FIX img[src]
+$log->add('FIX img[src]',null,['$Page->artId'=>$Page->artId]);
+if(class_exists('BlogKff') && $Page->artId){
+	// $buf= str_replace('{DIR}assets', "/files/CKeditor/{$Page->artId}", $buf);
+	$buf= BlogKff::fixImgs($Page->artId, $buf);
+}
+
+
 // *Финишная замена кодов шаблона на HTML
 $buf = preg_replace(
 	array_map(function(&$i){

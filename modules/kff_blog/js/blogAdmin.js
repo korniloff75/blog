@@ -88,6 +88,7 @@ U.on(BH.content$obj, 'click', '#save_sts', $e=>{
 	} else {
 		var request= kff.request('',{name:'sortCategories', value: out},['.switcher-item.order','.log'])
 		.then(r=>{
+			U.$('.switcher-item.order').classList.add('uk-active');
 			// console.log('\nresponse= ', r);
 			UIkit.notification( "<span uk-icon='icon: check; ratio:1.5;'></span> Порядок элементов успешно сохранён",'success');
 		}, err=>console.error(err));

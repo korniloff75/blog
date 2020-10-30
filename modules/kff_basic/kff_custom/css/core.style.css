@@ -71,6 +71,10 @@ input, select, textarea {
 	max-width: 100%;
 }
 
+code {
+	white-space: pre-wrap !important;
+}
+
 @media (max-width: 450px) {
 	div.content {
 		padding: 5px;

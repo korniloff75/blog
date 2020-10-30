@@ -26,8 +26,20 @@ class BlogKff extends Index_my_addon
 
 	public function __construct()
 	{
+		global $Page;
+
 		// *Директория модуля от DR
 		self::$modDir = self::getPathFromRoot(__DIR__);
+
+		// self::$log->add(__METHOD__,null,['$artDB'=>$artDB,]);
+
+		if(
+			($artDB= self::getArtDB())
+			&& $artDB->count()
+		){
+			$Page->catId= $artDB->catId;
+			$Page->artId= $artDB->id;
+		}
 
 		if(
 			!file_exists(self::$storagePath)
@@ -308,6 +320,15 @@ class BlogKff extends Index_my_addon
 	{
 		global $URI, $Page;
 		return is_object($Page) && $Page->module === 'kff_blog' && $URI[1] === $Page->id && empty($URI[2]);
+	}
+
+	// *FIX img[src]
+	public static function fixImgs($artId, $txt)
+	{
+		global $Page;
+
+		// $log->add('FIX img[src]',null,['$Page->artId'=>$Page->artId]);
+		return str_replace('{DIR}assets', "/files/CKeditor/{$artId}", $txt);
 	}
 
 

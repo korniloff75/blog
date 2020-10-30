@@ -241,7 +241,7 @@ class DbJSON implements Iterator, Countable
 		$ind= $this->getInd($key,$val,$strict);
 
 		if(empty($this->db[$ind])){
-			self::$log->add(__METHOD__,\Logger::BACKTRACE,['$this->db'=>$this->db, '$key'=>$key, '$val'=>$val]);
+			self::$log->add(__METHOD__.": empty(\$this->db[$ind])",\Logger::BACKTRACE,['$this->db'=>$this->db, '$key'=>$key, '$val'=>$val]);
 			return null;
 		}
 		else return $this->db[$ind];

@@ -26,8 +26,20 @@ class BlogKff extends Index_my_addon
 
 	public function __construct()
 	{
+		global $Page;
+
 		// *Директория модуля от DR
 		self::$modDir = self::getPathFromRoot(__DIR__);
+
+		// self::$log->add(__METHOD__,null,['$artDB'=>$artDB,]);
+
+		if(
+			($artDB= self::getArtDB())
+			&& $artDB->count()
+		){
+			$Page->catId= $artDB->catId;
+			$Page->artId= $artDB->id;
+		}
 
 		if(
 			!file_exists(self::$storagePath)
@@ -80,6 +92,12 @@ class BlogKff extends Index_my_addon
 			return $this->{$m_name}($val) || true;
 		}
 		return false;
+	}
+
+
+	public static function is_edit()
+	{
+		return self::is_adm() && isset($_GET['edit']);
 	}
 
 

@@ -29,22 +29,35 @@ class Index_my_addon implements BasicClassInterface
 		// ini_set('display_errors', 1);
 		// trigger_error('test');
 
-		// *Отсекаем проверки комментов
-		if(
-			$is_comment_ajax = stripos($_SERVER['REQUEST_URI'], 'ajax/newcommentcheck')
-			|| stripos($_SERVER['REQUEST_URI'], 'ajax/loadcomments')
-		)
-			return;
-
 		self::$dir = self::getPathFromRoot(__DIR__) . '/kff_custom';
 
 		define('BASE_URL', (self::is('https')?'https':'http') . '://' . \HOST);
 
 		spl_autoload_register([__CLASS__,'_autoloader']);
 
-		// require_once __DIR__.'/kff_custom/Logger.php' ;
 		// *Logger
 		self::$log = new Logger('kff.log', DR);
+
+		// *Отсекаем
+		if(
+			// *проверки комментов
+			$is_comment_ajax = stripos($_SERVER['REQUEST_URI'], 'ajax/newcommentcheck')
+			|| stripos($_SERVER['REQUEST_URI'], 'ajax/loadcomments')
+		){
+			self::$log::$notWrite= 1;
+			return;
+		}
+
+		// *Отсекаем на 404
+		if(
+			// *обращения к несуществующим файлам
+			$has_ext = !self::is_admPanel() && strpos($_SERVER['REQUEST_URI'], '.')
+		){
+			// self::$log->add(__METHOD__,null,['$has_ext'=>$has_ext, '$_SERVER'=>$_SERVER]);
+			self::$log::$notWrite= 1;
+			header(PROTOCOL.' 404 Not Found'); require(DR.'/pages/404.html');
+			die('404');
+		}
 
 		// *Расширяем системные настройки
 		self::$Config= self::getSystemConfig();
@@ -59,6 +72,7 @@ class Index_my_addon implements BasicClassInterface
 		}
 
 		// *Настройки Basic
+		// ?deprecated
 		self::$cfg = self::$cfgDB->get();
 
 		self::$modulesPath = '/modules';

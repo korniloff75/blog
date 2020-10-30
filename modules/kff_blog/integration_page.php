@@ -41,8 +41,13 @@ class BlogKff_page extends BlogKff
 				}
 			}
 
+			ob_start();
+				require $artPathname;
+			$art= ob_get_clean();
+
 			$doc = new DOMDocument('1.0','utf-8');
-			@$doc->loadHTMLFile($artPathname);
+			// @$doc->loadHTMLFile($artPathname);
+			@$doc->loadHTML($art);
 			$doc->normalizeDocument();
 
 			$catId= $artData['catId'] ?? basename(dirname($artPathname));
@@ -67,12 +72,15 @@ class BlogKff_page extends BlogKff
 			if(
 				!empty($img= $imgs->item(0))
 				&& (
-					$src= $img->getAttribute("src")
-					// || ($src= $img->getAttribute("data-src"))
+					($src= $img->getAttribute("src"))
+					|| ($src= $img->getAttribute("data-src"))
+				)
+				&& (
+					$src= self::fixImgs($artId, $src)
 				)
 			){
 				$o.= "<img src=".$src.">" ;
-				// self::$log->add('$imgs->item(0)->getAttribute("src")',null,[$img->getAttribute("src")]);
+				// self::$log->add('$img->getAttribute("src")',null,[$img->getAttribute("src")]);
 			}
 
 			// *Ищем сепаратор
@@ -379,20 +387,19 @@ class BlogKff_page extends BlogKff
 	 */
 	public function Render()
 	{
-		$artData= &$this->artData;
-		$artData= self::getArtData(self::getArtPathname());
+		$artDB= self::getArtDB();
 
-		self::$log->add(__METHOD__,null,['$artData'=>$artData]);
+		self::$log->add(__METHOD__,null,['$artDB'=>$artDB]);
 
 		echo '<script src="/' .self::$modDir. '/js/blogHelper.js"></script>';
 
 		// *На стартовой - новостная лента
-		if(!$artData){
+		if(!$artDB->count()){
 			echo $this->newsTape(self::$l_cfg['newsTapeLength']);
 			return;
 		}
 
-		echo '<h1 id="title" itemprop="headline" class="'. (filter_var($artData['not-public'],FILTER_VALIDATE_BOOLEAN)? 'not-public':'') .'">' . ($artData['title'] ?? $artData['name']) . '</h1>';
+		echo '<h1 id="title" itemprop="headline" class="'. (filter_var($artDB->{'not-public'},FILTER_VALIDATE_BOOLEAN)? 'not-public':'') .'">' . ($artDB->title ?? $artDB->name) . '</h1>';
 		?>
 
 		<meta itemprop="identifier" content="<?=self::getPathFromRoot(self::getArtPathname())?>">
@@ -403,28 +410,28 @@ class BlogKff_page extends BlogKff
 		{
 		?>
 		<div id="artOpts" class="uk-flex uk-flex-wrap uk-flex-middle">
-			<span class="uk-width-1-3@s"><b>name</b></span> <input name="name" class="uk-width-expand" type="text" placeholder="name" value="<?=$artData['name']?>"><p class="uk-width-1 uk-margin-remove"></p>
+			<span class="uk-width-1-3@s"><b>name</b></span> <input name="name" class="uk-width-expand" type="text" placeholder="name" value="<?=$artDB->name?>"><p class="uk-width-1 uk-margin-remove"></p>
 
-			<span class="uk-width-1-3@s"><b>title</b></span> <input name="title" class="uk-width-expand" type="text" placeholder="title" value="<?=$artData['title'] ?? $artData['name']?>"><p class="uk-width-1 uk-margin-remove"></p>
+			<span class="uk-width-1-3@s"><b>title</b></span> <input name="title" class="uk-width-expand" type="text" placeholder="title" value="<?=$artDB->title ?? $artDB->name?>"><p class="uk-width-1 uk-margin-remove"></p>
 
-			<span class="uk-width-1-3@s"><b>description</b></span><textarea name="description" class="uk-width-expand uk-resize-vertical" type="text" placeholder="description"><?=$artData['description']?></textarea><p class="uk-width-1 uk-margin-remove"></p>
+			<span class="uk-width-1-3@s"><b>description</b></span><textarea name="description" class="uk-width-expand uk-resize-vertical" type="text" placeholder="description"><?=$artDB->description?></textarea><p class="uk-width-1 uk-margin-remove"></p>
 
-			<span class="uk-width-1-3@s"><b>keywords</b> (через запятую)</span><input name="keywords" class="uk-width-expand" type="text" placeholder="keywords" value="<?=$artData['keywords']?>"><p class="uk-width-1 uk-margin-remove"></p>
+			<span class="uk-width-1-3@s"><b>keywords</b> (через запятую)</span><input name="keywords" class="uk-width-expand" type="text" placeholder="keywords" value="<?=$artDB->keywords?>"><p class="uk-width-1 uk-margin-remove"></p>
 
-			<span class="uk-width-1-3@s"><b>Метки</b> (через запятую)</span><input name="tag" class="uk-width-expand" type="text" placeholder="метки" value="<?=$artData['tag']?>"><p class="uk-width-1 uk-margin-remove"></p>
+			<span class="uk-width-1-3@s"><b>Метки</b> (через запятую)</span><input name="tag" class="uk-width-expand" type="text" placeholder="метки" value="<?=$artDB->tag?>"><p class="uk-width-1 uk-margin-remove"></p>
 
-			<span class="uk-width-1-3@s"><b>Автор</b></span><input name="author" class="uk-width-expand" type="text" value="<?=$artData['author']?>"><p class="uk-width-1 uk-margin-remove"></p>
+			<span class="uk-width-1-3@s"><b>Автор</b></span><input name="author" class="uk-width-expand" type="text" value="<?=$artDB->author?>"><p class="uk-width-1 uk-margin-remove"></p>
 
 			<span class="uk-width-1-3@s"><b>Комментарии</b></span>
-			<select name="enable-comments" value="<?=!empty($artData['enable-comments'])? 1: 0 ?>">
+			<select name="enable-comments" value="<?=!empty($artDB->enable-comments)? 1: 0 ?>">
 				<option value="0">Отключены</option>
-				<option value="1" <?=!empty($artData['enable-comments'])? 'selected': '' ?>>Подключены</option>
+				<option value="1" <?=!empty($artDB->enable-comments)? 'selected': '' ?>>Подключены</option>
 			</select>
 
 			<span class="uk-width-1-3@s"><b>Черновик</b></span>
-			<select name="not-public" value="<?=!empty($artData['not-public'])? 1: 0 ?>">
+			<select name="not-public" value="<?=!empty($artDB->{'not-public'})? 1: 0 ?>">
 				<option value="0">Опубликовано</option>
-				<option value="1" <?=!empty($artData['not-public'])? 'selected': '' ?>>Черновик</option>
+				<option value="1" <?=!empty($artDB->{'not-public'})? 'selected': '' ?>>Черновик</option>
 			</select>
 
 		</div>
@@ -454,7 +461,7 @@ class BlogKff_page extends BlogKff
 			'use strict';
 
 			// *saveEdit
-			U.on('#saveEdit', 'click', BH.editRequest.bind(null, <?=DbJSON::toJSON($artData)?>));
+			U.on('#saveEdit', 'click', BH.editRequest.bind(null, <?=DbJSON::toJSON($artDB)?>));
 
 			// *Удаляем теги
 			// $('#editor1').find('[itemprop="about"]').remove();
@@ -482,16 +489,17 @@ class BlogKff_page extends BlogKff
 		}
 
 		if(!self::is_indexPage()){
-			self::renderDateBlock($artData);
+			self::renderDateBlock($artDB->get());
 		}
 
 		// *Comments
-		if(self::is_adm() || !empty($artData['enable-comments'])){
+		if(self::is_adm() || !empty($artDB->enable-comments)){
 			require_once DR.'/'. self::$internalModulesPath . '/kff_comments/Comments.class.php';
 
-			// self::$log->add(__METHOD__,null,['$artData'=>$artData]);
+			// self::$log->add(__METHOD__,null,['$artDB'=>$artDB]);
 
-			$comments= new Comments($artData);
+			// todo @param $artDB
+			$comments= new Comments($artDB->get());
 			$comments->Render();
 		}
 	}
