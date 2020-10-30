@@ -129,13 +129,20 @@ var kff = {
 				return resolve(window[name]);
 			}
 
-			var $_= document.createElement('script');
-			$_.src= src || 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js';
+			var $_= document.querySelector('script[src*=name]');
 
-			console.info(name + ' отсутствует! Загружаем из ' + $_.src);
-			// $_.async= false;
-			document.head.append($_);
+			if(!$_){
+				$_= document.createElement('script');
+				$_.src= src || 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js';
+
+				console.info(name + ' отсутствует! Загружаем из ' + $_.src);
+				// $_.async= false;
+				document.head.append($_);
+			}
+
 			$_.onload= ()=>resolve(window[name]);
+			$_.onerror= ()=>reject(window[name]);
+
 		});
 	},
 
@@ -312,6 +319,9 @@ var kff = {
 
 				if(!$sourceNode.length)
 					$sourceNode = $dfr;
+				else{
+					targetNode.classList= $sourceNode[0].classList;
+				}
 
 
 
@@ -319,7 +329,7 @@ var kff = {
 
 				var newContent= $sourceNode.html();
 
-				if($sourceNode[0].classList && $sourceNode[0].classList.length > targetNode.classList.length) targetNode.classList= $sourceNode[0].classList;
+				// if($sourceNode[0].classList && $sourceNode[0].classList.length > targetNode.classList.length) targetNode.classList= $sourceNode[0].classList;
 
 				out[i]= $(targetNode).html(newContent).html();
 			});

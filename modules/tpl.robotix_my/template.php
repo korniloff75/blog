@@ -10,6 +10,10 @@
 * {
 	box-sizing: border-box;
 }
+header .user_menu a {
+	padding: 10px 20px 10px 18px;
+	background: #111 url(/modules/tpl.etual/images/user.svg) 10px 47% no-repeat;
+}
 .sidebar, .aside_content{
 	background: #eee;
 }
