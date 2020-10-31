@@ -461,7 +461,7 @@ class BlogKff_page extends BlogKff
 			'use strict';
 
 			// *saveEdit
-			U.on('#saveEdit', 'click', BH.editRequest.bind(null, <?=DbJSON::toJSON($artDB)?>));
+			U.on('#saveEdit', 'click', BH.editRequest.bind(null, <?=DbJSON::toJSON($artDB->get())?>));
 
 			// *Удаляем теги
 			// $('#editor1').find('[itemprop="about"]').remove();
