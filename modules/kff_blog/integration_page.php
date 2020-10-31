@@ -210,7 +210,7 @@ class BlogKff_page extends BlogKff
 			foreach($catData['items'] as &$artData){
 				if(stripos($artData['tag'], $hashtag) === false) continue;
 
-				echo "<li><a href=\"/{$Page->id}/{$catData['id']}/{$artData['id']}\">{$artData['name']}</a></li>";
+				echo "<li><a href=\"/{$Page->id}/{$catData['id']}/{$artData['id']}\">{$artData['title']}</a></li>";
 			}
 		}
 
@@ -246,7 +246,7 @@ class BlogKff_page extends BlogKff
 			switch ($k) {
 				case 'tag':
 					// *Вытаскиваем #тэги
-					preg_match_all('~[\s\W]#(\D.+?\b)~u', $html, $matchTags);
+					preg_match_all('~[\s\W]#([^"]+?\b)~u', $html, $matchTags);
 					self::$log->add(__METHOD__,null,['$matchTags[1]'=>$matchTags[1], '$html'=>$html]);
 					if(count($matchTags[1])){
 						$v= implode(',', array_unique(array_merge($matchTags[1], array_filter(explode(',', $v)))));
@@ -423,9 +423,9 @@ class BlogKff_page extends BlogKff
 			<span class="uk-width-1-3@s"><b>Автор</b></span><input name="author" class="uk-width-expand" type="text" value="<?=$artDB->author?>"><p class="uk-width-1 uk-margin-remove"></p>
 
 			<span class="uk-width-1-3@s"><b>Комментарии</b></span>
-			<select name="enable-comments" value="<?=!empty($artDB->enable-comments)? 1: 0 ?>">
+			<select name="enable-comments" value="<?=!empty($artDB->{'enable-comments'})? 1: 0 ?>">
 				<option value="0">Отключены</option>
-				<option value="1" <?=!empty($artDB->enable-comments)? 'selected': '' ?>>Подключены</option>
+				<option value="1" <?=!empty($artDB->{'enable-comments'})? 'selected': '' ?>>Подключены</option>
 			</select>
 
 			<span class="uk-width-1-3@s"><b>Черновик</b></span>
@@ -493,7 +493,7 @@ class BlogKff_page extends BlogKff
 		}
 
 		// *Comments
-		if(self::is_adm() || !empty($artDB->enable-comments)){
+		if(self::is_adm() || !empty($artDB->{'enable-comments'})){
 			require_once DR.'/'. self::$internalModulesPath . '/kff_comments/Comments.class.php';
 
 			// self::$log->add(__METHOD__,null,['$artDB'=>$artDB]);

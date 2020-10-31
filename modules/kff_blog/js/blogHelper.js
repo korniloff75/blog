@@ -1,5 +1,6 @@
 'use strict';
 var BH = {
+	inited: false,
 	contentSelector: '.content',
 	get content$obj(){
 		return $(this.contentSelector);
@@ -82,8 +83,9 @@ var BH = {
 	}
 } //BH
 
+
 // *
-kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/js/uikit.min.js').then(UIkit=>{
+BH.inited || kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/js/uikit.min.js').then(UIkit=>{
 	window.U = window.U || window.UIkit && UIkit.util;
 
 	// *Copy from CODE
@@ -98,7 +100,9 @@ kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/js/uikit.min.j
 		document.getSelection().addRange(r);
 		document.execCommand('copy');
 		UIkit.notification('Текст скопирован в буфер обмена','success');
-	})
+	});
+
+	BH.inited= true;
 });
 
 

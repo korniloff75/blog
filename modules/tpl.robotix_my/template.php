@@ -10,9 +10,17 @@
 * {
 	box-sizing: border-box;
 }
+header {
+	overflow: hidden;
+	line-height: 50px;
+	font-size: 14px;
+}
 header .user_menu a {
 	padding: 10px 20px 10px 18px;
 	background: #111 url(/modules/tpl.etual/images/user.svg) 10px 47% no-repeat;
+}
+.bgcontent {
+	padding-top: 1em;
 }
 .sidebar, .aside_content{
 	background: #eee;
@@ -24,7 +32,7 @@ ul.categories a.active{
 </style>
 
 <?php
-if($kff::is_adm()){
+if($kff::is_admPanel()){
 ?>
 	<link rel="stylesheet" href="/admin/include/windows/windows.css">
 	<script async src="/admin/include/windows/windows.js"></script>

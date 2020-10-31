@@ -125,11 +125,13 @@ var kff = {
 	 */
 	checkLib: function (name, src) {
 		return new Promise((resolve, reject) => {
-			if(typeof window[name] !== 'undefined') {
+			// console.info('name= ' + name, `script[src*=${name}]`, document.querySelector(`script[src*=${name.toLowerCase()}]`));
+
+			if(window[name] !== undefined) {
 				return resolve(window[name]);
 			}
 
-			var $_= document.querySelector('script[src*=name]');
+			var $_= document.querySelector(`script[src*=${name.toLowerCase()}]`);
 
 			if(!$_){
 				$_= document.createElement('script');
@@ -151,7 +153,7 @@ var kff = {
 	 * @param {string} selector
 	 */
 	highlight: function highlight(selector) {
-		if(!`1`) return;
+		if(!1) return;
 		selector= selector||'.log';
 		if(selector instanceof NodeList) {
 			// todo
@@ -168,7 +170,7 @@ var kff = {
 			padding: 1em;
 			font: 1em consolas !important;
 		}
-		${selector} .strings{color:#f99 !important}/* Строки красные */
+		${selector} .strings{color:#f99 !important}
 		${selector} .func{color:#77a !important}
 		${selector} .kwrd{font-weight:bold !important}
 		${selector} .kwrd_2{ color:#99f;}
@@ -235,6 +237,12 @@ var kff = {
 		return location.pathname.split('/');
 	},
 
+
+	/**
+	 * Конструктор AJAX меню
+	 * @param {jQ || NodeElement} $nav - навигация
+	 * @param {string} mainSelector - селектор блока с динамическим контентом
+	 */
 	menu: function($nav, mainSelector) {
 		this.$nav = ($nav instanceof jQuery)? $nav: $($nav);
 		mainSelector = mainSelector || 'main';
@@ -322,8 +330,6 @@ var kff = {
 				else{
 					targetNode.classList= $sourceNode[0].classList;
 				}
-
-
 
 				// console.log(i, targetNode, $sourceNode, $sourceNode.html(), '\n');
 

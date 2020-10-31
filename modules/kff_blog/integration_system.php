@@ -34,20 +34,20 @@ class BlogKff extends Index_my_addon
 		// self::$log->add(__METHOD__,null,['$artDB'=>$artDB,]);
 
 		if(
-			($artDB= self::getArtDB())
-			&& $artDB->count()
-		){
-			$Page->catId= $artDB->catId;
-			$Page->artId= $artDB->id;
-		}
-
-		if(
 			!file_exists(self::$storagePath)
 			&& !mkdir(self::$storagePath, 0755, 1)
 		) die(__METHOD__.': Невозможно создать директорию хранилища');
 
 		// * self::$catsDB с категориями
 		self::_defineCatsDB();
+
+		if(
+			($artDB= self::getArtDB())
+			&& $artDB->count()
+		){
+			$Page->catId= $artDB->catId;
+			$Page->artId= $artDB->id;
+		}
 
 		self::getBlogMap();
 
@@ -143,13 +143,16 @@ class BlogKff extends Index_my_addon
 	{
 		global $Page;
 
-		$artDB= &self::$artDB;
+		$curArtPathname= self::getArtPathname();
 
-		if(empty($artPathname)){
-			if(!empty($artDB))
+		if(
+			empty($artPathname)
+			|| trim($artPathname, '/') === trim($curArtPathname, '/')
+		){
+			if(!empty($artDB= &self::$artDB))
 				return $artDB;
 
-			$artPathname= self::getArtPathname();
+			$artPathname= $artPathname ?? $curArtPathname;
 		}
 
 		self::_defineCatsDB();
@@ -308,6 +311,8 @@ class BlogKff extends Index_my_addon
 	public static function getArtPathname()
 	{
 		global $Page;
+
+		if(!self::$blogDB) self::$log->add(__METHOD__,Logger::BACKTRACE,['self::$blogDB'=>self::$blogDB]);
 
 		return is_object($Page)?
 		str_replace($Page->id, basename(self::$storagePath), DR.explode('?',REQUEST_URI)[0]) . self::$blogDB->ext
