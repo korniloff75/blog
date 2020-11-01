@@ -22,6 +22,9 @@ header .user_menu a {
 .bgcontent {
 	padding-top: 1em;
 }
+.content .sidebar {
+	padding-top: 50px;
+}
 .sidebar, .aside_content{
 	background: #eee;
 }
@@ -29,6 +32,7 @@ ul.categories a.active{
 	font-weight:700;
 	color: #147;
 }
+
 </style>
 
 <?php
@@ -84,7 +88,6 @@ if($kff::is_admPanel()){
 
 		<main>
 			<article>
-				<!-- <h1 class="name"><?php $Page->get_name();?></h1> -->
 				<!-- <h1 class="name">{{Title}}</h1> -->
 				<?php $Page->get_content();?>
 			</article>

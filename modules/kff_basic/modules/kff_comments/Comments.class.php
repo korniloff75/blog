@@ -41,7 +41,7 @@ class Comments extends BlogKff
 
 
 	###
-	function __construct(array &$artData)
+	function __construct(array $artData)
 
 	{
 		global $act;

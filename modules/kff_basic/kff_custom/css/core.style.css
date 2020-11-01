@@ -97,9 +97,6 @@ ol li:before {
 	box-shadow: 2px 2px 0 0 #ccc;
 }
 
-ol li{
-	/* font-size: 18px; */
-}
 
 
 @media (max-width: 450px) {

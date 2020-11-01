@@ -10,17 +10,21 @@ class BlogKff_sidebar extends BlogKff
 		(function() {
 			'use strict';
 			var targetSel = '.blog_content',
-			$sidebar = $('.aside_content>ul.categories');
+			$sidebar = $('ul.categories', BH.getSidebar());
+			// $sidebar = $('.aside_content>ul.categories');
+
 			new kff.menu($sidebar, targetSel);
 
 			var stiky= $sidebar.attr('uk-sticky') + 'offset:' + parseInt(getComputedStyle($('.bgheader')[0]).height) + ';';
-			console.log('stiky=',stiky);
+			// console.log('stiky=',stiky);
 			// !
 			$sidebar.attr('uk-sticky', stiky);
 		})();
 		</script>
 	<?php
 	}
+
+
 	public function Render()
 	{
 		global $Page;
@@ -32,7 +36,7 @@ class BlogKff_sidebar extends BlogKff
 
 		echo '<ul uk-nav="multiple: false" class="categories uk-nav-parent-icon uk-nav-primary uk-nav-center" uk-sticky="show-on-up:true; media:@m; bottom: .sidebar; " style="background: inherit;">';
 
-		foreach(self::getBlogMap() as $ind=>$catData){
+		foreach(self::getBlogMap() as $catInd=>$catData){
 
 			if(empty($items= $catData['items']))
 				continue;
@@ -55,7 +59,7 @@ class BlogKff_sidebar extends BlogKff
 
 						</li>";
 
-						if(!empty(filter_var($artData['not-public'],FILTER_VALIDATE_BOOLEAN))){
+						if(filter_var($artData['not-public'],FILTER_VALIDATE_BOOLEAN)){
 							if(self::is_adm())
 							echo str_replace('class=""', 'class="not-public"', $li);
 						}

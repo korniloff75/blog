@@ -27,6 +27,33 @@ if (!NodeList.prototype.forEach) {
 	NodeList.prototype.forEach = Array.prototype.forEach;
 }
 
+if (!Array.prototype.find) {
+	Object.defineProperty(Array.prototype, 'find', {
+		value: function(predicate) {
+			var o = Object(this);
+			var len = o.length >>> 0;
+			if (typeof predicate !== 'function') {
+				throw new TypeError('predicate must be a function');
+			}
+
+			var thisArg = arguments[1];
+			var k = 0;
+
+			while (k < len) {
+				var kValue = o[k];
+				if (predicate.call(thisArg, kValue, k, o)) {
+					return kValue;
+				}
+				k++;
+			}
+
+			return undefined;
+		},
+		configurable: true,
+		writable: true
+	});
+}
+
 // closest && fix matches
 ;(function(EL) {
 	if(EL.closest) return;
@@ -105,10 +132,7 @@ document.documentElement.hidden !== undefined || Object.assign(HTMLElement.proto
 });
 
 String.prototype.trim = String.prototype.trim || function () { return this.replace(/^\s+|\s+$/gm, '') };
-String.prototype.ltrim = String.prototype.ltrim || function () { return this.replace(/^\s+/gm, '') };
 String.prototype.tabTrim = function () { return this.replace(/\t/gm, '  ') };
-String.prototype.rtrim = String.prototype.rtrim || function () { return this.replace(/\s+$/gm, '') };
-String.prototype.fulltrim = String.prototype.fulltrim || function () { return this.replace(/((^|\n)\s+|\s+($|\n))/gm, '').replace(/\s+/gm, ' '); };
 
 Math.sign = Math.sign || function (x) {
 	x = +x;
@@ -235,6 +259,10 @@ var kff = {
 
 	get URI(){
 		return location.pathname.split('/');
+	},
+
+	getURI: function(uri){
+		return uri? uri.split('/'): this.URI;
 	},
 
 
