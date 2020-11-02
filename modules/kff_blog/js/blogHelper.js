@@ -7,7 +7,7 @@ var BH = {
 		return $(this.contentSelector);
 	},
 	getSidebar: function(){
-		return U.$('aside');
+		return document.querySelector('aside');
 	},
 	logSelector: '.log',
 	get pageInfo(){
@@ -95,7 +95,7 @@ var BH = {
 		var items= U.$$('.uk-nav a[itemprop]', BH.getSidebar()),
 			active= items.find(i=>i.classList.contains(this.navActiveClass));
 
-		console.log('items=', items, active,);
+		console.log('items=', items, active);
 
 		var siblInd = active.index + _step,
 			sibling= items[siblInd % items.length] || items[items.length-1];
@@ -123,28 +123,6 @@ BH.inited || kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/j
 		UIkit.notification('Текст скопирован в буфер обмена','success');
 	});
 
-	// *Active in nav
-	var uri= kff.getURI();
-
-	U.ready(()=>{
-		var items= U.$$('.uk-nav a[itemprop]', BH.getSidebar());
-		items.some((item,ind)=>{
-			var iUri= kff.getURI(item.href),
-				cond= uri[uri.length-1] === iUri[iUri.length-1];
-
-			if(cond){
-				item.index= ind;
-				item.closest('.uk-parent').classList.add('uk-open');
-				var hidden= item.closest('[hidden]');
-				hidden&&(hidden.hidden=0);
-				item.classList.add(BH.navActiveClass);
-			}
-
-			return cond;
-		});
-
-		console.log(items, BH.getSidebar());
-	});
 
 	BH.inited= true;
 });

@@ -210,7 +210,7 @@ class BlogKff_page extends BlogKff
 			foreach($catData['items'] as &$artData){
 				if(stripos($artData['tag'], $hashtag) === false) continue;
 
-				echo "<li><a href=\"/{$Page->id}/{$catData['id']}/{$artData['id']}\">{$artData['name']}</a></li>";
+				echo "<li><a href=\"/{$Page->id}/{$catData['id']}/{$artData['id']}\">{$artData['title']}</a></li>";
 			}
 		}
 
@@ -246,7 +246,7 @@ class BlogKff_page extends BlogKff
 			switch ($k) {
 				case 'tag':
 					// *Вытаскиваем #тэги
-					preg_match_all('~[\s\W]#(\D.+?\b)~u', $html, $matchTags);
+					preg_match_all('~[\s\W]#([^"]+?\b)~u', $html, $matchTags);
 					self::$log->add(__METHOD__,null,['$matchTags[1]'=>$matchTags[1], '$html'=>$html]);
 					if(count($matchTags[1])){
 						$v= implode(',', array_unique(array_merge($matchTags[1], array_filter(explode(',', $v)))));
@@ -370,6 +370,17 @@ class BlogKff_page extends BlogKff
 	}
 
 	/**
+	 * ?Предыдущая / Следующая
+	 * todo...
+	 */
+	function c_getSiblingArticle($data)
+	{
+		$map= self::getBlogMap();
+		$ind= self::getArtDB()->ind;
+		self::$log->add(__METHOD__, null,['data'=>$data]);
+	}
+
+	/**
 	 * Создаем папку
 	 */
 	protected function c_addImgFolder(string $name)
@@ -385,9 +396,9 @@ class BlogKff_page extends BlogKff
 	/**
 	 * *Вывод в страницу
 	 */
-	public function Render()
+	public function Render($artPathname=null)
 	{
-		$artDB= self::getArtDB();
+		$artDB= self::getArtDB($artPathname);
 
 		self::$log->add(__METHOD__,null,['$artDB'=>$artDB]);
 
@@ -490,10 +501,15 @@ class BlogKff_page extends BlogKff
 
 		if(!self::is_indexPage()){
 			self::renderDateBlock($artDB->get());
+
+			echo '<div class="uk-margin-vertical">
+			<a href="#" onclick="BH.getSiblingArticle(-1,event)">Предыдущая</a>
+			<a href="#" class="uk-float-right" onclick="BH.getSiblingArticle(+1,event)">Следующая</a>
+			</div>';
 		}
 
 		// *Comments
-		if(self::is_adm() || !empty($artDB->{'enable-comments'})){
+		if(self::is_adm() || filter_var($artDB->{'enable-comments'},FILTER_VALIDATE_BOOLEAN)){
 			require_once DR.'/'. self::$internalModulesPath . '/kff_comments/Comments.class.php';
 
 			// self::$log->add(__METHOD__,null,['$artDB'=>$artDB]);

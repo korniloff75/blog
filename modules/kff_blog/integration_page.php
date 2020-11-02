@@ -503,8 +503,8 @@ class BlogKff_page extends BlogKff
 			self::renderDateBlock($artDB->get());
 
 			echo '<div class="uk-margin-vertical">
-			<a href="#" onclick="BH.getSiblingArticle(-1,event)">Предыдущая</a>
-			<a href="#" class="uk-float-right" onclick="BH.getSiblingArticle(+1,event)">Следующая</a>
+			<a href="#" onclick="BH.getSiblingArticle(-1,event)"><span uk-pagination-previous></span>Предыдущая</a>
+			<a href="#" class="uk-float-right" onclick="BH.getSiblingArticle(+1,event)">Следующая<span uk-pagination-next></span></a>
 			</div>';
 		}
 

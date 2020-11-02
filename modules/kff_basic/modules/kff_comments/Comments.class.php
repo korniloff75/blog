@@ -46,7 +46,7 @@ class Comments extends BlogKff
 	{
 		global $act;
 
-		$this->path= self::$storagePath. "/{$artData['oldCatId']}/{$artData['id']}_comments.json";
+		$this->path= self::$storagePath. "/{$artData['oldCatId']}/{$artData['id']}.comments.json";
 
 		$this->file = new DbJSON($this->path);
 

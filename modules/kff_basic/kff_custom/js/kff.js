@@ -172,6 +172,10 @@ var kff = {
 		});
 	},
 
+	getSidebar: function(){
+		return document.querySelector('aside');
+	},
+
 	/**
 	 * Базовая подсветка кодов
 	 * @param {string} selector
@@ -356,7 +360,8 @@ var kff = {
 				if(!$sourceNode.length)
 					$sourceNode = $dfr;
 				else{
-					targetNode.classList= $sourceNode[0].classList;
+					// targetNode.classList= $sourceNode[0].classList;
+					targetNode.className= $sourceNode[0].className;
 				}
 
 				// console.log(i, targetNode, $sourceNode, $sourceNode.html(), '\n');
@@ -428,7 +433,7 @@ kff.menu.prototype.clickHahdler = function ($e) {
 
 		// *Close uk-dropdown
 		if(t.closest('.uk-dropdown')){
-			console.log('uk-dropdown',t.closest('.uk-open'), );
+			console.log('uk-dropdown',t.closest('.uk-open') );
 			var open= $e.target.closest('.uk-open');
 			open && UIkit.dropdown(open).hide();
 		}

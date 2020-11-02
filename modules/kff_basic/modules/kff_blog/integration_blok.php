@@ -1,26 +1,60 @@
 <?php
+if(realpath('.') === __DIR__) die('Access denied');
 
 class BlogKff_sidebar extends BlogKff
 {
 	private function _setAJAXMenu()
 	{
 		?>
-		<!-- AJAX menu -->
 		<script>
-		(function() {
-			'use strict';
-			var targetSel = '.blog_content',
-			$sidebar = $('.aside_content>ul.categories');
+		'use strict';
+		// <?=__FILE__?>
+
+		kff.getSidebar().hidden=1;
+
+		// console.log('kff.getSidebar().hidden=', kff.getSidebar().hidden);
+
+		// *Active in nav
+		kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/js/uikit.min.js').then(UIkit=>{
+			window.U = window.U || window.UIkit && UIkit.util;
+			var uri= kff.getURI(),
+				targetSel = '.blog_content',
+				$sidebar = U.$('ul.categories', kff.getSidebar()),
+				items= U.$$('a[itemprop]', $sidebar);
+
+			items.some((item,ind)=>{
+				var iUri= kff.getURI(item.href),
+					cond= uri[uri.length-1] === iUri[iUri.length-1];
+
+				if(cond){
+					item.index= ind;
+					item.closest('.uk-parent').classList.add('uk-open');
+					var hidden= item.closest('[hidden]');
+					hidden&&(hidden.hidden=0);
+					item.classList.add(BH.navActiveClass);
+				}
+
+				return cond;
+			});
+
+			kff.getSidebar().hidden=0;
+
+			// *AJAX menu
 			new kff.menu($sidebar, targetSel);
 
-			var stiky= $sidebar.attr('uk-sticky') + 'offset:' + parseInt(getComputedStyle($('.bgheader')[0]).height) + ';';
-			console.log('stiky=',stiky);
+			var stiky= U.attr($sidebar, 'uk-sticky') + 'offset:' + parseInt(getComputedStyle(U.$('.bgheader')).height) + ';';
+			// console.log('stiky=',stiky);
 			// !
-			$sidebar.attr('uk-sticky', stiky);
-		})();
+			U.attr($sidebar, 'uk-sticky', stiky);
+
+			// console.log(items, kff.getSidebar());
+		});
+
 		</script>
 	<?php
 	}
+
+
 	public function Render()
 	{
 		global $Page;
@@ -32,7 +66,7 @@ class BlogKff_sidebar extends BlogKff
 
 		echo '<ul uk-nav="multiple: false" class="categories uk-nav-parent-icon uk-nav-primary uk-nav-center" uk-sticky="show-on-up:true; media:@m; bottom: .sidebar; " style="background: inherit;">';
 
-		foreach(self::getBlogMap() as $ind=>$catData){
+		foreach(self::getBlogMap() as $catInd=>$catData){
 
 			if(empty($items= $catData['items']))
 				continue;
@@ -55,7 +89,7 @@ class BlogKff_sidebar extends BlogKff
 
 						</li>";
 
-						if(!empty(filter_var($artData['not-public'],FILTER_VALIDATE_BOOLEAN))){
+						if(filter_var($artData['not-public'],FILTER_VALIDATE_BOOLEAN)){
 							if(self::is_adm())
 							echo str_replace('class=""', 'class="not-public"', $li);
 						}

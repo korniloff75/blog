@@ -58,8 +58,13 @@ class BlogKff_adm extends BlogKff
 				if($item['oldCatId'] !== $catId)
 				{
 					$oldCatPath = self::$storagePath . "/{$item['oldCatId']}";
-					rename("{$oldCatPath}/{$item['id']}" . self::$blogDB->ext, $artPathname);
-					rename("{$oldCatPath}/{$item['id']}.json", "$catPathname/{$item['id']}.json");
+
+					foreach(glob("{$oldCatPath}/{$item['id']}.*") as $removed){
+						rename($removed, str_replace("{$oldCatPath}/{$item['id']}", "{$catPathname}/{$item['id']}", $removed));
+					}
+
+					// rename("{$oldCatPath}/{$item['id']}" . self::$blogDB->ext, $artPathname);
+					// rename("{$oldCatPath}/{$item['id']}.json", "$catPathname/{$item['id']}.json");
 
 					// *Перезаписываем данные в базе статьи
 					// $artDB = new DbJSON("$catPathname/{$item['id']}.json");
@@ -68,8 +73,7 @@ class BlogKff_adm extends BlogKff
 					$artDB->set($item);
 					$artDB->save();
 
-					// unset($item['oldCatId']);
-				}
+				} //remove
 
 				// *Обновляем базу элементов категории
 				$catDB->append(['items'=>[$item]]);
@@ -184,6 +188,8 @@ class BlogKff_adm extends BlogKff
 	 */
 	public function c_addArticle($new_article)
 	{
+		if(!self::is_adm()) die('Access denied');
+
 		$cfg = ['name'=>$new_article];
 		$new_article = Index_my_addon::translit($new_article);
 		$cfg['id'] = $new_article;

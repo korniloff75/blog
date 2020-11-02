@@ -32,13 +32,6 @@
 	border: 2px dashed blue;
 }
 
-.not-public {
-	background: orange;
-	border: dotted 1px;
-	text-align: center;
-	font-weight: 600;
-}
-
 #response{
 	background:#def;
 	color: #333;
@@ -95,6 +88,17 @@ ol li:before {
 	content: counters(li,".");
 	border-radius: 3px;
 	box-shadow: 2px 2px 0 0 #ccc;
+}
+
+.active{
+	font-weight: 700;
+}
+
+.not-public {
+	background: orange;
+	border: dotted 1px;
+	text-align: center;
+	font-weight: 300;
 }
 
 
