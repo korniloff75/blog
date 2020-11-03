@@ -85,7 +85,7 @@ class BlogKff_sidebar extends BlogKff
 
 					foreach($items as &$artData) {
 						$li= "<li data-id={$artData['id']} data-cat=$catId class=\"\">
-						<a href=\"/{$pageId}/$catId/{$artData['id']}\" itemprop=\"url\" title=\"" . ($artData['title'] ?? $artData['name']) . "\" uk-tooltip>{$artData['name']}</a>
+						<a href=\"/{$pageId}/$catId/{$artData['id']}\" data-ind=\"".implode('', $artData['ind'])."\" itemprop=\"url\" title=\"" . ($artData['title'] ?? $artData['name']) . "\" uk-tooltip>{$artData['name']}</a>
 
 						</li>";
 

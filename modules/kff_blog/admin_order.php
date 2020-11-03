@@ -43,7 +43,7 @@ foreach(self::getBlogMap() as $catInd=>$catData) {
 		echo "<li data-artData='"
 		. json_encode($artData, JSON_UNESCAPED_UNICODE|JSON_HEX_QUOT|JSON_HEX_APOS)
 		. "' uk-tooltip title=\"{$artData['title']}\" class=\"uk-flex uk-flex-wrap uk-flex-middle\">
-		<div class=\"uk-sortable-handle uk-margin-small-right\" uk-icon=\"icon: table\"></div>
+		<div class=\"uk-sortable-handle uk-margin-small-right\" uk-icon=\"icon: menu\"></div>
 
 		<!-- artName -->
 		{$artData['name']}

@@ -188,7 +188,7 @@ class BlogKff_page extends BlogKff
 		echo '</pre>'; */
 		echo '<ul>';
 		foreach(self::getCategoryData($catId)['items'] as $artData){
-			echo "<li><a href='/{$Page->id}/$catId/".$artData['id']."'>{$artData['name']}</a></li>";
+			echo "<li><a href=\"/{$Page->id}/$catId/".$artData['id']."\">{$artData['name']}</a></li>";
 		}
 		echo '</ul>';
 		ob_end_flush();
@@ -434,15 +434,15 @@ class BlogKff_page extends BlogKff
 			<span class="uk-width-1-3@s"><b>Автор</b></span><input name="author" class="uk-width-expand" type="text" value="<?=$artDB->author?>"><p class="uk-width-1 uk-margin-remove"></p>
 
 			<span class="uk-width-1-3@s"><b>Комментарии</b></span>
-			<select name="enable-comments" value="<?=!empty($artDB->{'enable-comments'})? 1: 0 ?>">
+			<select name="enable-comments" value="<?=filter_var($artDB->{'enable-comments'},FILTER_VALIDATE_BOOLEAN)? 1: 0 ?>">
 				<option value="0">Отключены</option>
-				<option value="1" <?=!empty($artDB->{'enable-comments'})? 'selected': '' ?>>Подключены</option>
+				<option value="1" <?=filter_var($artDB->{'enable-comments'},FILTER_VALIDATE_BOOLEAN)? 'selected': '' ?>>Подключены</option>
 			</select>
 
 			<span class="uk-width-1-3@s"><b>Черновик</b></span>
-			<select name="not-public" value="<?=!empty($artDB->{'not-public'})? 1: 0 ?>">
+			<select name="not-public" value="<?=filter_var($artDB->{'not-public'},FILTER_VALIDATE_BOOLEAN)? 1: 0 ?>">
 				<option value="0">Опубликовано</option>
-				<option value="1" <?=!empty($artDB->{'not-public'})? 'selected': '' ?>>Черновик</option>
+				<option value="1" <?=filter_var($artDB->{'not-public'},FILTER_VALIDATE_BOOLEAN)? 'selected': '' ?>>Черновик</option>
 			</select>
 
 		</div>
@@ -468,6 +468,14 @@ class BlogKff_page extends BlogKff
 
 		<script type="text/javascript" src="/modules/ckeditor_4.5.8_standard/ckeditor/ckeditor.js"></script>
 
+		<style>
+		.cke_top {
+			/* position: fixed; */
+			top: 0;
+			z-index: 1000;
+		}
+		</style>
+
 		<script>
 			'use strict';
 
@@ -480,15 +488,22 @@ class BlogKff_page extends BlogKff
 
 			// *Запускаем редактор с файловым браузером
 			CKEDITOR.replace( 'editor1', {
+				height: '80vh',
 				filebrowserBrowseUrl: '?name=createCKEditorBrowser',
 				disallowedContent : 'img{width,height}',
 				image_removeLinkByEmptyURL: true,
+
 			});
 
 			CKEDITOR.disableAutoInline = true;
 			/* CKEDITOR.inline( 'editor1', {
 				customConfig: ''
 			}); */
+
+			CKEDITOR.on('instanceReady', ()=>{
+				// *Фиксируем панель
+				U.attr(U.$('.cke_top'), 'uk-sticky', 'bottom: true');
+			});
 
 		</script>
 
@@ -514,8 +529,7 @@ class BlogKff_page extends BlogKff
 
 			// self::$log->add(__METHOD__,null,['$artDB'=>$artDB]);
 
-			// todo @param $artDB
-			$comments= new Comments($artDB->get());
+			$comments= new Comments();
 			$comments->Render();
 		}
 	}

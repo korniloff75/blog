@@ -188,7 +188,7 @@ class BlogKff_page extends BlogKff
 		echo '</pre>'; */
 		echo '<ul>';
 		foreach(self::getCategoryData($catId)['items'] as $artData){
-			echo "<li><a href='/{$Page->id}/$catId/".$artData['id']."'>{$artData['name']}</a></li>";
+			echo "<li><a href=\"/{$Page->id}/$catId/".$artData['id']."\">{$artData['name']}</a></li>";
 		}
 		echo '</ul>';
 		ob_end_flush();
@@ -503,8 +503,8 @@ class BlogKff_page extends BlogKff
 			self::renderDateBlock($artDB->get());
 
 			echo '<div class="uk-margin-vertical">
-			<a href="#" onclick="BH.getSiblingArticle(-1,event)">Предыдущая</a>
-			<a href="#" class="uk-float-right" onclick="BH.getSiblingArticle(+1,event)">Следующая</a>
+			<a href="#" onclick="BH.getSiblingArticle(-1,event)"><span uk-pagination-previous></span>Предыдущая</a>
+			<a href="#" class="uk-float-right" onclick="BH.getSiblingArticle(+1,event)">Следующая<span uk-pagination-next></span></a>
 			</div>';
 		}
 
@@ -514,8 +514,7 @@ class BlogKff_page extends BlogKff
 
 			// self::$log->add(__METHOD__,null,['$artDB'=>$artDB]);
 
-			// todo @param $artDB
-			$comments= new Comments($artDB->get());
+			$comments= new Comments();
 			$comments->Render();
 		}
 	}

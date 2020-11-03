@@ -12,7 +12,7 @@ self::$log->add(__METHOD__,null,['$this->check_no_comm()'=>$this->check_no_comm(
 	) echo self::T_DISABLED;
 
 	if(self::is_adm()):
-		// self::$log->add(__METHOD__,null,['$this->artData[\'enable-comments\']'=>$this->artData['enable-comments']]);
+		// self::$log->add(__METHOD__,null,['self::$artDB->{\'enable-comments\'}'=>self::$artDB->{'enable-comments'}]);
 	?>
 
 	<div class="uk-text-center uk-margin">

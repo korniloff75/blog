@@ -92,13 +92,16 @@ var BH = {
 		e.preventDefault();
 		e.stopPropagation();
 
-		var items= U.$$('.uk-nav a[itemprop]', BH.getSidebar()),
-			active= items.find(i=>i.classList.contains(this.navActiveClass));
+		var items= U.$$('.uk-nav a[data-ind]', BH.getSidebar());
 
-		console.log('items=', items, active);
+		items= items.sort((a,b)=>parseInt(a.getAttribute('data-ind')) - parseInt(b.getAttribute('data-ind')));
+
+		var active= items.find(i=>i.classList.contains(this.navActiveClass));
 
 		var siblInd = active.index + _step,
 			sibling= items[siblInd % items.length] || items[items.length-1];
+
+		// console.log('items=', items.map(i=>i.getAttribute('data-ind')), sibling, active);
 
 		location.href= sibling.href;
 	},

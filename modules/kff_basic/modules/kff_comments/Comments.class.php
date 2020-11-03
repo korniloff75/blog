@@ -13,7 +13,7 @@ class Comments extends BlogKff
 		MAX_LEN = 1500,
 		MAX_ON_PAGE = 10,
 		MAX_ENTRIES = 10000,
-		TO_EMAIL = 0, // ! 1
+		TO_EMAIL = 0, // note 0- test, 1- prod
 		CAPTCHA_4_USERS = false,
 		TRY_AGAIN = '<button class="core note pointer" onclick="commFns.refresh(null, {hash:\'#comments_name\'});">Попробовать ещё раз</button>',
 		T_DISABLED = '<div id="comm_off" class="core warning uk-text-center">Комменты отключены</div>',
@@ -32,21 +32,21 @@ class Comments extends BlogKff
 		$Title = 'Добавить комментарий',
 		$separator='|-|';
 
-	public
-		$artData;
-
 	static
 		$SPAM_IP,
 		$captcha;
 
 
 	###
-	function __construct(array $artData)
+	function __construct()
 
 	{
 		global $act;
 
-		$this->path= self::$storagePath. "/{$artData['oldCatId']}/{$artData['id']}.comments.json";
+		$artDB= &self::$artDB;
+		$artDB= $artDB ?? self::getArtDB();
+
+		$this->path= self::$storagePath. "/{$artDB->catId}/{$artDB->id}.comments.json";
 
 		$this->file = new DbJSON($this->path);
 
@@ -59,10 +59,7 @@ class Comments extends BlogKff
 		// *При Аякс-запросе открываем сессию
 		// if(!headers_sent() && !isset($_SESSION)) session_start();
 
-		// $this->artData= self::getArtData();
-		self::$artDB= self::$artDB ?? self::getArtDB();
-		// $this->artData= $artData;
-		$this->artData= &self::$map->get($artData['ind'][0])['items'][$artData['ind'][1]];
+		$this->artData= &self::$map->get($artDB->ind[0])['items'][$artDB->ind[1]];
 
 		// self::$log->add(__METHOD__,null,['$this->artData'=>$this->artData]);
 
@@ -73,7 +70,7 @@ class Comments extends BlogKff
 		self::$captcha = self::realIP();
 
 		// ?
-		$this->p_name= $this->artData['title'];
+		$this->p_name= $artDB->title;
 
 		// var_dump($this->file);
 
@@ -214,7 +211,7 @@ class Comments extends BlogKff
 
 			self::sendMail([
 				"Уважаемый(ая) " . $name . "!\nАдминистрация сайта " . \HOST
-				. " ответила на Ваш комментарий на странице - " . $this->artData['title'],
+				. " ответила на Ваш комментарий на странице - " . self::$artDB->title,
 				'Комментарий' => $e,
 				'Ответ' => $o,
 				'email' => $_POST['email'],
@@ -304,8 +301,8 @@ class Comments extends BlogKff
 		# Если указан, то отсылаем на мыло
 		if(self::TO_EMAIL == true)
 		{
-			$subject = "Комментарий со страницы {$this->artData['title']} - ". ($_REQUEST['curpage'] ?? \HOST);
-			self::$log->add(__METHOD__,null,['$this->artData'=>$this->artData]);
+			$subject = "Комментарий со страницы " . self::$artDB->title . "- ". ($_REQUEST['curpage'] ?? \HOST);
+			self::$log->add(__METHOD__,null,['self::$artDB->get()'=>self::$artDB->get()]);
 
 			// !
 			// return;
@@ -458,8 +455,8 @@ class Comments extends BlogKff
 			<p>this->path= <?=$this->path?></p>
 
 			<hr>
-			<p>this->p_name= <?=$this->artData['title']?></p>
-			<p>check_no_comm(this->p_name)= <? var_dump($this->check_no_comm($this->artData['title']))?></p>
+			<p>this->p_name= <?=self::$artDB->title?></p>
+			<p>check_no_comm(this->p_name)= <? var_dump($this->check_no_comm(self::$artDB->title))?></p>
 
 		</div>
 
@@ -494,7 +491,7 @@ class Comments extends BlogKff
 			'adm' => self::is_adm(),
 			'email' => $Config->adminEmail,
 			// 'refPage' => $_REQUEST['page'],
-			'p_name' => $this->artData['title'],
+			'p_name' => self::$artDB->title,
 			'check_no_comm' => $this->check_no_comm(),
 			'name_request' => 'p_comm',
 			'MAX_LEN' => self::MAX_LEN,

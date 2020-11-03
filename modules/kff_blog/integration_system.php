@@ -440,7 +440,7 @@ class BlogKff extends Index_my_addon
 	{
 		// *UIkit подключён
 		if(
-			!empty(self::$cfgDB->uk['include_uikit'])
+			filter_var(self::$cfgDB->uk['include_uikit'], FILTER_VALIDATE_BOOLEAN)
 		) return;
 
 		$UIKpath = '/'. self::$internalModulesPath . '/kff_uikit-3.5.5';
@@ -460,7 +460,6 @@ class BlogKff extends Index_my_addon
 		<!-- /UIkit -->
 
 		<?php
-		self::$cfgDB->uk['include_uikit'] = 0;
 	}
 
 	public function __destruct()

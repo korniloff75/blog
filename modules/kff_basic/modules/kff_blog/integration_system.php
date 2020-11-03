@@ -227,15 +227,20 @@ class BlogKff extends Index_my_addon
 	 */
 	protected static function _updateCatDB(SplFileInfo $catFI, $humName=null)
 	{
+		if(!self::is_adm()) die('Access denied in '. __METHOD__);
+
 		$catPathname = $catFI->getPathname();
 
 		// self::$log->add($catFI->getPathname() . "/*" . self::$blogDB->ext);
 
 		$catId= $catFI->getFilename();
 		$catDB = new DbJSON($catPathname . "/data.json");
-		$catDB->clear('items');
+		// $catDB->clear('items');
+		$items= [];
 		// $catDB->append(['name'=>$catFilename]);
-		$nameFixed= is_string($catDB->get('name'));
+		$catDbFixed= is_string($catDB->get('name'));
+
+		// self::$log->add(__METHOD__,null,['glob($catPathname . "/*" . self::$blogDB->ext)'=>glob($catPathname . "/*" . self::$blogDB->ext) ]);
 
 		foreach(glob($catPathname . "/*" . self::$blogDB->ext) as $ind=>&$artPathname) {
 			// *без расширения
@@ -247,21 +252,32 @@ class BlogKff extends Index_my_addon
 			// 	$artDB->set(['title'=>$artDB->get('name')]);
 
 			$item= $artDB->get();
-			// $item['ind']= $item['ind']?? [$catDB->get('ind')??0, $ind];
 			$item['id']= $item['id']?? $artId;
 
-			$catDB->append([
-				'items'=>[$item]
-			]);
+			// *Сохраняем порядок
+			if(
+				is_numeric($artInd= (int)$artDB->ind[1])
+				&& is_null($items[$artInd])
+			){
+				$items[$artInd]= $item;
+			}
+			else
+				$items[]= $item;
 
 			// *Берем данные из статьи категории
-			if($artDB->get('catName') && !$nameFixed){
-				$catDB->push($artDB->get('catName'), 'name');
-				$nameFixed=1;
+			if($artDB->catName && !$catDbFixed){
+				$catDB->push($artDB->catId, 'id');
+				$catDB->push($artDB->catName, 'name');
+				$catDbFixed=1;
 			}
 
 		} //foreach
 
+		// self::$log->add(__METHOD__,null,['$items'=>$items ]);
+
+		ksort($items);
+
+		$catDB->push($items, 'items');
 		$catDB->save();
 
 		// *Заносим в $map
@@ -424,7 +440,7 @@ class BlogKff extends Index_my_addon
 	{
 		// *UIkit подключён
 		if(
-			!empty(self::$cfgDB->uk['include_uikit'])
+			filter_var(self::$cfgDB->uk['include_uikit'], FILTER_VALIDATE_BOOLEAN)
 		) return;
 
 		$UIKpath = '/'. self::$internalModulesPath . '/kff_uikit-3.5.5';
@@ -444,7 +460,6 @@ class BlogKff extends Index_my_addon
 		<!-- /UIkit -->
 
 		<?php
-		self::$cfgDB->uk['include_uikit'] = 0;
 	}
 
 	public function __destruct()

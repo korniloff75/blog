@@ -1,6 +1,5 @@
 // comm_vars - settings in comments.php
 'use strict';
-var U= window.U || UIkit.util;
 
 var commFns = {
 	module: 'php/modules/comments/comments.php',
@@ -227,4 +226,7 @@ var commFns = {
 } //== /commFns
 
 
-commFns.init(window);
+kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/js/uikit.min.js').then(UIkit=>{
+	var U= window.U || UIkit.util;
+	commFns.init(window);
+});
