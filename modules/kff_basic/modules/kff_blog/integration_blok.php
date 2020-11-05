@@ -20,18 +20,21 @@ class BlogKff_sidebar extends BlogKff
 			var uri= kff.getURI(),
 				targetSel = '.blog_content',
 				$sidebar = U.$('ul.categories', kff.getSidebar()),
-				items= U.$$('a[itemprop]', $sidebar);
+				items= U.$$('a[data-ind]', $sidebar);
 
-			items.some((item,ind)=>{
+			// items.some((item,ind)=>{
+			items.forEach((item,ind)=>{
 				var iUri= kff.getURI(item.href),
 					cond= uri[uri.length-1] === iUri[iUri.length-1];
 
+				item.blockIndex= ind;
+
 				if(cond){
-					item.index= ind;
 					item.closest('.uk-parent').classList.add('uk-open');
+					// ?
 					var hidden= item.closest('[hidden]');
 					hidden&&(hidden.hidden=0);
-					item.classList.add(BH.navActiveClass);
+					// item.classList.add(BH.navActiveClass);
 				}
 
 				return cond;
@@ -41,13 +44,13 @@ class BlogKff_sidebar extends BlogKff
 
 			// *AJAX menu
 			new kff.menu($sidebar, targetSel);
+			// note worked
+			// new kff.menu($sidebar, targetSel, [BH.navSelector]);
 
 			var stiky= U.attr($sidebar, 'uk-sticky') + 'offset:' + parseInt(getComputedStyle(U.$('.bgheader')).height) + ';';
 			// console.log('stiky=',stiky);
 			// !
 			U.attr($sidebar, 'uk-sticky', stiky);
-
-			// console.log(items, kff.getSidebar());
 		});
 
 		</script>
@@ -68,7 +71,7 @@ class BlogKff_sidebar extends BlogKff
 
 		foreach(self::getBlogMap() as $catInd=>$catData){
 
-			if(empty($items= $catData['items']))
+			if(empty($items= &$catData['items']))
 				continue;
 			// print_r ($catData);
 
@@ -85,7 +88,7 @@ class BlogKff_sidebar extends BlogKff
 
 					foreach($items as &$artData) {
 						$li= "<li data-id={$artData['id']} data-cat=$catId class=\"\">
-						<a href=\"/{$pageId}/$catId/{$artData['id']}\" data-ind=\"".implode('', $artData['ind'])."\" itemprop=\"url\" title=\"" . ($artData['title'] ?? $artData['name']) . "\" uk-tooltip>{$artData['name']}</a>
+						<a href=\"/{$pageId}/$catId/{$artData['id']}\" data-ind=\"".implode('', $artData['ind'])."\" class=\"". ($artData['id'] === self::getArtData()['id']? 'active': '') ."\" itemprop=\"url\" title=\"" . ($artData['title'] ?? $artData['name']) . "\" uk-tooltip>{$artData['name']}</a>
 
 						</li>";
 
@@ -99,9 +102,10 @@ class BlogKff_sidebar extends BlogKff
 					?>
 				</ul>
 
-			</li>
+			</li><!-- .uk-parent -->
 		<?php
 		} //foreach
+		echo "</ul><!-- .uk-nav -->";
 
 		$this->_setAJAXMenu();
 	}

@@ -2,6 +2,7 @@
 var BH = {
 	inited: false,
 	contentSelector: '.content',
+	navSelector: 'aside ul.uk-nav',
 	navActiveClass: 'active',
 	get content$obj(){
 		return $(this.contentSelector);
@@ -92,18 +93,18 @@ var BH = {
 		e.preventDefault();
 		e.stopPropagation();
 
-		var items= U.$$('.uk-nav a[data-ind]', BH.getSidebar());
+		var items= U.$$('.uk-nav a[data-ind]', kff.getSidebar());
 
-		items= items.sort((a,b)=>parseInt(a.getAttribute('data-ind')) - parseInt(b.getAttribute('data-ind')));
+		items= items.sort((a,b)=>+U.attr(a, 'data-ind') - +U.attr(b, 'data-ind'));
 
 		var active= items.find(i=>i.classList.contains(this.navActiveClass));
 
-		var siblInd = active.index + _step,
+		var siblInd = parseInt(active.blockIndex) + _step,
 			sibling= items[siblInd % items.length] || items[items.length-1];
 
-		// console.log('items=', items.map(i=>i.getAttribute('data-ind')), sibling, active);
+		// console.log('items=', items, items.map(i=>U.attr(i,'data-ind')), 'sibling.href= '+ sibling.href + location.search, active, 'active.href= '+active.href, 'active.blockIndex= '+active.blockIndex, 'siblInd= '+siblInd);
 
-		location.href= sibling.href;
+		location.href= sibling.href + location.search;
 	},
 } //BH
 

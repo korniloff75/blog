@@ -5,7 +5,9 @@ ob_clean();
 
 if(!$Page) {
 	$log::$notWrite= 1;
-	header(PROTOCOL.' 404 Not Found'); require('./pages/404.html');
+	header(PROTOCOL.' 404 Not Found');
+	require('./pages/404.html');
+	echo __FILE__;
 	die('404');
 }
 

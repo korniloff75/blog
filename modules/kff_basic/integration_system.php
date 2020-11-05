@@ -48,14 +48,17 @@ class Index_my_addon implements BasicClassInterface
 			return;
 		}
 
+		self::$log->add(__METHOD__,null, ['REQUEST_URI'=>\REQUEST_URI]);
+
 		// *Отсекаем на 404
 		if(
 			// *обращения к несуществующим файлам
-			$has_ext = !self::is_admPanel() && strpos($_SERVER['REQUEST_URI'], '.')
+			$has_ext = !file_exists(\DR.$_SERVER['SCRIPT_NAME']) && !self::is_admPanel() && strpos($_SERVER['REQUEST_URI'], '.')
 		){
-			// self::$log->add(__METHOD__,null,['$has_ext'=>$has_ext, '$_SERVER'=>$_SERVER]);
+			self::$log->add(__METHOD__,null,['$has_ext'=>$has_ext, '$_SERVER'=>$_SERVER]);
 			self::$log::$notWrite= 1;
 			header(PROTOCOL.' 404 Not Found'); require(DR.'/pages/404.html');
+			echo __FILE__;
 			die('404');
 		}
 
@@ -90,7 +93,7 @@ class Index_my_addon implements BasicClassInterface
 			AdmPanel::addResponsive();
 		}
 
-		self::$log->add(__METHOD__,null, ['REQUEST_URI'=>\REQUEST_URI, __CLASS__.'::$cfg'=>self::$cfgDB->get(), /* '$Config'=>self::$Config */]);
+		self::$log->add(__METHOD__,null, [__CLASS__.'::$cfg'=>self::$cfgDB->get(), /* '$Config'=>self::$Config */]);
 
 	}
 
@@ -113,9 +116,9 @@ class Index_my_addon implements BasicClassInterface
 	public static function getSystemConfig()
 	{
 		global $Config;
-		$Config= $Config ?? json_decode(file_get_contents(DR.'/data/cfg/config.dat'));
+		// $Config= $Config ?? json_decode(file_get_contents(self::$Storage .'/config.dat'));
 
-		// $Config= self::$Config ?? new DbJSON(DR.'/data/cfg/config.dat');
+		$Config= self::$Config ?? new DbJSON(self::$Storage .'/config.dat');
 		return $Config;
 
 		$Config::$defaultDB= [
@@ -155,7 +158,7 @@ class Index_my_addon implements BasicClassInterface
 
 
 	/**
-	 * *Для обработки $Page - апускать из integration_pages.php
+	 * *Для обработки $Page - zапускать из integration_pages.php
 	 */
 	public static function headHtml()
 	{

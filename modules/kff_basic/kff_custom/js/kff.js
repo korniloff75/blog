@@ -274,10 +274,13 @@ var kff = {
 	 * Конструктор AJAX меню
 	 * @param {jQ || NodeElement} $nav - навигация
 	 * @param {string} mainSelector - селектор блока с динамическим контентом
+	 * @param {Array} sels - optional селекторы с обновляемым контентом
 	 */
-	menu: function($nav, mainSelector) {
+	menu: function($nav, mainSelector, sels) {
 		this.$nav = ($nav instanceof jQuery)? $nav: $($nav);
+
 		mainSelector = mainSelector || 'main';
+		// if(!(mainSelector instanceof Array)) mainSelector = [mainSelector];
 
 		var self = this,
 			$loader = $('#loading');
@@ -287,6 +290,7 @@ var kff = {
 		}
 
 		this.mainSelector= mainSelector;
+		this.sels= sels || [];
 		this.$loader= $loader;
 
 		this.$nav.on('click', this.clickHahdler.bind(this));
@@ -302,10 +306,13 @@ var kff = {
 
 			if(!state) return false;
 
-			// console.log(state, /* state.html */);
+			console.log('state.sels', state.sels /* state.html */);
 
 			kff.request(state.href,null,state.sels)
-			.then(r=>self.setActive(state.href));
+			.then(r=>{
+				document.title= state.title;
+				self.setActive(state.href);
+			});
 		});
 	},
 
@@ -408,11 +415,13 @@ kff.menu.prototype.clickHahdler = function ($e) {
 	this.setActive(t.href);
 
 	// todo
-	var sels= [mainSelector,'h1#title','.core.info','.log','#wrapEntries'];
+	this.sels.push(mainSelector);
+	var sels= this.sels.concat(['h1#title','.core.info','.log','#wrapEntries']);
+
 	kff.request(t.href,null,sels)
 	.then(r=>{
 		if(!r[mainSelector]){
-			console.warn(r)
+			console.error(r)
 		}
 		// console.log(Object.keys(r).length && Object.keys(r) || r);
 
@@ -452,7 +461,7 @@ kff.menu.prototype.setActive = function setActive (href) {
 // kff.menu.setActive = function setActive (href) {
 	if(!this.$nav.length) return;
 
-	$('.active').removeClass();
+	this.$nav.find('.active').removeClass();
 	this.$nav.find('a').filter((ind,i)=> i.href === href).addClass('active');
 	// console.log($nav.css('height'));
 
