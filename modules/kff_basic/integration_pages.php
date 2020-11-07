@@ -5,25 +5,24 @@ $kff::headHtml();
 
 if(
 	class_exists('BlogKff')
-	&& $artData= BlogKff::getArtData()
+	&& $artDB= BlogKff::getArtDB()
 ){
 	// $log->add('',null,['$artData'=>$artData]);
 
 	// *Подкладываем данные из Блога
 	foreach(['title','description','keywords'] as $prop){
-		if(!empty($val= trim($artData[$prop]))){
+		if(!empty($val= trim($artDB->{$prop}))){
 			$Page->{$prop}= $val;
 			// $log->add('',null,["$prop"=>$Page->{$prop}]);
 		}
 	}
-	unset($artData);
 }
 
 $Page->endhtml.= '<link rel="stylesheet" href="/'.$kff::$dir.'/css/core.style.css" />';
 
 
 // *UIKit
-if(!empty($kff::$cfg['uk']['use_styles_input']))
+if(!empty($kff::$cfgDB->uk['use_styles_input']))
 {
 	ob_start();
 ?>
@@ -58,7 +57,7 @@ if(!empty($kff::$cfg['uk']['use_styles_input']))
 	$Page->endhtml.= ob_get_clean();
 }
 
-if(!empty($kff::$cfg['uk']['use_styles_ul']))
+if(!empty($kff::$cfgDB->uk['use_styles_ul']))
 {
 	$Page->endhtml.= '<script>
 	kff.checkLib(\'jQuery\')

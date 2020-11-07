@@ -1,7 +1,7 @@
 <button id="addSetting" title="Добавить настройку" uk-tooltip>ADD</button>
 
 <?php
-// self::$log->add(__METHOD__,null,['self::$blogDB'=>self::$blogDB]);
+self::$log->add(__METHOD__,null,['self::$blogDB'=>self::$blogDB]);
 
 foreach(self::$blogDB as $n=>$v){
 	$iType= is_numeric($v)? 'number': 'text';

@@ -246,10 +246,11 @@ class BlogKff_page extends BlogKff
 			switch ($k) {
 				case 'tag':
 					// *Вытаскиваем #тэги
-					preg_match_all('~[\s\W]#([^"]+?\b)~u', $html, $matchTags);
-					self::$log->add(__METHOD__,null,['$matchTags[1]'=>$matchTags[1], '$html'=>$html]);
-					if(count($matchTags[1])){
-						$v= implode(',', array_unique(array_merge($matchTags[1], array_filter(explode(',', $v)))));
+					preg_match_all('~(?<=[^\w\?+\-])#([^+\-][^"\d]+?)\b~u', $html, $matchTags);
+					$match= $matchTags[1];
+					self::$log->add(__METHOD__,null,['$match'=>$match, '$html'=>$html]);
+					if(count($match)){
+						$v= implode(',', array_unique(array_merge($match, array_filter(explode(',', $v)))));
 					}
 				case 'keywords':
 					$v= preg_replace(['~\s*(,)\s*~u','~\s+~u'], ['$1', '_'], $v);
@@ -284,7 +285,7 @@ class BlogKff_page extends BlogKff
 		]];
 		$map->set($newData);
 
-		self::$log->add(__METHOD__,null,['$ind'=>$ind,'$artDB'=>$artDB, "\$map->get({$ind[0]})"=>$map->get()]);
+		self::$log->add(__METHOD__,null,['$ind'=>$ind,'$artDB'=>$artDB, "\$newData"=>$newData]);
 	}
 
 
@@ -319,6 +320,7 @@ class BlogKff_page extends BlogKff
 		}
 
 
+		// *hashtags
 		if(!empty($tags= array_filter(explode(',', $artDB->tag)))){
 			echo '<div class="tags uk-margin" itemprop="about" itemscope itemtype="https://schema.org/Thing">';
 
@@ -406,7 +408,7 @@ class BlogKff_page extends BlogKff
 
 		// *На стартовой - новостная лента
 		if(!$artDB->count()){
-			echo $this->newsTape(self::$l_cfg['newsTapeLength']);
+			echo $this->newsTape(self::$blogDB->newsTapeLength);
 			return;
 		}
 

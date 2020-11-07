@@ -33,11 +33,6 @@ class BlogKff extends Index_my_addon
 
 		// self::$log->add(__METHOD__,null,['$artDB'=>$artDB,]);
 
-		if(
-			!file_exists(self::$storagePath)
-			&& !mkdir(self::$storagePath, 0755, 1)
-		) die(__METHOD__.': Невозможно создать директорию хранилища');
-
 		// * self::$catsDB с категориями
 		self::_defineCatsDB();
 
@@ -103,9 +98,18 @@ class BlogKff extends Index_my_addon
 
 	protected static function _defineCatsDB()
 	{
+		global $Page;
+		// self::$log->add(__METHOD__,null,['$Page'=>$Page]);
 		if(self::$catsDB) return;
 
+		if(
+			// !file_exists(self::$storagePath= DR. "/{$Page->id}_blog")
+			!file_exists(self::$storagePath)
+			&& !mkdir(self::$storagePath, 0755, 1)
+		) die(__METHOD__.': Невозможно создать директорию хранилища');
+
 		self::$blogDB = new DbJSON(DR.'/data/cfg/kff_blog.json');
+		// ?deprecated
 		self::$l_cfg= self::$blogDB->get();
 		if(!self::$blogDB->count())
 			self::$blogDB->replace(self::$def_cfg);

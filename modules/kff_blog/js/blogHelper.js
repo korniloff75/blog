@@ -1,5 +1,5 @@
 'use strict';
-var BH = {
+var BH = window.BH || {
 	inited: false,
 	contentSelector: '.content',
 	navSelector: 'aside ul.uk-nav',
@@ -109,6 +109,8 @@ var BH = {
 } //BH
 
 
+// console.log('BH.inited', BH.inited);
+
 // *Не обновляется при AJAX
 BH.inited || kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/js/uikit.min.js').then(UIkit=>{
 	window.U = window.U || window.UIkit && UIkit.util;
@@ -128,7 +130,8 @@ BH.inited || kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/j
 	});
 
 
-	BH.inited= true;
+	Object.defineProperty(BH, 'inited', {value: true});
+	// console.log('BH.inited', BH.inited);
 });
 
 
