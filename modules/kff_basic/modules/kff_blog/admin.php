@@ -11,7 +11,7 @@ if(!$kff::is_adm()) die('Access denied!');
 
 class BlogKff_adm extends BlogKff
 {
-	protected static
+	// protected static
 	// *Extended
 		// $modDir;
 
@@ -27,12 +27,15 @@ class BlogKff_adm extends BlogKff
 	/**
 	 * *Сохрааняем сортировку статей
 	 */
-	function c_sortCategories($catsAll)
+	protected function c_sortCategories($catsAll)
 	{
 		if(is_string($catsAll))
-			$catsAll = json_decode($catsAllJson, 1);
+			$catsAll = json_decode($catsAll, 1);
 
 		$cats = array_keys($catsAll);
+
+		// todo
+		$map= self::getBlogMap();
 
 		// self::$log->add(__METHOD__,null,['$cats'=>$cats, '$catsAll'=>$catsAll]);
 
@@ -44,7 +47,8 @@ class BlogKff_adm extends BlogKff
 			$items = &$catsAll[$catId];
 
 			$catDB = new DbJSON($catPathname . "/data.json");
-			$catDB->set(['ind'=>$catInd]);
+			// $catDB->set(['ind'=>$catInd]);
+			$catDB->push($catInd, 'ind');
 
 			$catDB->clear('items');
 
@@ -54,40 +58,48 @@ class BlogKff_adm extends BlogKff
 			foreach($items as $ind=>&$item) {
 				$artPathname= "$catPathname/{$item['id']}" . self::$blogDB->ext;
 
+				$artDB = self::getArtDB($artPathname);
+
 				// *Элемент перемещён в другую категорию
-				if($item['oldCatId'] !== $catId)
-				{
+				if($item['oldCatId'] !== $catId){
 					$oldCatPath = self::$storagePath . "/{$item['oldCatId']}";
 
 					foreach(glob("{$oldCatPath}/{$item['id']}.*") as $removed){
 						rename($removed, str_replace("{$oldCatPath}/{$item['id']}", "{$catPathname}/{$item['id']}", $removed));
 					}
 
-					// rename("{$oldCatPath}/{$item['id']}" . self::$blogDB->ext, $artPathname);
-					// rename("{$oldCatPath}/{$item['id']}.json", "$catPathname/{$item['id']}.json");
-
 					// *Перезаписываем данные в базе статьи
 					// $artDB = new DbJSON("$catPathname/{$item['id']}.json");
-					$artDB = self::getArtDB($artPathname);
+
 					$item = array_replace($item, ['ind'=>[$catInd,$ind],'catId'=>$catId, 'oldCatId'=>$catId, 'catName'=>$catDB->get('name')]);
 					$artDB->set($item);
 					$artDB->save();
 
 				} //remove
+				// *Элемент перемещён внутри категории
+				elseif($item['ind'][1] != $artDB->ind[1]){
+					self::$log->add(__METHOD__,null,['$artDB->ind'=>$artDB->ind,'$ind'=>$ind, '$item[\'ind\']'=>$item['ind']]);
+					$artDB->set(['ind'=>$item['ind']]);
+				}
 
 				// *Обновляем базу элементов категории
 				$catDB->append(['items'=>[$item]]);
 
 			} //foreach
 
-			if(!empty($oldCatPath))
+			/* if(!empty($oldCatPath))
 				self::_updateCatDB(new SplFileInfo($oldCatPath));
-			else $catDB->save();
+			else $catDB->save(); */
+			// $catDB->save();
 
-			// *Обновляем карту
-			self::_createBlogMap(1);
+			// *Обновляем категорию в карте
+			$map->setInd($catDB->get(), 'id', $catId);
 
 		} //foreach
+
+
+		// *Обновляем карту
+		// self::_createBlogMap(1);
 
 		return $cats;
 	}
@@ -98,7 +110,7 @@ class BlogKff_adm extends BlogKff
 	 */
 	protected static function c_saveSts($sts)
 	{
-		var_dump($sts);
+		// var_dump($sts);
 		self::$blogDB->replace($sts);
 	}
 
@@ -135,6 +147,8 @@ class BlogKff_adm extends BlogKff
 		cpDir::RemoveDir(self::$storagePath. "/$removeId");
 		$num= array_search($removeId, self::$catsDB->get());
 		self::$catsDB->remove($num);
+
+		self::$catsDB->save();
 
 		// *Обновляем карту
 		self::_createBlogMap(1);

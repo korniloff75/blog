@@ -27,7 +27,7 @@ foreach(self::getBlogMap() as $catInd=>$catData) {
 	</div>
 
 	<div class="uk-display-inline-block uk-width-1-2@s">
-		<input type="hidden" name="ind" value="<?=$catInd . ',' . (is_array($catData['items'])? count($catData['items']): 0)?>">
+		<input type="hidden" name="ind" value="<?=$catInd . ',' . count($catData['items'] ?? [])?>">
 		<input type="hidden" name="catId" value="<?=$catData['id']?>">
 		<input type="hidden" name="catName" value="<?=$catData['name']?>">
 		<input type="text" name="addArticle" class="uk-width-expand" placeholder="Название статьи">

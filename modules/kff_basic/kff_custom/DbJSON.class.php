@@ -225,8 +225,10 @@ class DbJSON implements Iterator, Countable
 	 */
 	public function setInd(array $item, $key, $val, $strict=1)
 	{
-		if(is_numeric($ind= $this->getInd($key,$val,$strict)))
+		if(is_numeric($ind= $this->getInd($key,$val,$strict))){
 			$this->db[$ind]= $item;
+			$this->changed= 1;
+		}
 
 		return $this;
 	}
@@ -258,7 +260,7 @@ class DbJSON implements Iterator, Countable
 
 	public function push($item, $key=null)
 	{
-		if($key){
+		if(!is_null($key)){
 			$this->db[$key]= $item;
 		}
 		else{

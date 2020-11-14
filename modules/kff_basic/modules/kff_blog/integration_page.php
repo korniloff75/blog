@@ -79,7 +79,7 @@ class BlogKff_page extends BlogKff
 					$src= self::fixImgs($artId, $src)
 				)
 			){
-				$o.= "<img src=".$src.">" ;
+				$o.= "<img src=\"".$src."\">" ;
 				// self::$log->add('$img->getAttribute("src")',null,[$img->getAttribute("src")]);
 			}
 
@@ -450,6 +450,7 @@ class BlogKff_page extends BlogKff
 		</div>
 
 		<?php
+		self::$log->add(__METHOD__,null,['not-public'=> filter_var($artDB->{'not-public'},FILTER_VALIDATE_BOOLEAN), $artDB->{'not-public'}]);
 		}
 		?>
 
