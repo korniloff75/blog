@@ -87,7 +87,7 @@ class Sitemap extends BlogKff
 				// *Удаляем черновики
 				if(filter_var($artData['not-public'],FILTER_VALIDATE_BOOLEAN)) continue;
 
-				$artData['ts'] = filemtime(\DR."/$artPath" . self::$l_cfg['ext']);
+				$artData['ts'] = filemtime(\DR."/$artPath" . self::$blogDB->ext);
 				$artData['date'] = date (self::DATE_FORMAT, $artData['ts']);
 
 				$this->sitemap .= "<url>\n"
@@ -99,8 +99,8 @@ class Sitemap extends BlogKff
 
 				// *RSS
 				ob_start();
-				include \DR."/$artPath" . self::$l_cfg['ext'];
-				// $itemContent = ($this->_addToRss(\DR."/$artPath" . self::$l_cfg['ext']));
+				include \DR."/$artPath" . self::$blogDB->ext;
+				// $itemContent = ($this->_addToRss(\DR."/$artPath" . self::$blogDB->ext));
 				$itemContent = $this->_addToRss(ob_get_clean());
 
 				// echo "<hr>". htmlspecialchars($itemContent);
@@ -109,9 +109,9 @@ class Sitemap extends BlogKff
 
 				$this->rss .= "\n".'<item turbo="true">'
 				. "\n<link>" . \BASE_URL . "/$artPath</link>\n"
-				. "<pubDate>". date ('r', $artData['ts']) ."</pubDate>"
-				. "\n<turbo:content>\n<![CDATA[\n"
-				. "<header>\n<h1>".($artData['title'] ?? $artData['name'])."</h1>\n</header>\n"
+				. "<pubDate>". date ('r', $artData['ts']) ."</pubDate>\n"
+				. "<turbo:content>\n<![CDATA[\n"
+				. "<header>\n<h1>".($artData['title'] ?? $artData['name']). "</h1>\n". $this->_constrMenu() ."\n</header>\n"
 				. $itemContent
 				. "\n]]>\n</turbo:content>\n"
 				. "</item>\n";
@@ -175,6 +175,15 @@ class Sitemap extends BlogKff
 
 		return preg_replace('~<body>([\s\S]+)</body>~u', '$1', $xml, 1);
 		// return utf8_decode($xml);
+	}
+
+	/**
+	 * todo Сделать меню для турбо
+	 */
+	protected function _constrMenu()
+	{
+		$m='';
+		return $m;
 	}
 
 } // SiteMap_RSS

@@ -346,7 +346,8 @@ var kff = {
 		return kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/js/uikit.min.js')
 		.then(UIkit=>{
 
-			var $dfr= $(document.createDocumentFragment()),
+			// var $dfr= $(document.createDocumentFragment()),
+			var $dfr= $('<div/>'),
 				out = {$dfr: $dfr};
 
 			$dfr.html(response);
@@ -378,7 +379,9 @@ var kff = {
 				// if($sourceNode[0].classList && $sourceNode[0].classList.length > targetNode.classList.length) targetNode.classList= $sourceNode[0].classList;
 
 				out[i]= $(targetNode).html(newContent).html();
-			});
+			}); //forEach
+
+			window.scroll(0,0);
 
 			// *Подсвечиваем лог
 			sels.includes('.log') && this.highlight('.log');

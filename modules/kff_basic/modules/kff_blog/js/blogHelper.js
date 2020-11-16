@@ -57,10 +57,13 @@ var BH = window.BH || {
 			opts: null,
 		})
 		.then(response=>{
-			// console.log(response);
+			var dfr= document.createElement('html');
+			dfr.innerHTML= response;
+
+			// console.log({dfr}, U.$('body', dfr));
 			UIkit.modal.dialog(
 				'<h3 class="uk-text-center">' + catName + '</h3>'
-				+ response
+				+ U.$('body', dfr).innerHTML
 			);
 
 		});
@@ -78,10 +81,12 @@ var BH = window.BH || {
 			opts: null,
 		})
 		.then(response=>{
+			var dfr= document.createElement('html');
+			dfr.innerHTML= response;
 			// console.log(response);
 			UIkit.modal.dialog(
 				'<h3 class="uk-text-center">#' + hashtag + '</h3>'
-				+ response
+				+ U.$('body', dfr).innerHTML
 			);
 
 		});

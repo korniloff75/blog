@@ -26,7 +26,14 @@ ob_start();
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<title>{{Title}}</title>
 	<meta name="description" content="<?php $Page->get_description()?>">
-	<meta name="keywords" content="<?php $Page->get_keywords()?>">
+	<?php
+	ob_start();
+	$Page->get_keywords();
+	if(!empty($keywords= ob_get_clean())){
+		echo "<meta name=\"keywords\" content=\"$keywords\">";
+	}
+	?>
+
 	<link rel="icon" href="/favicon.ico" type="image/x-icon">
 
 <?php

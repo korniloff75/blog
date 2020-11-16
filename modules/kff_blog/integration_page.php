@@ -24,6 +24,7 @@ class BlogKff_page extends BlogKff
 	public function newsTape($quantity=5)
 	{
 		global $Page;
+		$Page->description= 'Последние публикации. Лента новостей.';
 		$o= "";
 
 
@@ -183,14 +184,28 @@ class BlogKff_page extends BlogKff
 	{
 		global $Page;
 		ob_clean();
+		$catData= self::getCategoryData($catId);
+		?>
+		<!DOCTYPE html>
+		<html lang="ru">
+		<head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<meta name="description" content="Список страниц в категории <?=$catData['name']?>">
+			<title><?=$catData['name']?></title>
+		</head>
+		<body>
+
+		<?php
 		/* echo '<pre>';
 		var_dump(self::getCategoryData($catId)['items'] );
 		echo '</pre>'; */
 		echo '<ul>';
-		foreach(self::getCategoryData($catId)['items'] as $artData){
+		foreach($catData['items'] as $artData){
 			echo "<li><a href=\"/{$Page->id}/$catId/".$artData['id']."\">{$artData['name']}</a></li>";
 		}
-		echo '</ul>';
+
+		echo "\n</ul>\n</body>\n</html>";
 		ob_end_flush();
 		die;
 	}
@@ -203,6 +218,18 @@ class BlogKff_page extends BlogKff
 	{
 		global $Page;
 		ob_clean();
+		?>
+		<!DOCTYPE html>
+		<html lang="ru">
+		<head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<meta name="description" content="Список страниц по хэштэгу #<?=$hashtag?>">
+			<title><?="#$hashtag"?></title>
+		</head>
+		<body>
+
+		<?php
 
 		echo '<ul>';
 
@@ -214,7 +241,7 @@ class BlogKff_page extends BlogKff
 			}
 		}
 
-		echo '</ul>';
+		echo "\n</ul>\n</body>\n</html>";
 		ob_end_flush();
 		die;
 	}
