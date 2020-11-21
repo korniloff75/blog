@@ -598,5 +598,6 @@ $Blog = new BlogKff_page;
 
 $Blog->Render();
 
-return ob_get_clean();
-// ob_end_clean();
+$Page->content= ob_get_clean();
+return;
+// return ob_get_clean();

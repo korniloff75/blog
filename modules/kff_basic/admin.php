@@ -77,7 +77,8 @@ class Basic
 
 		$ini = parse_ini_file($ini_path);
 		// self::$log->add('parsed INI=',null,[$ini]);
-		$ini[$s_name] = addslashes($s_val);
+		// $ini[$s_name] = addslashes($s_val);
+		$ini[$s_name] = $s_val;
 
 		file_put_contents($ini_path, Index_my_addon::arr2ini($ini));
 		?>
@@ -240,7 +241,7 @@ class Basic
 	/**
 	 * Отключение модулей
 	 */
-	static function disableModules($fileInfo, array &$ini)
+	static function disableModules($fileInfo, ?array &$ini)
 	{
 		if(empty($ini))
 			return;

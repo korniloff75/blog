@@ -147,11 +147,11 @@ trait Helpers
 			}
 			else
 			{
-				if(is_string($v))
-					$v= '"' . htmlspecialchars_decode($v, ENT_NOQUOTES) . '"';
+				if(is_string($v) && !is_numeric($v))
+					$v= addslashes(htmlspecialchars_decode($v, ENT_NOQUOTES));
 
 				//*plain key->value case
-				$out .= "$k=$v" . PHP_EOL;
+				$out .= "$k=\"$v\"" . PHP_EOL;
 			}
 		}
 		return $out;

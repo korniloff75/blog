@@ -249,7 +249,12 @@ class Index_my_addon implements BasicClassInterface
 		global $Page;
 		// self::$log->add(__METHOD__,null,['is_admPanel'=>empty($Page)]);
 		// return empty($Page);
-		return explode('/', \REQUEST_URI)[1] === self::ADM_FOLDER_NAME;
+		$folder= explode('/', \REQUEST_URI)[1];
+
+		return
+			file_exists(DR."/$folder/admin.trigger")
+			|| $folder === self::ADM_FOLDER_NAME;
+		// return explode('/', \REQUEST_URI)[1] === self::ADM_FOLDER_NAME;
 	}
 
 
