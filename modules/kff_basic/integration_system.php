@@ -21,7 +21,9 @@ class Index_my_addon implements BasicClassInterface
 		$State, // *DbJSON с состояниями
 		$cfg;
 
-	protected static $log = false;
+	protected static
+		$admFolder,
+		$log = false;
 
 
 	public function __construct()
@@ -243,18 +245,32 @@ class Index_my_addon implements BasicClassInterface
 		return $GLOBALS['status'] === 'admin';
 	}
 
+	// todo
+	protected static function getAdmFolder()
+	{
+		$f= &self::$admFolder;
+		if(!empty($f)) return $f;
+
+		if(file_exists(DR.'/'. self::ADM_FOLDER_NAME)) $f= DR.'/'. self::ADM_FOLDER_NAME;
+		else foreach(new FilesystemIterator(\DR, FilesystemIterator::SKIP_DOTS| FilesystemIterator::KEY_AS_FILENAME| FilesystemIterator::UNIX_PATHS) as $fn=>$fFI){
+			if($fFI->isDir() && file_exists(DR. "/$fn/admin.trigger")){
+				$f= $fn;
+				break;
+			}
+		}
+
+		return $f;
+	}
+
 
 	public static function is_admPanel ()
 	{
 		global $Page;
 		// self::$log->add(__METHOD__,null,['is_admPanel'=>empty($Page)]);
-		// return empty($Page);
+
 		$folder= explode('/', \REQUEST_URI)[1];
 
-		return
-			file_exists(DR."/$folder/admin.trigger")
-			|| $folder === self::ADM_FOLDER_NAME;
-		// return explode('/', \REQUEST_URI)[1] === self::ADM_FOLDER_NAME;
+		return $folder === self::getAdmFolder();
 	}
 
 

@@ -15,17 +15,17 @@ echo $kff::headHtml();
 if(!$kff::is_adm()) die('Access denied!');
 
 
-class Basic
+class Basic extends Index_my_addon
 {
-	static $modDir, $cfgDB, $cfg, $log, $mds_prefix;
+	static $modDir, $mds_prefix;
 
 	static function init()
 	{
 		global $kff, $log;
 
-		self::$log = &$log;
+		// self::$log = &$log;
 		// *Директория модуля от DR
-		self::$modDir = $kff::getPathFromRoot(__DIR__);
+		self::$modDir = self::getPathFromRoot(__DIR__);
 
 		/* self::$cfg= json_decode(
 			@file_get_contents(__DIR__.'/cfg.json'), 1
@@ -33,7 +33,7 @@ class Basic
 			'copyModules'=> 0,
 			'mds_prefix'=> 'kff'
 		]; */
-		self::$cfgDB= &$kff::$cfgDB;
+		// self::$cfgDB= &$kff::$cfgDB;
 		if(is_null(self::$cfgDB->get('mds_prefix'))){
 			self::$cfgDB->set([
 				'mds_prefix'=> 'kff_' // *Префикс для сканируемых модулей
@@ -297,7 +297,7 @@ class Basic
 			echo "<li><h5><label><input name='installed_$name' type=checkbox "
 			. (self::checkModule($name) ? 'checked' : 'data-unchecked')
 			."> $icon</label> $name v.{$info[$name]['version']}</h5>
-			<p><a href='/admin/module.php?module=$name' class='uk-button uk-button-primary uk-button-small'>Настройки</a></p>"
+			<p><a href='/".Index_my_addon::getAdmFolder()."/module.php?module=$name' class='uk-button uk-button-primary uk-button-small'>Настройки</a></p>"
 			. "<div class=comment>".($info[$name]['description'] ?? '')."</div>
 
 			</li>\n";
@@ -312,18 +312,13 @@ class Basic
 	{
 		$mds = self::scanModules();
 		?>
-		<!-- <link rel="stylesheet" href="/<?=self::$modDir?>/admin.style.css"> -->
 
 		<!-- uk-switcher -->
-		<!-- class="menu_page" -->
-		<!-- <div class="uk-flex"> -->
-			<!-- <div style="width: 4em;"></div> -->
 		<ul uk-tab uk-sticky="top: 100; show-on-up:true;">
 			<li><button>Модули</button></li>
 			<li><button>Подмодули</button></li>
 			<li><button>Настройки</button></li>
 		</ul>
-		<!-- </div> -->
 
 		<div class="uk-switcher">
 		<!--  -->

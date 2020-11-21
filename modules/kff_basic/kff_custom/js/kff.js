@@ -216,7 +216,8 @@ var kff = {
 			},
 			safe = { '<': '<', '>': '>', '&': '&' };
 
-		document.querySelector('head').appendChild(styleBox);
+		if(!highlight.inited) document.querySelector('head').appendChild(styleBox);
+		highlight.inited= 1;
 
 		// node.innerHTML = node.textContent
 		node.innerHTML = node.innerHTML
@@ -356,7 +357,6 @@ var kff = {
 				if(stop) return;
 				var targetNode= document.querySelector(i);
 
-				// if(!targetNode) return;
 				if(!targetNode){
 					i= 'main';
 					targetNode= document.querySelector(i);

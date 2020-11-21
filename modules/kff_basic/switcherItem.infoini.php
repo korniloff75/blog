@@ -59,7 +59,7 @@ foreach($mds as &$m)
 		!empty($ini['disable'])?" uk-background-primary uk-background-muted uk-light":''
 		)."' data-ini-path='$ini_path'>{$ini['name']} v.{$ini['version']}".(
 			!empty($ini['disable'])?" -- disabled":''
-		)." <a href='/admin/module.php?module=$name' class='uk-button uk-button-primary uk-button-small' onclick='event.stopPropagation();'>Настройки</a>
+		)." <a href='/".self::getAdmFolder()."/module.php?module=$name' class='uk-button uk-button-primary uk-button-small' onclick='event.stopPropagation();'>Настройки</a>
 		</h4>";
 	echo '<ul class="uk-accordion-content uk-margin-bottom">';
 

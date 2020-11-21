@@ -1,4 +1,6 @@
 <?php
+if(!$kff::is_admPanel()) :
+
 // *Собираем весь буфер в $buf и очищаем его (не закрываем)
 $buf = ob_get_contents();
 ob_clean();
@@ -117,3 +119,5 @@ $log->add("Уровень буфера= ". ob_get_level() . ' -> flush to index'
 
 echo $buf;
 // *-> to flush in index.php
+
+endif;

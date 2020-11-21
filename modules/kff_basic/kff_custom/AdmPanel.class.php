@@ -19,14 +19,14 @@ class AdmPanel extends Index_my_addon
 		// System::addAdminHeadHtml('<link rel="stylesheet" href="/'.self::$dir.'/../admin.style.css">');
 		ob_start();
 		?>
-		<link rel="stylesheet" href="/<?=Index_my_addon::getPathFromRoot(__DIR__)?>/css/admin.style.css">
+		<link rel="stylesheet" href="/<?=self::getPathFromRoot(__DIR__)?>/css/admin.style.css">
 		<script data-method="<?=__METHOD__?>">
 		$(()=>{
 			'use strict';
 			var $sidebar= $("#bar");
 
 			// *Добавляем пункт Basic
-			$sidebar.find('#menu').append('<a href="/admin/module.php?module=kff_basic" class="mdls activ"><button>Basic</button></a>');
+			$sidebar.find('#menu').append('<a href="/<?=self::getAdmFolder()?>/module.php?module=kff_basic" class="mdls activ"><button>Basic</button></a>');
 
 			// *Скрываем меню на маленьких мониторах
 			if($(window).width() < 1100){
@@ -66,7 +66,7 @@ class AdmPanel extends Index_my_addon
 			return;
 
 		// *Адаптивный дизайн
-		$sourcePath = '/admin/include/start.dat';
+		$sourcePath = '/'.self::getAdmFolder().'/include/start.dat';
 		if(!file_exists(DR."$sourcePath.bak"))
 		{
 			$start = file_get_contents(DR.$sourcePath);
