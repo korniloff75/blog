@@ -84,11 +84,10 @@ class Index_my_addon implements BasicClassInterface
 		// *Path to internal modules
 		self::$internalModulesPath = self::getPathFromRoot(__DIR__).'/modules';
 
-		self::headHtml();
-
 		// *Подключаем класс для админки
 		if(self::is_admPanel())
 		{
+			self::headHtml();
 			// *Корректировка системы
 			AdmPanel::fixSystem();
 
@@ -204,8 +203,8 @@ class Index_my_addon implements BasicClassInterface
 		';
 
 		self::$log->add(__METHOD__,null, [
-			'$Page->headhtml'=>$Page->headhtml,
-			'$Page'=>$Page,
+			// '$Page->headhtml'=>$Page->headhtml,
+			// '$Page'=>$Page,
 		]);
 
 		// *Подключаем скрипты в страницы

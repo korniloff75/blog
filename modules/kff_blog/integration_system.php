@@ -431,6 +431,8 @@ class BlogKff extends Index_my_addon
 			$map= self::_createBlogMap();
 		}
 
+		// $map->sortInd('ind');
+
 		// self::$log->add(__METHOD__.': BlogMap',null,[$map->get(), /* $map->get('Novaya') */]);
 
 		return $map;

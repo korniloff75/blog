@@ -233,6 +233,14 @@ class DbJSON implements Iterator, Countable
 		return $this;
 	}
 
+	public function sortInd($ind)
+	{
+		usort($this->db, function(&$a,&$b) use($ind){
+			return $a[$ind] - $b[$ind];
+		});
+		return $this;
+	}
+
 	/**
 	 * *db - [{},{},...]
 	 * *Поиск в базе по значению ключа
