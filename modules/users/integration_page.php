@@ -325,7 +325,7 @@ if(!isset($URI[2])){
 			$return = '<p>На указанный email выслана ссылка по которой нужно перейти</p>
 			<p class="p_link_back"><a href="/'.$URI[1].'">Вернуться назад</a></p>';
 			$txt = "Для подтверждения вашего email перейдите по ссылке ниже\n\n\n";
-			$txt.= "http://".SERVER."/".$URI[1]."/echeck/".$CUser->login."/".$CUser->emailChecksum;
+			$txt.= $Config->protocol."://".SERVER."/".$URI[1]."/echeck/".$CUser->login."/".$CUser->emailChecksum;
 			addmail($CUser->email, "Ссылка для подтверждения email", $txt, $Config->adminEmail);
 			System::notification('На email пользователя '.$CUser->login.' отправлена ссылка для подтверждения email', 'g');
 
@@ -395,7 +395,7 @@ if(!isset($URI[2])){
 			$txt = "На сайте ".SERVER." был сделан запрос на генерацию нового пароля от аккаунта ".$CUser->login.".\n\n\n";
 			$txt.= "Для генерации нового пароля перейдите по ссылке ниже.\n";
 			$txt.= "Если вы не запрашивали генерацию нового пароля, то просто проигнорируйте это письмо. Если подобные письма приходять слишком часто, то обратитесь к администратору сайта.\n\n\n";
-			$txt.= "http://".SERVER."/".$URI[1]."/npcheck/".$CUser->login."/".$CUser->newPasswordChecksum;
+			$txt.= $Config->protocol."://".SERVER."/".$URI[1]."/npcheck/".$CUser->login."/".$CUser->newPasswordChecksum;
 			addmail($CUser->email, "Ссылка для генерации нового пароля", $txt, $Config->adminEmail);
 			System::notification('На email пользователя '.$CUser->login.' отправлена ссылка для генерации нового пароля', 'g');
 
@@ -488,7 +488,7 @@ if(!isset($URI[2])){
 				$return = '<p>Для завершения регистрации подтвердите ваш email, для этого необходимо перейти по ссылке которую мы отправили вам на email.</p>
 				<p><a href="/'.$URI[1].'">Перейти к профилю</a></p>';
 				$txt = "Для подтверждения вашего email перейдите по ссылке ниже\n\n\n";
-				$txt.= "http://".SERVER."/".$URI[1]."/echeck/".$CUser->login."/".$CUser->emailChecksum;
+				$txt.= $Config->protocol."://".SERVER."/".$URI[1]."/echeck/".$CUser->login."/".$CUser->emailChecksum;
 				addmail($CUser->email, "Ссылка для подтверждения email", $txt, $Config->adminEmail);
 				System::notification('На email пользователя '.$CUser->login.' отправлена ссылка для подтверждения email', 'g');
 			}else{
@@ -649,19 +649,27 @@ if(!isset($URI[2])){
 				}
 				
 				if(User::setConfig($CUser->login, $CUser)){
-					$return = '<p>Пользователь успешно заблокирован</p>
-					<p><a href="/'.$URI[1].'/'.$CUser->login.'">Перейти к профилю пользователя</a></p>';
-					System::notification('Заблокирован пользователь '.$CUser->login.', автор блокировки пользователь '.$User->login, 'g');
+					if($_POST['time'] == 'none'){
+						$return = '<p>Ошибка при сохранении настроек</p>
+						<p><a href="/'.$URI[1].'/'.$CUser->login.'">Перейти к профилю пользователя</a></p>';
+						System::notification('Ошибка при блокировке пользователя '.$CUser->login.', не указано время блокировки. Автор блокировки пользователь '.$User->login, 'r');
+					}elseif($_POST['time'] == '0'){
+						$return = '<p>Пользователь успешно разблокирован</p>
+						<p><a href="/'.$URI[1].'/'.$CUser->login.'">Перейти к профилю пользователя</a></p>';
+						System::notification('Разблокирован пользователь '.$CUser->login.', автор разблокировки пользователь '.$User->login, 'g');
+					}else{
+						$return = '<p>Пользователь успешно заблокирован</p>
+						<p><a href="/'.$URI[1].'/'.$CUser->login.'">Перейти к профилю пользователя</a></p>';
+						System::notification('Заблокирован пользователь '.$CUser->login.', автор блокировки пользователь '.$User->login, 'g');
+					}
 				}else{
 					$return = '<p>Ошибка при сохранении настроек</p>';
 					System::notification('Ошибка при сохранении конфигурации пользователя '.$CUser->login.' во время блокировки пользователем '.$User->login, 'r');
 				}
-				
 			}else{
 				$return = '<p>Ошибка при сохранении настроек</p>';
 				System::notification('Ошибка при сохранении конфигурации пользователя '.$CUser->login.' во время блокировки пользователем '.$User->login.'. Провалена проверка безопасности.', 'r');
 			}
-			
 		}else{
 			$page->name = 'Ошибка';
 			$return = '<p>Пользователь не найден</p>';

@@ -18,7 +18,7 @@ if($act=='add'){
 	$sitemapStorage = new EngineStorage('module.sitemap');
 	$sitemapStorage->delete('sitemap');
 	System::notification('Сброс кеша sitemap.xml', 'g');
-	echo'<div class="msg">Кеш карты сайты сброшен</div>';
+	echo'<div class="msg">Кеш карты сайта сброшен</div>';
 
 ?>
 <script type="text/javascript">

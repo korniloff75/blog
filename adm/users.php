@@ -19,6 +19,13 @@ return '<div class="a">Подтвердите удаление IP <i>' + ip + '<
 	'<button type="button" onclick="closewindow(\'window\');">Отмена</button>'+
 	'</div>';
 }
+function adell(login){
+return '<div class="a">Подтвердите удаление аватара пользователя <i>' + login + '</i></div>' +
+	'<div class="b">' +
+	'<button type="button" onClick="window.location.href = \'users.php?act=adell&amp;login='+login+'\';">Удалить</button> '+
+	'<button type="button" onclick="closewindow(\'window\');">Отмена</button>'+
+	'</div>';
+}
 </script>
 <?php
 $menu_page = '<div class="menu_page">
@@ -184,7 +191,7 @@ $menu_page = '<div class="menu_page">
 		</tr>
 
 		<tr>
-			<td>Привила при блокировки IP:</td>
+			<td>Правила при блокировки IP:</td>
 			<td>
 				<select name="ipBanRule">
 					<option value="0" '.($Config->ipBanRule == '0'?'selected':'').'>Запрет активности, сайт доступен только для просмотра
@@ -268,9 +275,11 @@ setTimeout('window.location.href = \'users.php?act=cfg\';', 3000);
 		if(($CUser = User::getConfig($_GET['login'])) != false){
 			if(file_exists(DR.'/'.$Config->userAvatarDir.'/'.$CUser->login.'.jpg')){
 				unlink(DR.'/'.$Config->userAvatarDir.'/'.$CUser->login.'.jpg');
+				echo '<div class="msg">Аватар успешно удален</div>';
+				System::notification('Удален аватар пользователя '.$CUser->login.'', 'g');
+			}else{
+				echo '<div class="msg">Аватар не найден или был удален ранее</div>';
 			}
-			echo '<div class="msg">Аватар успешно удален</div>';
-			System::notification('Удален аватар пользователя '.$CUser->login.'', 'g');
 		}else{
 			echo'<div class="msg">Пользователь не найден</div>';
 		}
@@ -303,7 +312,7 @@ setTimeout('window.location.href = \'users.php?act=user&login=<?php echo $CUser-
 					<p>Последняя активность: '.human_time(time() - $CUser->timeActive).' назад ('.date("d.m.Y H:i", $CUser->timeActive).')</p>
 					<p>Последний используемый IP: '.$CUser->ip.' (<a class="" href="users.php?act=ip&amp;ip='.$CUser->ip.'">Заблокировать этот ip адрес</a>)</p>
 					<p>Последний используемый UA: '.$CUser->ua.'</p>
-					<p>Электронная Почта: '.$CUser->email.' ('.($CUser->emailChecked?'<span class="g">Подтверждено</span>':'<span class="r">Не подтверждено</span>').')</p>
+					<p>Электронная Почта: '.$CUser->email.' ('.($CUser->emailChecked?'<span class="g">Подтверждено</span>':'<span class="r">Не подтверждено</span> &gt; <a class="" href="users.php?act=echeck&amp;login='.$CUser->login.'">Отправить повторный запрос на подтверждение</a>').')</p>
 					<p>Оставлено сообщений: '.$CUser->numPost.'</p>
 					<p>Преференции: ';
 					if($CUser->preferences == 0) echo'Нет';
@@ -321,16 +330,54 @@ setTimeout('window.location.href = \'users.php?act=user&login=<?php echo $CUser-
 				</div>
 				<p><a class="" href="users.php?act=edit&amp;login='.$CUser->login.'&amp;nom_page='.(isset($_GET['nom_page'])?htmlspecialchars($_GET['nom_page']):1).'">Редактировать профиль</a></p>
 				<p><a class="" href="users.php?act=ban&amp;login='.$CUser->login.'&amp;nom_page='.(isset($_GET['nom_page'])?htmlspecialchars($_GET['nom_page']):1).'">Управление блокировкой</a></p>
-				<p><a class="" href="users.php?act=adell&amp;login='.$CUser->login.'&amp;nom_page='.(isset($_GET['nom_page'])?htmlspecialchars($_GET['nom_page']):1).'">Удалить аватар пользователя</a></p>
+				<p><a class="" href="javascript:void(0);" onclick="openwindow(\'window\', 650, \'auto\', adell(\''.$CUser->login.'\'));">Удалить аватар пользователя</a></p>
 				
 			</div>';
-			
 			
 		}else{
 			echo'<div class="msg">Пользователь не найден</div>';
 		}
 	}
 	
+
+	if($act=='echeck')
+	{
+		if(($CUser = User::getConfig($_GET['login'])) != false){
+			
+			echo'<div class="header">
+				<h1>Управление пользователями</h1>
+			</div>
+			
+			<div class="menu_page"><a href="users.php?act=user&amp;login='.$CUser->login.'">&#8592; Вернуться назад</a></div>
+			
+			<div class="content">
+			<p>Подтвердите отправку запроса на подтверждение почтового адреса пользователя '.$CUser->login.'.</p>
+			<p><a class="" href="users.php?act=echeck2&amp;login='.$CUser->login.'">Отправить запрос на подтверждение</a></p>
+			</div>';
+			
+		}else{
+			echo'<div class="msg">Пользователь не найден</div>';
+		}
+	}
+
+	if($act=='echeck2')
+	{
+		if(($CUser = User::getConfig($_GET['login'])) != false){
+			$txt = "Для подтверждения вашего email перейдите по ссылке ниже\n\n\n";
+			$txt.= $Config->protocol."://".SERVER."/user/echeck/".$CUser->login."/".$CUser->emailChecksum;
+			addmail($CUser->email, "Ссылка для подтверждения email", $txt, $Config->adminEmail);
+			System::notification('На email пользователя '.$CUser->login.' отправлена ссылка для подтверждения email', 'g');
+			echo'<div class="msg">Запрос успешно отправлен</div>';
+			
+		}else{
+			echo'<div class="msg">Пользователь не найден</div>';
+		}
+		?>
+<script type="text/javascript">
+setTimeout('window.location.href = \'users.php?act=user&login=<?php echo $CUser->login;?>\';', 3000);
+</script>
+<?php	
+	}
 	
 	
 	if($act=='edit')

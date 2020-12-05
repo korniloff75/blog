@@ -16,7 +16,7 @@ if($status == 'admin'){
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=1300">
 <title>Панель управления</title>
 <link rel="StyleSheet" type="text/css" href="include/style.min.css?<?php echo $version;?>">
 <?php
@@ -132,12 +132,12 @@ setTimeout(function(){
 	<div class="logo" id="logo"><a href="index.php?">MYENGINE</a></div>
 	<div class="version" id="version"><?php echo 'Версия '.$version;?></div>
 	<div class="menu" id="menu">
-		<a href="index.php?" class="home <?php echo $activ=='index' || $activ=='notifications'?'activ':'';?>">Главная</a>
+		<a href="index.php?" class="home <?php echo $activ=='index' || $activ=='notifications' || $activ=='license' || $activ=='module'?'activ':'';?>">Главная</a>
 		<a href="users.php?" class="users <?php echo $activ=='users'?'activ':'';?>">Пользователи</a>
 		<a href="pages.php?" class="pages <?php echo $activ=='pages' || $activ=='editor'?'activ':'';?>">Страницы</a>
 		<a href="files.php?" class="files <?php echo $activ=='files'?'activ':'';?>">Файлы</a>
 		<a href="bloks.php?" class="bloks <?php echo $activ=='bloks'?'activ':'';?>">Меню</a>
-		<a href="modules.php?" class="mdls <?php echo $activ=='module' || $activ=='modules'?'activ':'';?>">Расширения</a>
+		<a href="modules.php?" class="mdls <?php echo $activ=='modules'?'activ':'';?>">Расширения</a>
 		<a href="setting.php?" class="setting <?php echo $activ=='setting'?'activ':'';?>">Настройки</a>
 		<a href="/" class="site" target="_blank">Перейти на сайт</a>
 	</div>

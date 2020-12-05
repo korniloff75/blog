@@ -6,6 +6,7 @@
 .window .a{
 	min-height: 40px;
 	text-align: left;
+	word-wrap: break-word;
 	padding: 30px;
 }
 .window .b{

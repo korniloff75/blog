@@ -92,7 +92,7 @@ if(isset($URI[2])){
 <div class="avatar"><a href="/user/'.$row['login'].'"><img src="'.$avatar_file.'" alt="avatar" id="avatar"></a></div>
 <div class="head">
 <a href="/user/'.$row['login'].'" class="user">'.$row['login'].'</a>
-<spam class="time">'.date("d.m.y H:i", $row['time']).'</spam> 
+<span class="time">'.date("d.m.y H:i", $row['time']).'</span> 
 <a href="javascript:void(0);" onClick="Chat.toUser(\''.$row['login'].'\')" class="re">Ответить</a> 
 '.($User->preferences > 0 || $status == 'admin' ? '<input type="checkbox" onClick="Chat.dellCheck();" name="checkedpost[]" value="'.$row['id'].'">':'').'
 </div><div class="msg">'.ptext($row['message']).'</div></div>';
@@ -120,7 +120,7 @@ if(isset($URI[2])){
 						}
 					}
 					
-					if(mb_strlen($message, 'utf-8') <= 5000 && mb_strlen($message, 'utf-8') > 0){
+					if(strlen($message) <= 10000 && strlen($message) > 0){
 						
 						$idMessage = $ChatStorage->iss('idMessage')?$ChatStorage->get('idMessage'):0;
 						++$idMessage;

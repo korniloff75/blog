@@ -37,7 +37,6 @@ return '<div class="a">Подтвердите удаление расширен�
 			
 		</div>
 		<div class="content">
-		
 		<table class="tables">
 		<tr>
 			<td class="tables_head" style="" colspan="2">Название</td>

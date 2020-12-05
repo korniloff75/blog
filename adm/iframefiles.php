@@ -7,7 +7,7 @@ header('X-XSS-Protection: 0');
 
 function is_img($fname){
 	$f = explode(".",$fname);
-	$f = mb_strtolower($f[count($f) - 1]);
+	$f = strtolower($f[count($f) - 1]);
 	return 
 	$f == 'gif'||
 	$f == 'jpg'||

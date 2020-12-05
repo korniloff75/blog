@@ -40,8 +40,8 @@ var info = '<div class="a" style="font: 12px Courier New, monospace;">' +
 <div class="menu_page">
 		<a class="link" href="//my-engine.ru/download" target="_blank">Проверить обновления</a>
 		<a class="link" href="javascript:void(0);" onclick="openwindow('window', 650, 'auto', info);">Информация о системе</a>
-		<a class="link" href="//my-engine.ru/license" target="_blank">Соглашение с пользователем</a>
-		<a class="link" href="//my-engine.ru/" target="_blank">Сайт разработчиков</a>
+		<a class="link" href="license.php">Соглашение с пользователем</a>
+		<a class="link" href="notifications.php">Уведомления системы</a>
 
 </div>
 <?php
@@ -57,7 +57,7 @@ var info = '<div class="a" style="font: 12px Courier New, monospace;">' +
 		echo'<div class="error">Необходимо изменить соль шифрования, перейдите в <a href="setting.php">настройки</a> и введите любые другие символы.</div>';
 	}
 	if (file_exists('../admin/index.php')){
-		echo'<div class="error" style="color: #666;">Для повышения безопасности сайта, вы можете переименовать папку панели администратора</div>';
+		echo'<div class="notification">Для повышения безопасности сайта, вы можете переименовать папку панели администратора</div>';
 	}
 	?>
 	

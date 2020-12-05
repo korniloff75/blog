@@ -3,8 +3,8 @@
 
 /* Цвет фона логотипа и заголовка 01579B */
 @bgheader: #eee;
-@bgheader1: #fafafa;
-@bgheader2: #eee;
+@bgheader1: #4671D5;
+@bgheader2: #3258b1;
 
 /* Ширина бокового меню */
 @w1bgmenu: 245px; // Большой экран
@@ -20,7 +20,7 @@
 @bgbox: #fff;
 
 /* Цвет логотипа */
-@logocolor: #ccc;
+@logocolor: #ccc ;
 
 /* Цвет фона логотипа */
 @bglogocolor: #000;
@@ -29,7 +29,7 @@
 @menucolor: #000;
 
 /* Цвет заголовка */
-@headercolor: #0288d1; // 0288d1
+@headercolor: #0288d1 ; // 0288d1
 
 /* Цвет основного текста */
 @textcolor: #333;
@@ -39,7 +39,7 @@
 @greencolor: green;
 
 /* Цвет рамок основных элементов */
-@bordercolol: darken(@bgbox, 13%);
+@bordercolol: #ddd;
 
 /* Цвет кнопок */
 @buttoncolor: #0288d1;//0288d1
@@ -62,14 +62,15 @@ body{
 }
 h1, h2, h3, h4{
 	font-weight: bold;
-	color: #111;
+	color: #333;//
 	padding: 10px 0;
 }
-h1{font-size: 28px;}
+h1{font-size: 23px; font-weight: normal;}
 h2{font-size: 24px;}
 h3{font-size: 18px;}
 h4{font-size: 14px;}
-p{margin: 0 0 10px 0;}
+p, li{margin: 0 0 10px 0;}
+li{margin-left: 40px;}
 
 a{
 	color: #43759e;//01579b
@@ -125,14 +126,13 @@ input[type="submit"], .button, button{
 	width: 45px;
 	height: 40px;
 	background: #0288d1 url(exit.svg) 50% 50% no-repeat;
-	border-top: 0px solid @bgmenu;
+	border-top: 0px solid #FF0000;
 	border-radius: 0px 0px 5px 5px;
 	box-shadow: 0 0 1px @bgmenu;
 	transition: all 0.2s ease 0s;
 }
 .exit:hover{
-	border-top: 5px solid lighten(#0288d1, 5%);
-	background-color: darken(#0288d1, 5%); 
+	border-top: 5px solid #FF0000;
 	color: #fff;
 	text-decoration: none;
 }
@@ -155,14 +155,14 @@ input[type="submit"], .button, button{
 	.logo{
 		z-index: 3;
 		// background-color: darken(@bgmenu, 5%);
-		// border-bottom: 1px solid lighten(@bgmenu, 3%);
+		border-bottom: 1px solid #e1e1e1;
 		text-align: center;
 		padding: 20px 0;
 		a{
 			font: bold 31px Arial, sans-serif;
 			color: @logocolor; // 
 			text-transform: uppercase;
-			text-shadow: 1px 1px 1px #fff;
+			text-shadow: 1px 1px 1px #fff;// 0px 3px 5px #ccc
 		}
 		a:hover{
 			color: @logocolor;
@@ -172,22 +172,23 @@ input[type="submit"], .button, button{
 	
 	.version{
 		// background-color: darken(@bgmenu, 5%);
-		border-top: 1px solid darken(@bgmenu, 5%);
+		// border-bottom: 1px solid #eee;
 		text-align: center;
-		// color: lighten(@bgmenu, 15%);
+		color: #000;
 		padding: 13px;
 	}
 
 	.menu{
-		/* padding-top: 20px; */
+		// padding: 0px 15px;
 		
 		a{
 			display: block;
 			background: url(arrow.svg) 25px 50% no-repeat;
-			border-left: 5px solid @bgmenu;
+			border-left: 5px solid #eee;
+			
 			// font-size: 15px;
 			color: @menucolor;
-			padding: 13px 10px 13px 70px;
+			padding: 14px 10px 14px 70px;
 			transition: background-color 0.1s ease 0s;
 			opacity: 0.6; 
 		}
@@ -223,17 +224,23 @@ input[type="submit"], .button, button{
 		a.activ, a:hover{
 			text-decoration: none;
 			opacity: 1;
+
 		}
 		a.activ{
-			background-color: darken(@bgmenu, 10%);
+			
+			background-color: #ccc;
 			border-left: 5px solid #0288d1;
+			// border-radius: 3px;
+			// box-shadow: 0 5px 10px lighten(#1572E8 , 25%);
 			color: #333;
+			// filter: invert(100%);
+			// font-weight: bold;
 			text-decoration: none;
 			opacity: 1;
 		}
 		a:hover{
 			opacity: 1;
-			color: #333;
+			// color: #fff;
 		}
 		
 	}
@@ -260,13 +267,14 @@ input[type="submit"], .button, button{
 .header{
 	background-color: @bgheader;
 	// background: @bgheader2; /* Для старых браузров */
-	// background: linear-gradient(to bottom, @bgheader1, @bgheader2);
+	// background: linear-gradient(to right, @bgheader1, @bgheader2);
 	border-bottom: 1px solid #ddd;
 	box-shadow: 0 0 10px #ddd;
 	padding-top: 5px;
 	h1{
-		font: normal 23px Arial, sans-serif;
+		// font: 23px Arial, sans-serif;
 		color: @headercolor;
+		// font-weight: bold;
 		// text-shadow: 0 1px 0 #fff;
 		text-shadow: 1px 1px 1px #fff;
 		margin: 0;
@@ -276,7 +284,7 @@ input[type="submit"], .button, button{
 
 
 .menu_page{
-	box-shadow: 0 5px 10px -3px #ddd ;
+	box-shadow: 0 5px 10px -3px #ddd;
 	// border-top: 1px solid #fff;
 	border-bottom: 1px solid #ddd;
 	background-color: @bgmenupage;
@@ -296,15 +304,21 @@ input[type="submit"], .button, button{
 	padding: 20px 40px 40px 40px;
 	overflow: hidden;
 }
-.error{
-	border-bottom: 1px solid @bordercolol;
+.notification{
+	border-bottom: 1px solid #ddd;
 	text-align: center;
-	color: @redcolor;
+	color: #666;
 	padding: 13px;
+	
+	
+}
+.error{
+	.notification;
+	color: @redcolor;
 	a{
 		text-decoration: underline;
 		color: @redcolor;
-	}	
+	}
 }
 
 
@@ -407,8 +421,8 @@ input[type="submit"], .button, button{
 	border-spacing: 0;
 	margin: 10px 0;
 	.tables_head{
-		/* background-color: #f1f1f1; 
-		background: linear-gradient(to bottom, #f6f6f6, #eee); */
+		// background-color: #f1f1f1; 
+		// background: linear-gradient(to bottom, #f6f6f6, #eee);
 		font-weight: bold;
 		color: #222;
 	}
@@ -423,7 +437,7 @@ input[type="submit"], .button, button{
 	
 
 	tr:hover{
-		background-color: darken(@bgbox, 5%);
+		background-color: #eee;
 	}
 	td.img{
 		width: 12px;
@@ -443,6 +457,7 @@ input[type="submit"], .button, button{
 
 
 .listrez{
+	box-sizing: border-box;
 	overflow: hidden;
 	width: 100%;
 	background-color: @bgbox;
@@ -452,11 +467,12 @@ input[type="submit"], .button, button{
 	border-radius: 2px;
 	box-shadow: 0 0 2px #ddd;
 	margin-top: 10px;
+	// padding: 0px 20px;
 	.item{
 		position: relative;
 		border-bottom: 1px solid @bordercolol;
 		text-align: left;
-		padding: 14px 18px;
+		padding: 15px 20px;
 		.name_page{
 			font-size: 15px;
 			padding-bottom: 4px;

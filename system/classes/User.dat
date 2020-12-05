@@ -56,7 +56,7 @@ class User
 	public static function registration($login, $password, $salt, $email)
 	{
 		if($login != '' && $password != '' && $email != ''){
-			if(mb_strlen($login, 'utf-8') < 36 && mb_strlen($email, 'utf-8') < 255){
+			if(strlen($login) < 36 && strlen($email) < 255){
 				if(System::validPath($login)){
 					if(User::exists($login, true)){
 						$return = 1;

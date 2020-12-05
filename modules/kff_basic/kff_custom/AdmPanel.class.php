@@ -8,12 +8,7 @@ if(realpath('.') === __DIR__) die('Access denied to file '.__FILE__);
 
 class AdmPanel extends Index_my_addon
 {
-	/* static
-		$cfg,
-		$cfgDB; */
-	/**
-	 *
-	 */
+
 	public static function addResponsive ()
 	{
 		// System::addAdminHeadHtml('<link rel="stylesheet" href="/'.self::$dir.'/../admin.style.css">');

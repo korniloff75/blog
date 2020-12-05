@@ -1,0 +1,53 @@
+#requestReport{
+color: #fff;
+text-align: center;
+padding: 5px;
+}
+#requestReport.green{
+border: 1px solid #7CB342;
+background-color: #9CCC65;
+}
+#requestReport.red{
+border: 1px solid #E53935;
+background-color: #EF5350;
+}
+#requestReport.grey{
+border: 1px solid #9E9E9E;
+background-color: #BDBDBD;
+}
+#requestReport a{
+color: #fff; text-decoration: underline;
+}
+
+#loginReport, #textReport{
+color: #E53935;
+}
+
+#commentDellButton{
+z-index: 9999;
+position: fixed;
+left: 50%;
+bottom: 0;
+width: 250px;
+margin-left: -125px;
+margin-bottom: 10px;
+padding: 10px;
+border: 0;
+border-radius: 0;
+background-color: #000;
+font-size: 16px;
+color: #fff;
+text-align: center;
+text-transform: none;
+cursor: pointer;
+}
+@media screen and (max-width: 600px) {
+#commentDellButton{
+position: fixed;
+left: 0;
+bottom: 0;
+width: 100%;
+margin: 0;
+border: 0;
+}
+}

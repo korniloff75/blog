@@ -145,7 +145,7 @@ if($act=='turbo_cfg'){
     
     <tr>
         <td>&nbsp;</td>
-        <td><button type="button" onClick="submit();">Сохранить</button> &nbsp; <a href="module.php?module='.$MODULE.'&act=info">Вернуться назад</a></td>
+        <td><button type="button" onClick="submit();">Сохранить</button> &nbsp; <a href="module.php?module='.$MODULE.'">Вернуться назад</a></td>
     </tr>
     </table>
     </form>

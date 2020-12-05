@@ -1,4 +1,4 @@
-//version 1.2
+//version 1.3
 function openwindow(id, w, h, html){
 	if(document.getElementById('bgwindow_'+id) == null){
 		var bgobj = document.createElement('div');

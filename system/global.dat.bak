@@ -1,11 +1,19 @@
 <?php
 // Минимальная версия тестов PHP 5.2
-// Максимальная версия тестов PHP 7.1
+// Максимальная версия тестов PHP 7.1 
 // Версия скрипта
-$version = '5.1.24';
+$version = '5.1.25';
 
 
-// Загрузка PHP функций
+
+
+// Выключение протоколирования ошибок для включения 0 заменить на "E_ALL ^ E_NOTICE" без кавычек
+// error_reporting(0);
+
+
+
+
+// Загрузка PHP функций 
 require 'function.dat';
 
 
@@ -13,7 +21,7 @@ require 'function.dat';
 
 // Подготовленные константы
 define('REQUEST_URI', htmlspecialchars($_SERVER['REQUEST_URI']));
-define('REFERER',     !empty($_SERVER['HTTP_REFERER'])?htmlspecialchars($_SERVER['HTTP_REFERER']):null);
+define('REFERER',     htmlspecialchars($_SERVER['HTTP_REFERER']));
 define('HOST',        htmlspecialchars($_SERVER['HTTP_HOST']));
 define('UA',          htmlspecialchars($_SERVER['HTTP_USER_AGENT']));
 define('IP',          $_SERVER['REMOTE_ADDR']);
@@ -28,7 +36,7 @@ define('VERSION',     $version);
 
 // Автозагрузка классов
 function autoloader($class) {
-		require DR.'/system/classes/' . $class . '.dat';
+    require DR.'/system/classes/' . $class . '.dat';
 }
 spl_autoload_register('autoloader');
 
@@ -36,8 +44,7 @@ spl_autoload_register('autoloader');
 
 
 // Экранируем при необходимости строки в $_GET, $_POST, $_COOKIE, $_FILES
-// ! Deprecated
-/* if(get_magic_quotes_gpc()){
+if(get_magic_quotes_gpc()){
 	function fix_magic_quotes_gpc($arr) {
 		foreach($arr as $k=>$v){
 			if (is_array($v)){
@@ -54,9 +61,9 @@ spl_autoload_register('autoloader');
 	if(!empty($_FILES)){
 		foreach ($_FILES as $k => $v){
 			$_FILES[$k]['name'] = stripslashes((string) $v['name']);
-		}
+		} 
 	}
-} */
+}
 
 
 
@@ -76,8 +83,7 @@ if($Config->timeZone != 'default'){
 
 
 // act get/post параметр
-$act= $_REQUEST['act'] ?? 'index';
-// if(isset($_REQUEST['act'])){$act = $_GET['act'];}elseif(isset($_POST['act'])){$act = $_POST['act'];}else{$act='index';}
+if(isset($_GET['act'])){$act = $_GET['act'];}elseif(isset($_POST['act'])){$act = $_POST['act'];}else{$act='index';}
 
 
 
@@ -92,7 +98,7 @@ $ADMIN_END_HTML = "\n".'<!-- Подключаемые расширения -->'.
 // Авторизация администратора
 if(isset($_COOKIE['password'])){
 	$password = $_COOKIE['password'];
-
+	
 	if(cipherPass($password, $Config->salt) == $Config->adminPassword){
 		$status = 'admin';
 		setcookie('password', $password, time() + $Config->timeAuth, '/');
@@ -109,7 +115,7 @@ if(isset($_COOKIE['password'])){
 //  Если забанен IP пользователя
 if($Config->ipBanRule && $status != 'admin'){
 	if(in_array(IP, $Config->ipBan)){
-		header('Content-type: text/html; charset=utf-8');
+		header('Content-type: text/html; charset=utf-8'); 
 		require DR.'/pages/ipban.html'; ob_end_flush(); exit();
 	}
 }
@@ -117,19 +123,19 @@ if($Config->ipBanRule && $status != 'admin'){
 if(isset($_COOKIE['user_login']) && isset($_COOKIE['user_password'])){
 	$User = new User($_COOKIE['user_login'], $_COOKIE['user_password']);
 	if($User->authorized){
-		// Продлили авторизацию
+		// Продлили авторизацию 
 		setcookie('user_login',$_COOKIE['user_login'],time()+32000000,'/');
 		setcookie('user_password',$_COOKIE['user_password'],time()+32000000,'/');
-
+		
 		// Если забанен пользователь
 		if ($User->timeBan > time() && $status != 'admin'){
-			header('Content-type: text/html; charset=utf-8');
+			header('Content-type: text/html; charset=utf-8'); 
 			require DR.'/pages/ban.html'; ob_end_flush(); exit();
 		}
 
 		// Если забанен IP пользователя
 		if(in_array(IP, $Config->ipBan) && $status != 'admin'){
-			header('Content-type: text/html; charset=utf-8');
+			header('Content-type: text/html; charset=utf-8'); 
 			require DR.'/pages/ipban.html'; ob_end_flush(); exit();
 		}
 

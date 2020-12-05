@@ -429,9 +429,11 @@ class BlogKff_page extends BlogKff
 	{
 		$artDB= self::getArtDB($artPathname);
 
+		$Page->headhtml.= '<script src="/' .self::$modDir. '/js/blogHelper.js"></script>';
+
 		self::$log->add(__METHOD__,null,['$artDB'=>$artDB]);
 
-		echo '<script src="/' .self::$modDir. '/js/blogHelper.js"></script>';
+		// echo '<script src="/' .self::$modDir. '/js/blogHelper.js"></script>';
 
 		// *На стартовой - новостная лента
 		if(!$artDB->count()){

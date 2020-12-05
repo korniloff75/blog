@@ -35,7 +35,7 @@ if($status=='admin'){
 		<input type="submit" name="" value="Поиск"> 
 		</form>
 		</div>
-
+		<h3>Список всех страниц</h3>
 		<div class="listrez">
 		';
 
@@ -134,98 +134,109 @@ if($status=='admin'){
 	
 
 	if($act=='search'){
-		function mb_ucfirst($text) {
-			return mb_strtoupper(mb_substr($text, 0, 1, 'UTF-8'), 'UTF-8') . mb_substr($text, 1, null, 'UTF-8');
-		}
-		$q = isset($_POST['q'])?htmlspecialchars(mb_ucfirst(trim($_POST['q']))):'';
-		
-		echo'<div class="header">
-			<h1>Поиск по страницам</h1>
-		</div>
-		<div class="menu_page"><a href="pages.php">&#8592; Вернуться назад</a></div>
-		
-		<div class="content">
-			<div class="row">
-			<form name="form_name" action="pages.php?act=search" method="post">
-			<input type="text"style="width: 250px;" name="q" value="'.$q.'" placeholder="Введите запрос" autofocus>
-			<input type="submit" name="" value="Поиск">
-			</form>
+		if(!function_exists('mb_stripos')){
+			echo'<div class="header">
+				<h1>Поиск по страницам</h1>
 			</div>
-			<p>Результаты поиска:</p>
-			';
+			<div class="menu_page"><a href="pages.php">&#8592; Вернуться назад</a></div>
+			<div class="content">
+				<p>На сервере не установлено php расширение "mbstring". Это расширение позволяет производить поиск по русскоязычным символам. Обратитесь к администратору вашего сервера для установки данного расширения. 
+				Администраторы могут воспользоваться <a href="https://www.php.net/manual/ru/book.mbstring.php" target="_blank">документацией</a>.</p>
+			</div>';
+		}else{
+			function mb_ucfirst($text) {
+				return mb_strtoupper(mb_substr($text, 0, 1, 'UTF-8'), 'UTF-8') . mb_substr($text, 1, mb_strlen($text, 'UTF-8'), 'UTF-8');
+			}
+			$q = isset($_POST['q'])?htmlspecialchars(mb_ucfirst(trim($_POST['q']))):'';
 			
-			if($q != ''){
+			echo'<div class="header">
+				<h1>Поиск по страницам</h1>
+			</div>
+			<div class="menu_page"><a href="pages.php">&#8592; Вернуться назад</a></div>
+			
+			<div class="content">
+				<div class="row">
+				<form name="form_name" action="pages.php?act=search" method="post">
+				<input type="text"style="width: 250px;" name="q" value="'.$q.'" placeholder="Введите запрос" autofocus>
+				<input type="submit" name="" value="Поиск">
+				</form>
+				</div>
+				<h3>Результаты поиска:</h3>
+				';
 				
-				$pages = System::listPages();
-				$pages = array_reverse($pages);//перевернули масив
-				
-				$pSearchName = array(); // Пустой массив результатов
-				$pSearchTitle = array(); // Пустой массив результатов
-				$pSearchKeywords = array(); // Пустой массив результатов
-				$pSearchDescription = array(); // Пустой массив результатов
-				$pSearchID = array(); // Пустой массив результатов
-				
-				foreach($pages as $value){
-					if(Page::exists($value)){
-						$Page = new Page($value);
-						if(mb_stripos($Page->name, $q, 0, 'UTF-8') !== false){
-							$pSearchName[] = array('name' => $Page->name, 'time' => $Page->time, 'show' => $Page->show, 'id' => $value);
-						}elseif(mb_stripos($Page->title, $q, 0, 'UTF-8') !== false){
-							$pSearchTitle[] = array('name' => $Page->name, 'time' => $Page->time, 'show' => $Page->show, 'id' => $value);
-						}elseif(mb_stripos($Page->keywords, $q, 0, 'UTF-8') !== false){
-							$pSearchKeywords[] = array('name' => $Page->name, 'time' => $Page->time, 'show' => $Page->show, 'id' => $value);
-						}elseif(mb_stripos($Page->description, $q, 0, 'UTF-8') !== false){
-							$pSearchDescription[] = array('name' => $Page->name, 'time' => $Page->time, 'show' => $Page->show, 'id' => $value);
-						}elseif(mb_stripos($value, $q, 0, 'UTF-8') !== false){
-							$pSearchID[] = array('name' => $Page->name, 'time' => $Page->time, 'show' => $Page->show, 'id' => $value);
+				if($q != ''){
+					
+					$pages = System::listPages();
+					$pages = array_reverse($pages);//перевернули масив
+					
+					$pSearchName = array(); // Пустой массив результатов
+					$pSearchTitle = array(); // Пустой массив результатов
+					$pSearchKeywords = array(); // Пустой массив результатов
+					$pSearchDescription = array(); // Пустой массив результатов
+					$pSearchID = array(); // Пустой массив результатов
+					
+					foreach($pages as $value){
+						if(Page::exists($value)){
+							$Page = new Page($value);
+							if(mb_stripos($Page->name, $q, 0, 'UTF-8') !== false){
+								$pSearchName[] = array('name' => $Page->name, 'time' => $Page->time, 'show' => $Page->show, 'id' => $value);
+							}elseif(mb_stripos($Page->title, $q, 0, 'UTF-8') !== false){
+								$pSearchTitle[] = array('name' => $Page->name, 'time' => $Page->time, 'show' => $Page->show, 'id' => $value);
+							}elseif(mb_stripos($Page->keywords, $q, 0, 'UTF-8') !== false){
+								$pSearchKeywords[] = array('name' => $Page->name, 'time' => $Page->time, 'show' => $Page->show, 'id' => $value);
+							}elseif(mb_stripos($Page->description, $q, 0, 'UTF-8') !== false){
+								$pSearchDescription[] = array('name' => $Page->name, 'time' => $Page->time, 'show' => $Page->show, 'id' => $value);
+							}elseif(mb_stripos($value, $q, 0, 'UTF-8') !== false){
+								$pSearchID[] = array('name' => $Page->name, 'time' => $Page->time, 'show' => $Page->show, 'id' => $value);
+							}
+
+						}
+					}
+
+					
+					$pSearchResult = array_merge($pSearchName, $pSearchTitle, $pSearchKeywords, $pSearchDescription, $pSearchID);
+					echo'<div class="listrez">';
+					$i = 0; // Счетчик показов
+					foreach($pSearchResult as $value){
+						//var_dump($key );
+
+						if($value['show'] == 1){
+							$tmp_34 = '<span class="g">Доступно всем</span>';
+						}elseif($value['show'] == 2){
+							$tmp_34 = '<span class="r">Доступно пользователям с преференциями</span>';
+						}elseif($value['show'] == 0){
+							$tmp_34 = '<span class="r">Доступно только администратору</span>';
+						}else{
+							$tmp_34 = '<span class="r">Error</span>';
 						}
 
+						$tmp_url = $value['id']!=$Config->indexPage?$value['id']:'';
+
+						
+						echo'<div class="item item_page">
+						<div class="right_menu">
+						<a href="editor.php?page='.$value['id'].'&amp;dub=1">Создать дубликат</a>
+						<a href="editor.php?page='.$value['id'].'">Редактировать</a>
+						<a href="javascript:void(0);" onclick="openwindow(\'window\', 650, \'auto\', dell(\''.$value['id'].'\', \''.$value['name'].'\', \''.SERVER.'/'.$tmp_url.'\'));">Удалить</a>
+						</div>
+						<div class="name_page"><img src="include/page.svg" alt=""> <a href="editor.php?page='.$value['id'].'">'.preg_replace('#'.$q.'#ius', '<span class="r">'.$q.'</span>', $value['name']).'</a></div>
+						<div>URL: <a href="//'.SERVER.'/'.$tmp_url.'" target="_blank">'.SERVER.'/'.$tmp_url.'</a> ('.$tmp_34.')</div>
+						<div>Дата редактирования: '.date("d.m.Y H:i", $value['time']).'</div>
+						</div>';
+						
+						++$i; if($i == 100) break; // Ограничение показов
 					}
-				}
-
-				
-				$pSearchResult = array_merge($pSearchName, $pSearchTitle, $pSearchKeywords, $pSearchDescription, $pSearchID);
-				echo'<div class="listrez">';
-				$i = 0; // Счетчик показов
-				foreach($pSearchResult as $value){
-					//var_dump($key );
-
-					if($value['show'] == 1){
-						$tmp_34 = '<span class="g">Доступно всем</span>';
-					}elseif($value['show'] == 2){
-						$tmp_34 = '<span class="r">Доступно пользователям с преференциями</span>';
-					}elseif($value['show'] == 0){
-						$tmp_34 = '<span class="r">Доступно только администратору</span>';
-					}else{
-						$tmp_34 = '<span class="r">Error</span>';
+					if($i == 0){
+						echo'<div class="item item_page">
+						<div>Ничего не найдено</div>
+						</div>';
 					}
-
-					$tmp_url = $value['id']!=$Config->indexPage?$value['id']:'';
-
+					echo'</div>';
 					
-					echo'<div class="item item_page">
-					<div class="right_menu">
-					<a href="editor.php?page='.$value['id'].'&amp;dub=1">Создать дубликат</a>
-					<a href="editor.php?page='.$value['id'].'">Редактировать</a>
-					<a href="javascript:void(0);" onclick="openwindow(\'window\', 650, \'auto\', dell(\''.$value['id'].'\', \''.$value['name'].'\', \''.SERVER.'/'.$tmp_url.'\'));">Удалить</a>
-					</div>
-					<div class="name_page"><img src="include/page.svg" alt=""> <a href="editor.php?page='.$value['id'].'">'.preg_replace('#'.$q.'#ius', '<span class="r">'.$q.'</span>', $value['name']).'</a></div>
-					<div>URL: <a href="//'.SERVER.'/'.$tmp_url.'" target="_blank">'.SERVER.'/'.$tmp_url.'</a> ('.$tmp_34.')</div>
-					<div>Дата редактирования: '.date("d.m.Y H:i", $value['time']).'</div>
-					</div>';
-					
-					++$i; if($i == 100) break; // Ограничение показов
-				}
-				if($i == 0){
-					echo'<div class="item item_page">
-					<div>Ничего не найдено</div>
-					</div>';
-				}
-				echo'</div>';
-				
-			}
-		
-		echo'</div>';
+				}else{echo'<div class="msg">Ошибка в запросе</div>';}
+			
+			echo'</div>';
+		}
 	}
 
     
