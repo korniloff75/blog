@@ -1,8 +1,5 @@
 <?php
 
-$kff::headHtml();
-
-
 if(
 	class_exists('BlogKff')
 	&& $artDB= BlogKff::getArtDB()

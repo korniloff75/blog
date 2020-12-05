@@ -95,7 +95,10 @@ class Index_my_addon implements BasicClassInterface
 			AdmPanel::addResponsive();
 		}
 
-		self::$log->add(__METHOD__,null, [__CLASS__.'::$cfg'=>self::$cfgDB->get(), /* '$Config'=>self::$Config */]);
+		self::$log->add(__METHOD__ . 'kff_basic is constructed',null, [
+			__CLASS__.'::$cfg'=>self::$cfgDB->get(),
+			/* '$Config'=>self::$Config */
+		]);
 
 	}
 
@@ -200,6 +203,11 @@ class Index_my_addon implements BasicClassInterface
 
 		';
 
+		self::$log->add(__METHOD__,null, [
+			'$Page->headhtml'=>$Page->headhtml,
+			'$Page'=>$Page,
+		]);
+
 		// *Подключаем скрипты в страницы
 		if(is_object($Page))
 		{
@@ -215,16 +223,16 @@ class Index_my_addon implements BasicClassInterface
 		// *Подключаем скрипты в админпанель
 		$addonsAdm= '
 
-		<!-- Start from '.__METHOD__.' -->
-		<!-- Load UIKit from '.$UIKitPath.' -->
-		<link rel="stylesheet" href="'.$UIKitPath.'/css/uikit.min.css" />
-		<script src="'.$UIKitPath.'/js/uikit.min.js"></script>
-		<!-- UIkit picts-->
-		<script src="'.$UIKitPath.'/js/uikit-icons.min.js"></script>
-		<!-- / UIKit -->
-		<script src="'.$kffJsPath.'/kff.js"></script>
-		<script src="'.$kffJsPath.'/jquery-3.3.1.min.js"></script>
-		<!-- / Start from '.__METHOD__.' -->
+		<!-- From '.__METHOD__.' -->
+			<!-- Load UIKit from '.$UIKitPath.' -->
+			<link rel="stylesheet" href="'.$UIKitPath.'/css/uikit.min.css" />
+			<script src="'.$UIKitPath.'/js/uikit.min.js"></script>
+			<!-- UIkit picts-->
+			<script src="'.$UIKitPath.'/js/uikit-icons.min.js"></script>
+			<!-- / UIKit -->
+			<script src="'.$kffJsPath.'/kff.js"></script>
+			<script src="'.$kffJsPath.'/jquery-3.3.1.min.js"></script>
+		<!-- / From '.__METHOD__.' -->
 
 		';
 

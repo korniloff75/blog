@@ -1,4 +1,5 @@
 <?php
+// *Обрабатываем буфер вывода для страниц
 if(!$kff::is_admPanel()) :
 
 // *Собираем весь буфер в $buf и очищаем его (не закрываем)
@@ -12,6 +13,9 @@ if(!$Page) {
 	echo __FILE__;
 	die('404');
 }
+
+// *Добавляем в head
+$Page->headhtml= $kff::headHtml() . $Page->headhtml;
 
 
 // *Templater
@@ -120,4 +124,4 @@ $log->add("Уровень буфера= ". ob_get_level() . ' -> flush to index'
 echo $buf;
 // *-> to flush in index.php
 
-endif;
+endif; // if(!$kff::is_admPanel())

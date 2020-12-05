@@ -166,7 +166,9 @@ class Logger
 		<?php
 		print_r("<h3 class='logCaption' style='text-align:center;'>Log</h3><pre class='log'>\n");
 		foreach ($this->log as &$string) {
-			print_r($string . "\n");
+			// ?
+			// print_r($string . "\n");
+			print_r(htmlspecialchars($string) . "\n");
 		}
 		echo "</pre>";
 		self::$printed = 1;

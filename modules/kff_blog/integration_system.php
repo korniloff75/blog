@@ -347,7 +347,7 @@ class BlogKff extends Index_my_addon
 		return is_object($Page) && $Page->module === 'kff_blog' && $URI[1] === $Page->id && empty($URI[2]);
 	}
 
-	// *FIX img[src]
+	// *FIX img[src*={DIR}assets]
 	public static function fixImgs($artId, $txt)
 	{
 		global $Page;

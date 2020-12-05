@@ -427,11 +427,16 @@ class BlogKff_page extends BlogKff
 	 */
 	public function Render($artPathname=null)
 	{
+		global $Page;
+
 		$artDB= self::getArtDB($artPathname);
 
 		$Page->headhtml.= '<script src="/' .self::$modDir. '/js/blogHelper.js"></script>';
 
-		self::$log->add(__METHOD__,null,['$artDB'=>$artDB]);
+		self::$log->add(__METHOD__,null,[
+			// '$artDB'=>$artDB,
+			'$Page->headhtml'=>$Page->headhtml,
+			]);
 
 		// echo '<script src="/' .self::$modDir. '/js/blogHelper.js"></script>';
 
@@ -511,12 +516,17 @@ class BlogKff_page extends BlogKff
 		<script>
 			'use strict';
 
-			// *saveEdit
-			U.on('#saveEdit', 'click', BH.editRequest.bind(null, <?=DbJSON::toJSON($artDB->get())?>));
+			kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/js/uikit.min.js').then(UIkit=>{
+				window.U = window.U || window.UIkit && UIkit.util;
 
-			// *Удаляем теги
-			// $('#editor1').find('[itemprop="about"]').remove();
-			U.$$('[itemprop="about"]', U.$('#editor1')).forEach(i=>i.remove());
+				// *saveEdit
+				U.on('#saveEdit', 'click', BH.editRequest.bind(null, <?=DbJSON::toJSON($artDB->get())?>));
+
+				// *Удаляем теги
+				// $('#editor1').find('[itemprop="about"]').remove();
+				U.$$('[itemprop="about"]', U.$('#editor1')).forEach(i=>i.remove());
+
+			});
 
 			// *Запускаем редактор с файловым браузером
 			CKEDITOR.replace( 'editor1', {
