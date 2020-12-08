@@ -54,23 +54,6 @@ class Pack
 		# класс для работы с архивами
 		$this->zip = new ZipArchive;
 
-		/* if(!$pathname) return;
-
-		$this->single= isset($_REQUEST['single']);
-
-		// *Папка назначения
-		static::$dest= $_REQUEST['dest'] ?? static::$dest;
-
-		if(isset($_REQUEST['recurse']))
-		{
-			$this->nameZIP = $this->RecursiveFolder($filename);
-		}
-		else
-		{
-			$this->nameZIP = $this->folder($filename);
-		}
- */
-
 	} // __construct
 
 
@@ -114,7 +97,7 @@ class Pack
 		self::$log->add(__METHOD__,null,[basename(static::$dest) .'___'. end(explode(DIRECTORY_SEPARATOR,realpath($pathdir)))  .'___'. $nameZIP . '<hr>']);
 
 
-		# создаем архив, если все прошло удачно продолжаем
+		// *создаем архив, если все прошло удачно продолжаем
 		if ( !$this->zip->open($nameZIP, ZipArchive::OVERWRITE | ZipArchive::CREATE )) eself::$log->add('Не работает $this->zip->open');
 
 

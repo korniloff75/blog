@@ -428,7 +428,7 @@ if(!isset($URI[2])){
 	$page->title = 'Регистрация';
 	$page->name = 'Регистрация';
 	if($Config->registration){
-		$return = '<form name="forma" action="/pages/" method="post">
+		$return = '<form name="forma" action="/'.$URI[1].'/addreg" method="post" onsubmit="if(document.getElementById(\'roscomnadzor\').checked){this.submit();}else{alert(\'Нужно дать согласие на обработку персональных данных\'); return false;}">
 		<INPUT TYPE="hidden" NAME="act" VALUE="add">
 		<div class="user_form user_reg_form">
 			<p class="p_info">Внимание! Логин может содержать только символы латинского алфавита и цифры.
@@ -444,26 +444,7 @@ if(!isset($URI[2])){
 			<p class="p_submit"><input type="submit" name="" value="Зарегистрироваться"></p>
 		</div>
 		</form>';
-	$return .= '<script>
-		(function(d) {
-		var form= d.querySelector(\'form[name=\"forma\"]\');
-		if(!form) return;
-		form.onsubmit= function(e) {
-			e.preventDefault();
-
-			if(!d.getElementById(\'roscomnadzor\').checked){
-				alert(\'Нужно дать согласие на обработку персональных данных\');
-				return;
-			}
-
-			this.action= \'/user/addreg\';
-
-			console.log(this.action);
-			this.submit();
-		}
-	})(document);
-	</script>';
-}else{
+	}else{
 		$return = '<p>Регистрация на сайте временно приостановлена</p>';
 	}
 

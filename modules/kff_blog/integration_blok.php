@@ -69,7 +69,7 @@ class BlogKff_sidebar extends BlogKff
 
 		echo '<ul uk-nav="multiple: false" class="categories uk-nav-parent-icon uk-nav-primary uk-nav-center" uk-sticky="show-on-up:true; media:@m; bottom: .sidebar; " style="background: inherit;">';
 
-		foreach(self::getBlogMap() as $catInd=>$catData){
+		foreach(self::getBlogMap()->sortInd('ind') as $catInd=>$catData){
 
 			if(empty($items= &$catData['items']))
 				continue;
