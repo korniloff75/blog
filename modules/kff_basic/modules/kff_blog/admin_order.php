@@ -7,10 +7,13 @@
 <ul id="categories" class="uk-nav uk-nav-default" uk-sortable="group: cats; handle: .uk-sortable-handle;">
 
 <?php
-// self::$log->add(__METHOD__,null,['self::$catsDB'=>self::$catsDB, ]);
+self::$log->add(__METHOD__,null,[
+	// 'self::$catsDB'=>self::$catsDB,
+	// 'self::getBlogMap()'=>self::getBlogMap(),
+	]);
 
 // foreach(self::$catsDB->get() as $catInd=>$catId) {
-foreach(self::getBlogMap() as $catInd=>$catData) {
+foreach(self::getBlogMap()->sortInd('ind') as $catInd=>$catData) {
 
 	$catData['id'] = $catData['id'] ?? self::$catsDB->get($catInd);
 	$catId= &$catData['id'];

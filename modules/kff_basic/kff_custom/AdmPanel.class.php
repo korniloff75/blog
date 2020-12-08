@@ -8,6 +8,7 @@ if(realpath('.') === __DIR__) die('Access denied to file '.__FILE__);
 
 class AdmPanel extends Index_my_addon
 {
+	const FIXED= '// FIXED'. PHP_EOL;
 
 	public static function addResponsive ()
 	{
@@ -56,7 +57,7 @@ class AdmPanel extends Index_my_addon
 
 		$fixes=[];
 
-		self::$cfg['fixSystem'] = self::$cfgDB->get('fixSystem');
+		// self::$cfg['fixSystem'] = self::$cfgDB->get('fixSystem');
 		if(self::$cfg['fixSystem'] === 'disable')
 			return;
 
@@ -77,14 +78,15 @@ class AdmPanel extends Index_my_addon
 		if(!file_exists(DR."$sourcePath.bak"))
 		{
 			$start = file_get_contents(DR.$sourcePath);
-			$fixes[$sourcePath] = str_replace([
-				'<?php'.PHP_EOL
-				.'require(\'./system/global.dat\');',
+
+			// self::$log->add(__METHOD__,null,['matched'=>preg_match('~<?php\s*require\(\'./system/global.dat\'\);~i', $start), $start]);
+
+			$fixes[$sourcePath] = preg_replace([
+				'~<\?php(\s*require\(\'./system/global.dat\'\);)~i',
 			],[
-				'<?php'.PHP_EOL
-				.'$START_PROFILE = microtime(true);'.PHP_EOL
-				.'require(\'./system/global.dat\');',
-			], $start);
+				'<?php '. self::FIXED
+				.'$START_PROFILE = microtime(true);$1',
+			], $start, 1);
 
 			if(!in_array($sourcePath, self::$cfg['fixSystem']))
 				self::$cfgDB->append(['fixSystem' => [$sourcePath]]);
@@ -99,7 +101,7 @@ class AdmPanel extends Index_my_addon
 			$fixes[$sourcePath] = str_replace([
 				'require DR.\'/system/classes/\' . $class . \'.dat\'',
 			],[
-				'if(file_exists($inc= DR.\'/system/classes/\' . $class . \'.dat\')) include_once $inc',
+				'if(file_exists($inc= DR.\'/system/classes/\' . $class . \'.dat\')) @include_once $inc',
 			], $start);
 
 			if(!in_array($sourcePath, self::$cfg['fixSystem']))
@@ -110,6 +112,8 @@ class AdmPanel extends Index_my_addon
 		$fixSystem = self::$cfgDB->get('fixSystem');
 
 		if(!empty($fixSystem)) foreach($fixSystem as $fp) {
+			self::$log->add(DR.$fp,null,$fixes[$fp]);
+
 			if(file_exists(DR."$fp.bak"))
 			{
 				self::$log->add("Файл $fp уже был обработан ранее. Для его повторной обработки переименуйте файл {$fp}.bak -> $fp");
@@ -117,17 +121,18 @@ class AdmPanel extends Index_my_addon
 			}
 			copy(DR.$fp,DR."$fp.bak");
 			file_put_contents(DR.$fp,$fixes[$fp]);
+
 		}
 
-		// self::$log->add
 	}
 
 	/**
 	 * *Восстановление после self::fixSystem()
+	 * todo...
 	 */
 	static function restoreSystem()
 	{
-		$fixSystem = self::$cfgDB->get('fixSystem');
+		$fixSystem = self::$cfgDB->fixSystem;
 
 		if(!empty($fixSystem)) foreach($fixSystem as $fp) {
 			rename(DR."$fp.bak", DR.$fp);

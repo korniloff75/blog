@@ -1,6 +1,6 @@
 <?php
 
-
+	
 if(!isset($URI[2])){
 	if($User->authorized){
 		$page->clear();// Очистили страницу
@@ -16,19 +16,19 @@ if(!isset($URI[2])){
 			<p class="p_avatar"><img src="'.$avatar_file.'" alt="avatar" id="avatar"></p>
 			<p class="p_info">Зарегистрирован '.human_time(time() - $User->timeRegistration).' назад</p>
 			<p class="p_info">Оставлено '.$User->numPost.' '.numDec($User->numPost, array('сообщение', 'сообщения', 'сообщений')).'</p>
-
+			
 			<p class="p_link_cfg"><a href="/'.$URI[1].'/avatar">Загрузить аватар</a></p>
 			<p class="p_link_cfg"><a href="/'.$URI[1].'/cfg">Настройки профиля</a></p>
 			<p class="p_link_exit"><a href="/'.$URI[1].'/exit">Выход из профиля</a></p>
 		</div>
-
+		
 		';
 	}else{
-
+		
 		//$page->clear();// Очистили страницу
 		$page->title = 'Вход';
 		$page->name = 'Вход';
-
+		
 		$return = '<form name="forma" action="/'.$URI[1].'/in" method="post">
 		<INPUT TYPE="hidden" NAME="act" VALUE="add">
 		<div class="user_form user_auth_form">
@@ -38,17 +38,17 @@ if(!isset($URI[2])){
 				<br><span style="font-size:12px; opacity: 0.7;">Для обновления символов нажмите на картинку</span>
 			</p>
 			<p class="p_captcha_input">Символы с картинки:<br><input type="text" name="captcha" value="" size="10"  autocomplete="off" required></p>
-			<p class="p_submit"><input type="submit" name="" value="Отправить"></p>
+			<p class="p_submit"><input type="submit" name="" value="Отправить"></p>	
 			<p class="p_link_reg"><a href="/'.$URI[1].'/reg">Зарегистрироваться</a></p>
 			<p class="p_link_newpassword"><a href="/'.$URI[1].'/newpassword">Не помню пароль</a></p>
 		</div>
 		</form>';
 	}
-
-
-
+	
+	
+	
 }elseif($URI[2]=='avatar'){
-
+	
 	if($User->authorized){
 		$Page->clear();// Очистили страницу
 		$Page->title = 'Профиль пользователя';
@@ -60,14 +60,14 @@ if(!isset($URI[2])){
 			$return = '<p>Пока что вам недоступна загрузка аватаров. Общайтесь на сайте, будьте актывным, и со временем у вас появится возможность загружать аватары.</p>
 				<p class="p_link_back"><a href="/'.$URI[1].'">Вернуться назад</a></p>';
 		}elseif(md5($_POST['ticket'].$Config->ticketSalt) == $_COOKIE['ticket']){
-
+			
 			$errorUpLoad = false;
 			$errorReport = 'Неизвестная ошибка';
 
 			if(isset($_FILES['img'])){
-
+				
 				if($_FILES['img']['error'] == '0'){
-
+					
 					if(($Config->userAvatarSize * 1000) <= $_FILES['img']['size']){
 						$errorUpLoad = true;
 						$errorReport = 'Превышен лимит файла в '.$Config->userAvatarSize.' кб.';
@@ -87,7 +87,7 @@ if(!isset($URI[2])){
 						}
 						imagedestroy($img);
 						unlink(DR.'/'.$Config->userAvatarDir.'/'.$User->login);
-
+						
 					}
 
 				}else{
@@ -115,8 +115,8 @@ if(!isset($URI[2])){
 			}
 
 			$return.= '<p class="p_link_back"><a href="/'.$URI[1].'">Вернуться к профилю</a></p>';
-
-
+	
+			
 		}else{
 			$ticket = random(255);
 			setcookie('ticket',md5($ticket.$Config->ticketSalt),0,'/');
@@ -127,13 +127,13 @@ if(!isset($URI[2])){
 					Допускается только JPEG формат<br>
 					<input type="file" name="img"></p>
 				<p class="p_sumit"><input type="submit" name="" value="Загрузить"></p>
-				<p class="p_link_back"><a href="/'.$URI[1].'">Вернуться назад</a></p>
+				<p class="p_link_back"><a href="/'.$URI[1].'">Вернуться назад</a></p>	
 			</div>
 			</form>';
 		}
-
-
-
+		
+		
+		
 	}else{
 		$Page->clear();// Очистили страницу
 		$Page->title = 'Перенаправление';
@@ -143,15 +143,15 @@ if(!isset($URI[2])){
 			setTimeout("window.location.href = \"/'.$URI[1].'\";", 1000);
 		</script>';
 	}
-
+	
 }elseif($URI[2]=='cfg'){
-
+	
 	if($User->authorized){
 		$page->clear();// Очистили страницу
 		$page->title = 'Профиль пользователя';
 		$page->name = 'Настройки';
 		if(md5($_POST['ticket'].$Config->ticketSalt) == $_COOKIE['ticket']){
-
+			
 			$return = '<p>Настройки успешно сохранены</p>
 			<p class="p_link_back"><a href="/'.$URI[1].'">Вернуться к профилю</a></p>';
 
@@ -168,7 +168,7 @@ if(!isset($URI[2])){
 				System::notification('Пользователь '.$User->login.' изменил свой пароль', 'g');
 				setcookie('user_password',cipherPass($_POST['password'], $User->salt),time()+32000000,'/');
 			}
-
+			
 			if($Config->userEmailChange && $User->email != $_POST['email']){
 				if($_POST['email'] == ''){
 					$page->name = 'Ошибка';
@@ -194,7 +194,7 @@ if(!isset($URI[2])){
 					$User->email = htmlspecialchars(substr(strtolower($_POST['email']), 0, 255));
 					$User->emailChecked = 0;
 					$User->emailChecksum = random(16);
-
+					
 					$listEmailsUsers[] = $User->email;
 					System::updateListEmailsUsers($listEmailsUsers);
 					if ($Config->userEmailChecked){
@@ -206,8 +206,8 @@ if(!isset($URI[2])){
 			}
 
 			$User->save();
-
-
+			
+			
 		}else{
 			$ticket = random(255);
 			setcookie('ticket',md5($ticket.$Config->ticketSalt),0,'/');
@@ -217,13 +217,13 @@ if(!isset($URI[2])){
 				if ($Config->userEmailChange) $return.= '<p class="p_email">Email:<br><input type="text" name="email" value="'.$User->email.'" placeholder="Обязательно для заполнения"></p>';
 				$return.= '<p class="p_password">Пароль:<br><input type="password" name="password" value="" placeholder="Оставьте пустым что-бы не менять"></p>
 				<p class="p_sumit"><input type="submit" name="" value="Сохранить"></p>
-				<p class="p_link_back"><a href="/'.$URI[1].'">Вернуться назад</a></p>
+				<p class="p_link_back"><a href="/'.$URI[1].'">Вернуться назад</a></p>	
 			</div>
 			</form>';
 		}
-
-
-
+		
+		
+		
 	}else{
 		$page->clear();// Очистили страницу
 		$page->title = 'Перенаправление';
@@ -233,12 +233,12 @@ if(!isset($URI[2])){
 			setTimeout("window.location.href = \"/'.$URI[1].'\";", 1000);
 		</script>';
 	}
-
+	
 }elseif($URI[2]=='in'){
-
+	
 	$page->clear();// Очистили страницу
 	$page->title = 'Вход';
-
+	
 	if(md5(strtolower($_POST['captcha']).$Config->ticketSalt) != $_COOKIE['captcha']){
 		$page->name = 'Ошибка';
 		$return = '<p>Цифры с картинки введены неверно</p><p class="p_link_back"><a href="/'.$URI[1].'">Вернуться назад</a></p>';
@@ -246,7 +246,7 @@ if(!isset($URI[2])){
 		if(($CUser = User::getConfig($_POST['login'])) !== false){
 			$AUser = new User($_POST['login'], cipherPass($_POST['password'], $CUser->salt));
 			if($AUser->authorized){
-
+				
 				if($Config->userEmailChecked && $AUser->emailChecked || !$Config->userEmailChecked){
 					$page->name = 'Вход';
 					$return = '<p>Вы успешно авторизованны</p><p><a href="/'.$URI[1].'">Перейти к профилю</a> или <a href="/">вернуться на главную страницу</a></p>';
@@ -260,7 +260,7 @@ if(!isset($URI[2])){
 				}
 				setcookie('user_login',$_POST['login'],time()+32000000,'/');
 				setcookie('user_password',cipherPass($_POST['password'], $CUser->salt),time()+32000000,'/');
-
+				
 			}else{
 				$page->name = 'Ошибка';
 				$return = '<p>Пароль введен неверно</p>
@@ -275,14 +275,14 @@ if(!isset($URI[2])){
 		}
 	}
 	setcookie('captcha','','0','/');
-
-
+	
+	
 }elseif($URI[2]=='emailchecked'){
-
+	
 	$page->clear();// Очистили страницу
 	$page->title = 'Подтверждение email адреса';
 	$page->name = 'Подтверждение email адреса';
-
+	
 	$ticket = random(255);
 			setcookie('ticket',md5($ticket.$Config->ticketSalt),0,'/');
 			$return = '<form name="forma" action="/'.$URI[1].'/emailchecked2" method="post">
@@ -296,17 +296,17 @@ if(!isset($URI[2])){
 				</p>
 				<p class="p_captcha_input">Символы с картинки:<br><input type="text" name="captcha" value="" autocomplete="off" required></p>
 				<p class="p_sumit"><input type="submit" name="" value="Отправить"></p>
-				<p class="p_link_back"><a href="/'.$URI[1].'">Вернуться назад</a></p>
+				<p class="p_link_back"><a href="/'.$URI[1].'">Вернуться назад</a></p>	
 			</div>
 			</form>';
-
-
+	
+	
 }elseif($URI[2]=='emailchecked2' && $Config->userEmailChecked){
-
+	
 	$page->clear();// Очистили страницу
 	$page->title = 'Подтверждение email адреса';
 	$page->name = 'Подтверждение email адреса';
-
+	
 	if(md5(strtolower($_POST['captcha']).$Config->ticketSalt) != $_COOKIE['captcha']){
 		$page->name = 'Ошибка';
 		$return = '<p>Цифры с картинки введены неверно</p>
@@ -315,7 +315,7 @@ if(!isset($URI[2])){
 		$return = '<p>Ошибка безопасности</p>
 		<p class="p_link_back"><a href="/'.$URI[1].'/emailchecked">Вернуться назад</a></p>';
 	}elseif (($CUser = User::getConfig($_POST['login'])) !== false){
-
+		
 		if($CUser->emailChecked){
 			$return = '<p>У этого аккаунта email уже подтвержден</p>
 			<p class="p_link_back"><a href="/'.$URI[1].'/emailchecked">Вернуться назад</a></p>';
@@ -338,21 +338,21 @@ if(!isset($URI[2])){
 		<p class="p_link_back"><a href="/'.$URI[1].'/emailchecked">Вернуться назад</a></p>';
 	}
 	setcookie('captcha','','0','/');
-
+	
 }elseif($URI[2]=='newpassword'){
-
+	
 	$page->clear();// Очистили страницу
 	$page->title = 'Восстановление доступа';
 	$page->name = 'Восстановление доступа';
-
+	
 	$ticket = random(255);
 	setcookie('ticket',md5($ticket.$Config->ticketSalt),0,'/');
 	if($Config->userNewPassword){
 		$return = '<form name="forma" action="/'.$URI[1].'/newpassword2" method="post">
 		<INPUT TYPE="hidden" NAME="ticket" VALUE="'.$ticket.'">
 		<div class="user_form user_newpassword_form">
-			<p class="p_info">Все пароли на нашем сайте хранятся в зашифрованном виде, мы не сможем его расшифровать и выслать вам.
-			Однако мы можем сгенерировать для вас новый пароль и выслать его вам на email, который был указан в вашем аккаунте.</p>
+			<p class="p_info">Все пароли на нашем сайте хранятся в зашифрованном виде, мы не сможем его расшифровать и выслать вам. 
+			Однако мы можем сгенерировать для вас новый пароль и выслать его вам на email, который был указан в вашем аккаунте.</p> 
 			<p class="p_info">Введите данные от своего аккаунта и мы отправим вам ссылку для генерации нового пароля.</p>
 			<p class="p_login">Логин:<br><input type="text" name="login" value="" required></p>
 			<p class="p_email">Email:<br><input type="text" name="email" value="" required></p>
@@ -363,21 +363,21 @@ if(!isset($URI[2])){
 			<p class="p_submit"><input type="submit" name="" value="Отправить"></p>
 			<p class="p_link_back"><a href="/'.$URI[1].'">Вернуться назад</a></p>
 		</div>
-
+		
 		</form>';
 	}else{
 		$return = '<p>К сожалению, в данное время мы не можем восcтановить ваш пароль</p>
 		<p class="p_link_back"><a href="/'.$URI[1].'">Вернуться назад</a></p>';
 	}
-
-
-
+		
+	
+	
 }elseif($URI[2]=='newpassword2' && $Config->userNewPassword){
-
+	
 	$page->clear();// Очистили страницу
 	$page->title = 'Восстановление доступа';
 	$page->name = 'Восстановление доступа';
-
+	
 	if(md5(strtolower($_POST['captcha']).$Config->ticketSalt) != $_COOKIE['captcha']){
 		$page->name = 'Ошибка';
 		$return = '<p>Цифры с картинки введены неверно</p>
@@ -408,30 +408,33 @@ if(!isset($URI[2])){
 		<p class="p_link_back"><a href="/'.$URI[1].'/emailchecked">Вернуться назад</a></p>';
 	}
 	setcookie('captcha','','0','/');
-
+	
 }elseif($URI[2]=='exit'){
-
+	
 	$page->clear();// Очистили страницу
 	$page->title = 'Выход';
 	$page->name = 'Выход';
-
+	
 	$return = '<p>Вы успешно вышли из системы</p>
 	<p><a href="/">Перейти на главную страницу</a></p>';
 	setcookie('user_login','','0','/');
 	setcookie('user_password','','0','/');
-
+	
 	if($User->authorized) System::notification('Выполнена деавторизация пользователя '.$User->login, 'g');
-
+	
 }elseif($URI[2]=='reg'){
-
+	$ticket = random(255);
+	setcookie('ticket',md5($ticket.$Config->ticketSalt),time()+32000000,'/');
+	
 	$page->clear();// Очистили страницу
 	$page->title = 'Регистрация';
 	$page->name = 'Регистрация';
 	if($Config->registration){
-		$return = '<form name="forma" action="/pages/" method="post">
+		$return = '<form name="forma" action="/'.$URI[1].'/addreg" method="post" onsubmit="if(document.getElementById(\'roscomnadzor\').checked){this.submit();document.getElementById(\'ticket\').value=\''.$ticket.'\';}else{alert(\'Нужно дать согласие на обработку персональных данных\'); return false;}">
 		<INPUT TYPE="hidden" NAME="act" VALUE="add">
+		<INPUT TYPE="hidden" NAME="ticket" id="ticket" VALUE="noInput">
 		<div class="user_form user_reg_form">
-			<p class="p_info">Внимание! Логин может содержать только символы латинского алфавита и цифры.
+			<p class="p_info">Внимание! Логин может содержать только символы латинского алфавита и цифры. 
 			'.($Config->userEmailChecked?'На указанный email придет письмо для подтверждения регистрации.':'').'</p>
 			<p class="p_login">Логин:<br><input type="text" name="login" value="" required ></p>
 			<p class="p_password">Пароль:<br><input type="password" name="password" value="" required ></p>
@@ -441,39 +444,20 @@ if(!isset($URI[2])){
 			</p>
 			<p class="p_captcha_input">Символы с картинки:<br><input type="text" name="captcha" value="" size="10"  autocomplete="off" required ></p>
 			<p class="p_roscomnadzor"><input type="checkbox" name="roscomnadzor" value="ok" id="roscomnadzor"> <label for="roscomnadzor">Я согласен на <a href="/fz152" target="_blank">обработку моих персональных данных</a></label></p>
-			<p class="p_submit"><input type="submit" name="" value="Зарегистрироваться"></p>
+			<p class="p_submit"><input type="submit" name="" value="Зарегистрироваться"></p>	
 		</div>
 		</form>';
-	$return .= '<script>
-		(function(d) {
-		var form= d.querySelector(\'form[name=\"forma\"]\');
-		if(!form) return;
-		form.onsubmit= function(e) {
-			e.preventDefault();
-
-			if(!d.getElementById(\'roscomnadzor\').checked){
-				alert(\'Нужно дать согласие на обработку персональных данных\');
-				return;
-			}
-
-			this.action= \'/user/addreg\';
-
-			console.log(this.action);
-			this.submit();
-		}
-	})(document);
-	</script>';
-}else{
+	}else{
 		$return = '<p>Регистрация на сайте временно приостановлена</p>';
 	}
-
-
-
+	
+	
+	
 }elseif($URI[2]=='addreg'){
-
+	
 	$page->clear();// Очистили страницу
 	$page->title = 'Регистрация';
-
+	
 	if(!$Config->registration){
 		$page->name = 'Ошибка';
 		$return = '<p>Регистрация на сайте временно приостановлена</p>';
@@ -484,6 +468,10 @@ if(!isset($URI[2])){
 	}elseif(md5(strtolower($_POST['captcha']).$Config->ticketSalt) != $_COOKIE['captcha']){
 		$page->name = 'Ошибка';
 		$return = '<p>Цифры с картинки введены неверно</p>';
+		$return.= '<p class="p_link_back"><a href="/'.$URI[1].'/reg">Вернуться назад</a></p>';
+	}elseif(md5($_POST['ticket'].$Config->ticketSalt) != $_COOKIE['ticket']){
+		$page->name = 'Ошибка';
+		$return = '<p>Проверка безопасности неудачна</p>';
 		$return.= '<p class="p_link_back"><a href="/'.$URI[1].'/reg">Вернуться назад</a></p>';
 	}elseif(filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) === false){
 		$page->name = 'Ошибка';
@@ -527,11 +515,11 @@ if(!isset($URI[2])){
 			System::notification('Ошибка при регистрации пользователя '.$_POST['login'].' - '.$errmsg, 'r');
 			$return = '<p>'.$errmsg.'</p><p class="p_link_back"><a href="/'.$URI[1].'/reg">Вернуться назад</a></p>';
 		}
-
+		
 	}
-
+	
 	setcookie('captcha','','0','/');
-
+	
 }elseif($URI[2]=='echeck' && $Config->userEmailChecked){
 	$page->clear();// Очистили страницу
 	$page->title = 'Подтверждение email адреса';
@@ -548,7 +536,7 @@ if(!isset($URI[2])){
 					$listEmailsUsers[] = strtolower($CUser->email);
 					System::updateListEmailsUsers($listEmailsUsers);
 				}/////////////////////////////////////////////
-
+				
 
 				$return = '<p>Ваш email адрес успешно подтвержден</p>
 				<p><a href="/'.$URI[1].'">Перейти к профилю</a></p>';
@@ -562,12 +550,12 @@ if(!isset($URI[2])){
 			$return = '<p>Ошибка контрольной суммы. Возможно вы допустили ошибку при копировании ссылки или email уже был подтвержден ранее.</p>
 				<p><a href="/">Перейти на главную страницу</a></p>';
 		}
-	}else{
+	}else{ 
 		$return = '<p>Не подтверждено. Возможно вы допустили ошибку при копировании ссылки или email уже был подтвержден ранее.</p>
 				<p><a href="/">Перейти на главную страницу</a></p>';
 	}
-
-
+	
+	
 }elseif($URI[2]=='npcheck' && $Config->userNewPassword){
 	$page->clear();// Очистили страницу
 	$page->title = 'Восстановление доступа';
@@ -597,25 +585,25 @@ if(!isset($URI[2])){
 			$return = '<p>Ошибка контрольной суммы. Возможно вы допустили ошибку при копировании ссылки.</p>
 				<p><a href="/">Перейти на главную страницу</a></p>';
 		}
-	}else{
+	}else{ 
 		$return = '<p>Ошибка контрольной суммы. Возможно вы допустили ошибку при копировании ссылки.</p>
 				<p><a href="/">Перейти на главную страницу</a></p>';
 	}
-
-
+	
+	
 }elseif($URI[2]=='ban'){
-
+	
 	$page->clear();// Очистили страницу
 	$page->title = 'Блокировака пользователя';
-
+	
 	if($User->authorized && $User->preferences > 1 || $status == 'admin'){
 		if(($CUser = User::getConfig($URI[3])) !== false){
-
+			
 			$page->name = $CUser->login;
-
+			
 			$ticket = random(255);
 			setcookie('ticket',md5($ticket.$Config->ticketSalt),0,'/');
-
+			
 			$return = '<form name="forma" action="/'.$URI[1].'/addban/'.$URI[3].'" method="post">
 			<INPUT TYPE="hidden" NAME="ticket" VALUE="'.$ticket.'">
 			<div class="user_form user_ban_form" id="user_ban_form">
@@ -635,38 +623,38 @@ if(!isset($URI[2])){
 						<OPTION VALUE="3153600000">Навсегда
 				</SELECT>
 				</p>
-				<p class="p_submit"><input type="submit" name="" value="Отправить"></p>
+				<p class="p_submit"><input type="submit" name="" value="Отправить"></p>	
 			</div>
 			</form>
 			<p class="p_link_back"><a href="/'.$URI[1].'/'.$CUser->login.'">Вернуться к профилю пользователя</a></p>';
-
+			
 		}else{
 			$page->name = 'Ошибка';
 			$return = '<p>Пользователь не найден</p>';
-				$return.= '<p><a href="/">Перейти на главную страницу</a></p>';
+				$return.= '<p><a href="/">Перейти на главную страницу</a></p>';	
 		}
 	}else{
 		$page->name = 'Ошибка';
 		$return = '<p><a href="/">Перейти на главную страницу</a></p>';
 	}
-
+	
 }elseif($URI[2]=='addban'){
-
+	
 	$page->clear();// Очистили страницу
 	$page->title = 'Блокировака пользователя';
-
+	
 	if($User->authorized && $User->preferences > 1 || $status == 'admin'){
 		if(($CUser = User::getConfig($URI[3])) !== false){
-
+			
 			$page->name = $CUser->login;
-
+			
 			if(md5($_POST['ticket'].$Config->ticketSalt) == $_COOKIE['ticket']){
-
-				$CUser->causeBan = htmlspecialchars($_POST['cause']);// Причина
+				
+				$CUser->causeBan = htmlspecialchars($_POST['cause']);// Причина 
 				if($_POST['time'] != 'none'){
 					$CUser->timeBan =  time() + (is_numeric($_POST['time'])?(int)$_POST['time']:0);// Время
 				}
-
+				
 				if(User::setConfig($CUser->login, $CUser)){
 					if($_POST['time'] == 'none'){
 						$return = '<p>Ошибка при сохранении настроек</p>
@@ -692,23 +680,23 @@ if(!isset($URI[2])){
 		}else{
 			$page->name = 'Ошибка';
 			$return = '<p>Пользователь не найден</p>';
-			$return.= '<p><a href="/">Перейти на главную страницу</a></p>';
+			$return.= '<p><a href="/">Перейти на главную страницу</a></p>';	
 		}
 	}else{
 		$page->name = 'Ошибка';
 		$return = '<p><a href="/">Перейти на главную страницу</a></p>';
 	}
-
+	
 }elseif($URI[2]=='ipban'){
-
+	
 	$page->clear();// Очистили страницу
 	$page->title = 'Блокировака IP пользователя';
-
+	
 	if($User->authorized && $User->preferences > 1 || $status == 'admin'){
 		if(($CUser = User::getConfig($URI[3])) !== false){
-
+			
 			$page->name = $CUser->login;
-
+			
 			if(in_array($CUser->ip, $Config->ipBan)){
 				$return.= '<p>Этот IP адрес уже заблокирован</p>';
 				$return.= '<p><a href="/'.$URI[1].'/'.$CUser->login.'">Вернуться к профилю пользователя</a></p>';
@@ -720,33 +708,33 @@ if(!isset($URI[2])){
 				$return.= '<p><a href="/'.$URI[1].'/ipban2/'.$CUser->login.'/'.$ticket.'">Блокировать IP пользователя</a></p>';
 				$return.= '<p><a href="/'.$URI[1].'/'.$CUser->login.'">Вернуться к профилю пользователя</a></p>';
 			}
-
-
+			
+			
 		}else{
 			$page->name = 'Ошибка';
 			$return = '<p>Пользователь не найден</p>';
-				$return.= '<p><a href="/">Перейти на главную страницу</a></p>';
+				$return.= '<p><a href="/">Перейти на главную страницу</a></p>';	
 		}
 	}else{
 		$page->name = 'Ошибка';
 		$return = '<p><a href="/">Перейти на главную страницу</a></p>';
 	}
-
+	
 }elseif($URI[2]=='ipban2'){
-
+	
 	$page->clear();// Очистили страницу
 	$page->title = 'Блокировака IP пользователя';
-
+	
 	if($User->authorized && $User->preferences > 1 || $status == 'admin'){
 		if(($CUser = User::getConfig($URI[3])) !== false){
-
+			
 			$page->name = $CUser->login;
-
+			
 			if(md5($URI[4].$Config->ticketSalt) == $_COOKIE['ticket'] && !in_array($CUser->ip, $Config->ipBan)){
-
-
-				$Config->ipBan[] = $CUser->ip;
-
+				
+				
+				$Config->ipBan[] = $CUser->ip; 
+			
 				if(System::saveConfig($Config)){
 					$return = '<p>IP адрес пользователя успешно заблокирован</p>
 					<p><a href="/'.$URI[1].'/'.$CUser->login.'">Перейти к профилю пользователя</a></p>';
@@ -757,25 +745,25 @@ if(!isset($URI[2])){
 				}
 
 
-
+				
 			}else{
 				$return = '<p>Ошибка при сохранении настроек</p>';
 				$return.= '<p><a href="/'.$URI[1].'/'.$CUser->login.'">Вернуться к профилю пользователя</a></p>';
 				System::notification('Ошибка при блокировки IP пользователя '.$CUser->login.' во время блокировки пользователем '.$User->login.'. Провалена проверка безопасности.', 'r');
 			}
-
+			
 		}else{
 			$page->name = 'Ошибка';
 			$return = '<p>Пользователь не найден</p>';
-			$return.= '<p><a href="/">Перейти на главную страницу</a></p>';
+			$return.= '<p><a href="/">Перейти на главную страницу</a></p>';	
 		}
 	}else{
 		$page->name = 'Ошибка';
 		$return = '<p><a href="/">Перейти на главную страницу</a></p>';
 	}
-
+	
 }else{
-
+	
 	if($User->authorized){
 		if(($CUser = User::getConfig($URI[2])) !== false){
 			$page->clear();// Очистили страницу
@@ -793,7 +781,7 @@ if(!isset($URI[2])){
 				<p class="p_info">Зарегистрирован: '.human_time(time() - $CUser->timeRegistration).' назад</p>
 				<p class="p_info">Активность: '.human_time(time() - $CUser->timeActive).' назад</p>
 				<p class="p_info">Оставлено '.$CUser->numPost.' '.numDec($CUser->numPost, array('сообщение', 'сообщения', 'сообщений')).'</p>';
-
+				
 				// Если забанен пользователь
 				if ($CUser->timeBan > time()){
 					$return.= '<p class="user_ban_info" style="color:red;">Пользователь заблокирован за нарушение правил сайта</p>';
@@ -804,26 +792,26 @@ if(!isset($URI[2])){
 					$return.= '<p class="p_link_ban_user"><a href="/'.$URI[1].'/ban/'.$CUser->login.'#user_ban_form">Блокировать пользователя</a></p>';
 					$return.= '<p class="p_link_ban_ip"><a href="/'.$URI[1].'/ipban/'.$CUser->login.'">Блокировать IP пользователя</a></p>';
 				}
-
-
+				
+				
 			$return.= '</div>';
-
+			
 		}else{
 			$page->clear();// Очистили страницу
 			$page->title = 'Профиль пользователя';
 			$page->name = 'Ошибка';
-
+			
 			$return = '<p>Пользователь не найден</p><p><a href="/">Перейти на главную страницу</a></p>';
-
+				
 		}
-
-
-
+		
+		
+		
 	}else{
 		$page->clear();// Очистили страницу
 		$page->title = 'Профиль пользователя';
 		$page->name = 'Ошибка';
-
+		
 		$return = '<p>Только зарегистрированные пользователи могут просматривать профили других пользователей. Пожалуйста <a href="/'.$URI[1].'/reg">зарегистрируйтесь</a> или <a href="/'.$URI[1].'">войдите</a> в систему.</p>';
 	}
 }

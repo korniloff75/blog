@@ -79,17 +79,8 @@ if($status=='admin'){
 						$tmp_34 = '<span class="r">Error</span>';
 					}
 
-					//$tmp_34 = $Page->show == 1?'<span class="g">Доступно всем</span>':'<span class="r">Ограничено</span>';
 					$tmp_url = $pages[$i]!=$Config->indexPage?$pages[$i]:'';
 					
-					// echo'<tr>
-					// 	<td class="img"><img src="include/page.svg" alt=""></td>
-					// 	<td><a href="editor.php?page='.$pages[$i].'">'.$Page->name.'</a></td>
-					// 	<td><a href="//'.SERVER.'/'.$tmp_url.'" target="_blank">'.SERVER.'/'.$tmp_url.'</a></td>
-					// 	<td>'.$tmp_34.'</td>
-					// 	<td style="text-align: center;">'.date("d.m.Y H:i", $Page->time).'</td>
-					// 	<td><a href="javascript:void(0);" onclick="openwindow(\'window\', 650, \'auto\', dell(\''.$pages[$i].'\', \''.$Page->name.'\', \''.SERVER.'/'.$tmp_url.'\'));">Удалить</a></td>
-					// </tr>';
 					echo'<div class="item item_page">
 					<div class="right_menu">
 					<a href="editor.php?page='.$pages[$i].'&amp;dub=1">Создать дубликат</a>

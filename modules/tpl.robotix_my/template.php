@@ -16,7 +16,7 @@ header {
 	font-size: 14px;
 }
 header .user_menu a {
-	padding: 10px 20px 10px 18px;
+	padding: 10px 20px 10px 30px;
 	background: #111 url(/modules/tpl.etual/images/user.svg) 10px 47% no-repeat;
 }
 .bgcontent {

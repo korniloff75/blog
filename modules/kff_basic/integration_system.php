@@ -252,13 +252,16 @@ class Index_my_addon implements BasicClassInterface
 		return $GLOBALS['status'] === 'admin';
 	}
 
-	// todo
-	protected static function getAdmFolder()
+	/**
+	 * *Возвращает имя папки админпанели
+	 * папка должна содержать файл admin.trigger
+	 */
+	static function getAdmFolder()
 	{
 		$f= &self::$admFolder;
 		if(!empty($f)) return $f;
 
-		if(file_exists(DR.'/'. self::ADM_FOLDER_NAME)) $f= DR.'/'. self::ADM_FOLDER_NAME;
+		if(file_exists(DR.'/'. self::ADM_FOLDER_NAME)) $f= self::ADM_FOLDER_NAME;
 		else foreach(new FilesystemIterator(\DR, FilesystemIterator::SKIP_DOTS| FilesystemIterator::KEY_AS_FILENAME| FilesystemIterator::UNIX_PATHS) as $fn=>$fFI){
 			if($fFI->isDir() && file_exists(DR. "/$fn/admin.trigger")){
 				$f= $fn;
@@ -272,9 +275,6 @@ class Index_my_addon implements BasicClassInterface
 
 	public static function is_admPanel ()
 	{
-		global $Page;
-		// self::$log->add(__METHOD__,null,['is_admPanel'=>empty($Page)]);
-
 		$folder= explode('/', \REQUEST_URI)[1];
 
 		return $folder === self::getAdmFolder();

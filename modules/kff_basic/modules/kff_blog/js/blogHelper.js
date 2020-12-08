@@ -117,7 +117,8 @@ var BH = window.BH || {
 // console.log('BH.inited', BH.inited);
 
 // *Не обновляется при AJAX
-BH.inited || kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/js/uikit.min.js').then(UIkit=>{
+// BH.inited || kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/js/uikit.min.js').then(UIkit=>{
+BH.inited || $(()=>{
 	window.U = window.U || window.UIkit && UIkit.util;
 
 	// *Copy from CODE

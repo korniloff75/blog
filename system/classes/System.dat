@@ -2,7 +2,7 @@
 
 class System
 {
-
+	
 	public static function validPath($path)
 	{
 		if(preg_match('/^[a-zA-Z0-9]+([\._-][a-zA-Z0-9]+)*$/', $path)){
@@ -12,14 +12,14 @@ class System
 		}
 		return $rezult;
 	}
-
-
+	
+	
 	public static function saveConfig($Config)
 	{
 		$json = json_encode($Config);
 		return filefputs(DR.'/data/cfg/config.dat', $json, 'w+');
 	}
-
+	
 
 	public static function getConfig()
 	{
@@ -63,14 +63,14 @@ class System
 
 		return $Config;
 	}
-
-
+	
+	
 	public static function getTimeZones()
 	{
 		return file(DR.'/data/cfg/time_zones.dat', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 	}
-
-
+	
+	
 	public static function notification($text, $color='g')
 	{
 		if($color=='g')$color='#009900';
@@ -87,10 +87,10 @@ class System
 		}
 		return filefputs(DR.'/data/cfg/notifications.dat', $color.'|'.date("d.m.Y H:i").'|'.htmlspecialchars(specfilter(substr($text, 0, 5000)))."\n", 'a+');
 	}
-
-
-
-
+	
+	
+	
+	
 	public static function listModules()
 	{
 		$return = array();
@@ -102,14 +102,14 @@ class System
 		}
 		return $return;
 	}
-
-
+	
+	
 	public static function listRunModules()
 	{
 		return json_decode(file_get_contents(DR.'/data/cfg/modules.dat'));
 	}
-
-
+	
+	
 	public static function listEmailsUsers()
 	{
 		return json_decode(file_get_contents(DR.'/data/cfg/emails.dat'));
@@ -119,17 +119,17 @@ class System
 	public static function updateListEmailsUsers($arr)
 	{
 		$arr = array_map('strtolower', $arr);
-		$arr = array_values($arr); // Переиндексировали числовые индексы
+		$arr = array_values($arr); // Переиндексировали числовые индексы 
 		return filefputs(DR.'/data/cfg/emails.dat', json_encode($arr), 'w+'); // Записали
 	}
-
+	
 
 	public static function isBadMailDomain($email)
 	{
 		$domain = stristr(strtolower($email), '@');
 		return in_array($domain, file(DR.'/data/cfg/bad_mail_domains.dat', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES));
 	}
-
+	
 
 	public static function listUsers()
 	{
@@ -139,8 +139,8 @@ class System
 		}
 		return $return;
 	}
-
-
+	
+	
 	public static function listPages()
 	{
 		return json_decode(file_get_contents(DR.'/data/pages/list.dat'), true);
@@ -159,34 +159,34 @@ class System
 		global $ADMIN_END_HTML;
 		$ADMIN_END_HTML .= $html."\n";
 	}
-
-
+	
+	
 	public static function initModules()
 	{
 		$dir = scandir(DR.'/modules/');
-
+		
 		$list['system'] = array();
 		$list['pages'] = array();
 		$list['end'] = array();
-
+		
 		foreach($dir as $key => $module){
 			if($module != '.' && $module != '..'){
 				if(Module::isIntegrationSystem($module)){
 					$list['system'][] = $module;
 				}
-
+				
 				if(Module::isIntegrationPages($module)){
 					$list['pages'][] = $module;
 				}
-
+				
 				if(Module::isIntegrationEnd($module)){
 					$list['end'][] = $module;
 				}
 			}
 		}
-
+		
 		filefputs(DR.'/data/cfg/modules.dat', json_encode($list), 'w+'); // Записали
-
+		
 	}
 
 }
