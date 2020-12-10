@@ -3,7 +3,7 @@
  * /modules/users/Antispam.php
  */
 
-$fname= './integration_page.php';
+$fname= __DIR__ . '/integration_page.php';
 
 function fixForm()
 {

@@ -6,6 +6,7 @@
  * http://site.ru/modules/kff_basic/fixUpdate.php
  * *Вносит изменения в основной движок, создавая резервные копии последней версии системных файлов.
  */
+
 define('DR', $_SERVER['DOCUMENT_ROOT']);
 define('HOST', htmlspecialchars($_SERVER['HTTP_HOST']));
 define('REQUEST_URI', htmlspecialchars($_SERVER['REQUEST_URI']));
@@ -67,6 +68,12 @@ if(($handle = @fopen("./index.php", "r")) && ($fstr = fgets($handle))){
 		}
 
 		AdmPanel::fixSystem();
+
+		// *Antispam
+		$usersPath= DR.'/modules/users';
+		unlink($usersPath.'/integration_page.php.bak');
+		require_once $usersPath.'/Antispam.php';
+
 		die('<h2>Файлы успешно обработаны!</h2><p>Для перехода в сайт -- перезагрузите эту страницу.</p>');
 	}
 	else{
