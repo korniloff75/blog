@@ -47,10 +47,17 @@ class BlogKff_sidebar extends BlogKff
 			// note worked
 			// new kff.menu($sidebar, targetSel, [BH.navSelector]);
 
-			var stiky= U.attr($sidebar, 'uk-sticky') + 'offset:' + parseInt(getComputedStyle(U.$('.bgheader')).height) + ';';
+			var topBlock= U.$('.bgheader');
+
+			if(topBlock){
+				topBlockRect= topBlock.getBoundingClientRect();
+				var stiky= U.attr($sidebar, 'uk-sticky') + ' offset:' + (topBlockRect.bottom || topBlockRect.top + topBlockRect.height) + ';';
+
+				// !
+				U.attr($sidebar, 'uk-sticky', stiky);
+			}
+
 			// console.log('stiky=',stiky);
-			// !
-			U.attr($sidebar, 'uk-sticky', stiky);
 		});
 
 		</script>
@@ -67,7 +74,8 @@ class BlogKff_sidebar extends BlogKff
 		$pageId= $Page->module === 'kff_blog'?
 			$Page->id : 'index';
 
-		echo '<ul uk-nav="multiple: false" class="categories uk-nav-parent-icon uk-nav-primary uk-nav-center" uk-sticky="show-on-up:true; media:@m; bottom: .sidebar; " style="background: inherit;">';
+		// show-on-up:true;
+		echo '<ul uk-nav="multiple: false" class="categories uk-nav-parent-icon uk-nav-primary uk-nav-center" uk-sticky="media:@m; bottom: .sidebar; " style="background: inherit;">';
 
 		foreach(self::getBlogMap()->sortInd('ind') as $catInd=>$catData){
 
@@ -87,7 +95,7 @@ class BlogKff_sidebar extends BlogKff
 					<?php
 
 					foreach($items as &$artData) {
-						$li= "<li data-id={$artData['id']} data-cat=$catId class=\"\">
+						$li= "<li data-id=\"{$artData['id']}\" data-cat=\"$catId\" class=\"\">
 						<a href=\"/{$pageId}/$catId/{$artData['id']}\" data-ind=\"".implode('', $artData['ind'])."\" class=\"". ($artData['id'] === self::getArtData()['id']? 'active': '') ."\" itemprop=\"url\" title=\"" . ($artData['title'] ?? $artData['name']) . "\" uk-tooltip>{$artData['name']}</a>
 
 						</li>";

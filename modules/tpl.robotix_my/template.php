@@ -135,7 +135,7 @@ if($kff::is_admPanel()){
 var $nav= $('#nav');
 
 // *burger button
-$('#menu').on('click', function(){
+$('#menu').on('click', function(e){
 	$nav.css(
 		'height',
 		$nav.css('height') === $nav.prop('scrollHeight') + 'px'

@@ -23,6 +23,8 @@ class BlogKff extends Index_my_addon
 		$art= [],
 		$map;
 
+	private static $jsIncluded;
+
 
 	public function __construct()
 	{
@@ -46,7 +48,9 @@ class BlogKff extends Index_my_addon
 
 		self::getBlogMap();
 
-		if(!$this->_InputController())
+		if(!$this->_InputController()){
+
+		}
 			self::addUIkit();
 
 	} // __construct
@@ -447,11 +451,13 @@ class BlogKff extends Index_my_addon
 		// *UIkit подключён
 		if(
 			filter_var(self::$cfgDB->uk['include_uikit'], FILTER_VALIDATE_BOOLEAN)
+			|| self::$jsIncluded
 		) return;
 
 		$UIKpath = '/'. self::$internalModulesPath . '/kff_uikit-3.5.5';
 		?>
 
+		<!-- UIkit from <?=__METHOD__?> -->
 		<!-- UIkit CSS -->
 		<link rel="stylesheet" href="<?=$UIKpath?>/css/uikit.min.css" />
 
@@ -466,6 +472,7 @@ class BlogKff extends Index_my_addon
 		<!-- /UIkit -->
 
 		<?php
+		self::$jsIncluded= true;
 	}
 
 	public function __destruct()

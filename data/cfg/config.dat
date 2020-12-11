@@ -1,6 +1,6 @@
 {
 	"header": "Блог интеллигента",
-	"template": "tpl.robotix_my",
+	"template": "deftpl2",
 	"slogan": "Могу сделать всё, но времени не хватает",
 	"wysiwyg": "ckeditor_plus",
 	"slashRule": 1,

@@ -105,8 +105,12 @@ ol li:before {
 
 @media (max-width: 450px) {
 	div.content {
+		width: 100%;
 		padding: 5px;
 		margin: 0;
+	}
+	div.content > main {
+		/* min-width: 100%; */
 	}
 	/* Убираем */
 	img[data-src][src*='data:image']{

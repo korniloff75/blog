@@ -211,7 +211,7 @@ class DbJSON implements Iterator, Countable
 				$strict && $i[$key] === $val
 				|| !$strict && $i[$key] == $val
 			) {
-				return $i['ind']= $ind;
+				return $i['ind']= $i['ind'] ?? $ind;
 			}
 		}
 

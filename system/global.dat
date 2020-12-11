@@ -1,6 +1,6 @@
 <?php
 // Минимальная версия тестов PHP 5.2
-// Максимальная версия тестов PHP 7.1
+// Максимальная версия тестов PHP 7.1 
 // Версия скрипта
 $version = '5.1.26';
 
@@ -13,7 +13,7 @@ error_reporting(0);
 
 
 
-// Загрузка PHP функций
+// Загрузка PHP функций 
 require 'function.dat';
 
 
@@ -36,7 +36,7 @@ define('VERSION',     $version);
 
 // Автозагрузка классов
 function autoloader($class) {
-    if(file_exists($inc= DR.'/system/classes/' . $class . '.dat')) @include_once $inc;
+    if(file_exists($inc= DR."/system/classes/$class.dat")) @include_once $inc;
 }
 spl_autoload_register('autoloader');
 
@@ -61,7 +61,7 @@ if(get_magic_quotes_gpc()){
 	if(!empty($_FILES)){
 		foreach ($_FILES as $k => $v){
 			$_FILES[$k]['name'] = stripslashes((string) $v['name']);
-		}
+		} 
 	}
 }
 
@@ -98,7 +98,7 @@ $ADMIN_END_HTML = "\n".'<!-- Подключаемые расширения -->'.
 // Авторизация администратора
 if(isset($_COOKIE['password'])){
 	$password = $_COOKIE['password'];
-
+	
 	if(cipherPass($password, $Config->salt) == $Config->adminPassword){
 		$status = 'admin';
 		setcookie('password', $password, time() + $Config->timeAuth, '/');
@@ -115,7 +115,7 @@ if(isset($_COOKIE['password'])){
 //  Если забанен IP пользователя
 if($Config->ipBanRule && $status != 'admin'){
 	if(in_array(IP, $Config->ipBan)){
-		header('Content-type: text/html; charset=utf-8');
+		header('Content-type: text/html; charset=utf-8'); 
 		require DR.'/pages/ipban.html'; ob_end_flush(); exit();
 	}
 }
@@ -123,19 +123,19 @@ if($Config->ipBanRule && $status != 'admin'){
 if(isset($_COOKIE['user_login']) && isset($_COOKIE['user_password'])){
 	$User = new User($_COOKIE['user_login'], $_COOKIE['user_password']);
 	if($User->authorized){
-		// Продлили авторизацию
+		// Продлили авторизацию 
 		setcookie('user_login',$_COOKIE['user_login'],time()+32000000,'/');
 		setcookie('user_password',$_COOKIE['user_password'],time()+32000000,'/');
-
+		
 		// Если забанен пользователь
 		if ($User->timeBan > time() && $status != 'admin'){
-			header('Content-type: text/html; charset=utf-8');
+			header('Content-type: text/html; charset=utf-8'); 
 			require DR.'/pages/ban.html'; ob_end_flush(); exit();
 		}
 
 		// Если забанен IP пользователя
 		if(in_array(IP, $Config->ipBan) && $status != 'admin'){
-			header('Content-type: text/html; charset=utf-8');
+			header('Content-type: text/html; charset=utf-8'); 
 			require DR.'/pages/ipban.html'; ob_end_flush(); exit();
 		}
 

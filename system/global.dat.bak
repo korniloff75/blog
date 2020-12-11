@@ -36,7 +36,7 @@ define('VERSION',     $version);
 
 // Автозагрузка классов
 function autoloader($class) {
-    if(file_exists($inc= DR.'/system/classes/' . $class . '.dat')) include_once $inc;
+    require DR.'/system/classes/' . $class . '.dat';
 }
 spl_autoload_register('autoloader');
 

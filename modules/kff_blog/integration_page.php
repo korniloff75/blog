@@ -307,10 +307,9 @@ class BlogKff_page extends BlogKff
 		$map= self::getBlogMap();
 		$ind= $artDB->get('ind');
 
-		$newData= [$ind[0]=>[
-			'items'=>[$ind[1]=>$artDB->get()]
-		]];
-		$map->set($newData);
+		$catData= $map->{$ind[0]};
+		$catData['items'][$ind[1]]= $artDB->get();
+		$map->push($catData, $ind[0]);
 
 		self::$log->add(__METHOD__,null,['$ind'=>$ind,'$artDB'=>$artDB, "\$newData"=>$newData]);
 	}

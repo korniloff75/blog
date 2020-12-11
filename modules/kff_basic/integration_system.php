@@ -179,6 +179,7 @@ class Index_my_addon implements BasicClassInterface
 		{
 			$addonsPages .= '
 			<!-- UIKit from '.$UIKitPath.' -->
+			<!-- UIKit ' . self::$cfgDB->uk['include_uikit'] . ' -->
 			<link rel="stylesheet" href="'.$UIKitPath.'/css/uikit.min.css" />
 			<script async src="'.$UIKitPath.'/js/uikit.min.js"></script>
 			';
@@ -210,7 +211,7 @@ class Index_my_addon implements BasicClassInterface
 		// *Подключаем скрипты в страницы
 		if(is_object($Page))
 		{
-			$Page->headhtml.= $addonsPages;
+			// $Page->headhtml.= $addonsPages;
 		}
 
 		elseif(!self::is_admPanel())
@@ -222,7 +223,7 @@ class Index_my_addon implements BasicClassInterface
 		// *Подключаем скрипты в админпанель
 		$addonsAdm= '
 
-		<!-- From '.__METHOD__.' -->
+		<!-- For Admin -- From '.__METHOD__.' -->
 			<!-- Load UIKit from '.$UIKitPath.' -->
 			<link rel="stylesheet" href="'.$UIKitPath.'/css/uikit.min.css" />
 			<script src="'.$UIKitPath.'/js/uikit.min.js"></script>
@@ -237,7 +238,8 @@ class Index_my_addon implements BasicClassInterface
 
 		System::addAdminHeadHtml($addonsAdm);
 
-		return $addonsAdm;
+		// return $addonsAdm;
+		return $addonsPages;
 	}
 
 

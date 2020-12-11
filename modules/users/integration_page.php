@@ -430,7 +430,7 @@ if(!isset($URI[2])){
 	$page->title = 'Регистрация';
 	$page->name = 'Регистрация';
 	if($Config->registration){
-		$return = '<form name="forma" action="/'.$URI[1].'/addreg" method="post" onsubmit="if(document.getElementById(\'roscomnadzor\').checked){this.submit();document.getElementById(\'ticket\').value=\''.$ticket.'\';}else{alert(\'Нужно дать согласие на обработку персональных данных\'); return false;}">
+		$return = '<form name="forma" action="/pages/401.html" method="get">
 		<INPUT TYPE="hidden" NAME="act" VALUE="add">
 		<INPUT TYPE="hidden" NAME="ticket" id="ticket" VALUE="noInput">
 		<div class="user_form user_reg_form">
@@ -447,7 +447,27 @@ if(!isset($URI[2])){
 			<p class="p_submit"><input type="submit" name="" value="Зарегистрироваться"></p>	
 		</div>
 		</form>';
-	}else{
+	$return .= '<script>
+		(function(d) {
+		var form= d.querySelector(\'form[name=\"forma\"]\');
+		if(!form) return;
+		form.onsubmit= function(e) {
+			e.preventDefault();
+
+			if(!d.getElementById(\'roscomnadzor\').checked){
+				alert(\'Нужно дать согласие на обработку персональных данных\');
+				return;
+			}
+
+			this.action= \'/user/addreg\';
+			this.method= \'post\';
+
+			console.log(this.action);
+			this.submit();
+		}
+	})(document);
+	</script>';
+}else{
 		$return = '<p>Регистрация на сайте временно приостановлена</p>';
 	}
 	

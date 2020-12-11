@@ -307,13 +307,27 @@ var kff = {
 
 			if(!state) return false;
 
-			console.log('state.sels', state.sels /* state.html */);
-
-			kff.request(state.href,null,state.sels)
+			// ?
+			/* kff.request(state.href,null,state.sels)
 			.then(r=>{
 				document.title= state.title;
 				self.setActive(state.href);
-			});
+			}); */
+
+			// *Добавляем заголовки
+			var html= `<h1 id="title"></h1><h1>${state.title}</h1><div>${state.html}</div>`;
+
+			// console.log('state.sels', state.sels, {html});
+
+			// !
+			// console.log('render=', kff.render(state.sels, html));
+			// kff.render(state.sels, html)
+			kff.render([mainSelector, '#title'], html)
+			.then(out=>{
+				document.title= state.title;
+				self.setActive(state.href);
+			}, err=>console.error(err));
+
 		});
 	},
 
@@ -340,6 +354,7 @@ var kff = {
 	 *
 	 * @param {Array} sels - заменяем контент узлов из sels
 	 * @param {string HTML} response
+	 * @returns Promise
 	 */
 	render: function(sels,response) {
 		var stop= 0;
@@ -349,7 +364,10 @@ var kff = {
 
 			// var $dfr= $(document.createDocumentFragment()),
 			var $dfr= $('<div/>'),
-				out = {$dfr: $dfr};
+				// out = {$dfr: $dfr};
+				out = {};
+
+			// console.log({response});
 
 			$dfr.html(response);
 
@@ -417,25 +435,34 @@ kff.menu.prototype.clickHahdler = function ($e) {
 	this.$loader.show();
 	this.setActive(t.href);
 
-	// todo
-	this.sels.push(mainSelector);
+	// Собираем селекторы для обновления
+	if(!this.sels.includes(mainSelector)) this.sels.push(mainSelector);
 	var sels= this.sels.concat(['h1#title','.core.info','.log','#wrapEntries']);
 
 	kff.request(t.href,null,sels)
-	.then(r=>{
-		if(!r[mainSelector]){
-			console.error(r)
+	// .then(r=>r.resolve)
+	.then(pr=>{
+		if(!pr[mainSelector]){
+			pr.then(r=>console.info('pr is Promise', {r}));
+			pr.then(r=>handleResponse);
 		}
-		// console.log(Object.keys(r).length && Object.keys(r) || r);
+		else{
+			console.info({pr});
+			handleResponse(pr);
+		}
 
+		// console.log(Object.keys(r).length && Object.keys(r) || r);
+	});
+
+	function handleResponse (r) {
 		var state={};
 		state[mainSelector]= {
 			href: t.href,
-			title: $('h1#title').html(),
+			title: $('h1#title, h1').html(),
 			sels: sels,
 			html: r[mainSelector]
 		};
-		console.info('state=',state);
+		console.info({state});
 
 		history.pushState(state, '', t.href);
 		self.$loader.hide();
@@ -454,7 +481,7 @@ kff.menu.prototype.clickHahdler = function ($e) {
 		if(typeof this.after === 'function'){
 			this.after();
 		}
-	});
+	}
 
 	return false;
 }

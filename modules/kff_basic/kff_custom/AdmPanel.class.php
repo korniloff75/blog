@@ -101,7 +101,7 @@ class AdmPanel extends Index_my_addon
 			$fixes[$sourcePath] = str_replace([
 				'require DR.\'/system/classes/\' . $class . \'.dat\'',
 			],[
-				'if(file_exists($inc= DR.\'/system/classes/\' . $class . \'.dat\')) @include_once $inc',
+				'if(file_exists($inc= DR."/system/classes/{$class}.dat")) @include_once $inc',
 			], $start);
 
 			if(!in_array($sourcePath, self::$cfg['fixSystem']))
