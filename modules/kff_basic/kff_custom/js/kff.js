@@ -315,7 +315,7 @@ var kff = {
 			}); */
 
 			// *Добавляем заголовки
-			var html= `<h1 id="title"></h1><h1>${state.title}</h1><div>${state.html}</div>`;
+			var html= `<h1 id="title" hidden></h1><h1>${state.title}</h1><div>${state.html}</div>`;
 
 			// console.log('state.sels', state.sels, {html});
 

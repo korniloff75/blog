@@ -135,7 +135,6 @@ BH.inited || $(()=>{
 		UIkit.notification('Текст скопирован в буфер обмена','success');
 	});
 
-
 	Object.defineProperty(BH, 'inited', {value: true});
 	// console.log('BH.inited', BH.inited);
 });

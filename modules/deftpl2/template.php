@@ -44,7 +44,19 @@ if(Module::exists('news')){
 .content .sidebar_right {
 	width: 240px;
 	flex: 0 0 auto;
-	padding-top: 2em;
+	margin-top: 2em;
+}
+
+@media (max-width: 500px){
+	.content .sidebar_right {
+		width: 100%;
+		flex: 0 0 100%;
+	}
+}
+@media (min-width: 501px){
+	.content main {
+		padding: 0 1em
+	}
 }
 </style>
 

@@ -25,12 +25,13 @@ class BlogKff_sidebar extends BlogKff
 			// items.some((item,ind)=>{
 			items.forEach((item,ind)=>{
 				var iUri= kff.getURI(item.href),
-					cond= uri[uri.length-1] === iUri[iUri.length-1];
+					cond= uri[uri.length-1] === iUri[iUri.length-1],
+					ukParent;
 
 				item.blockIndex= ind;
 
-				if(cond){
-					item.closest('.uk-parent').classList.add('uk-open');
+				if(cond && (ukParent= item.closest('.uk-parent'))){
+					ukParent.classList.add('uk-open');
 					// ?
 					var hidden= item.closest('[hidden]');
 					hidden&&(hidden.hidden=0);
@@ -50,14 +51,26 @@ class BlogKff_sidebar extends BlogKff
 			var topBlock= U.$('.bgheader');
 
 			if(topBlock){
-				topBlockRect= topBlock.getBoundingClientRect();
+				var topBlockRect= topBlock.getBoundingClientRect();
 				var stiky= U.attr($sidebar, 'uk-sticky') + ' offset:' + (topBlockRect.bottom || topBlockRect.top + topBlockRect.height) + ';';
 
 				// !
 				U.attr($sidebar, 'uk-sticky', stiky);
 			}
 
-			// console.log('stiky=',stiky);
+			// console.log({stiky});
+
+			// *Сохраняем загружаемую страницу
+			var state={};
+			state[targetSel]= {
+				href: location.href,
+				title: document.title,
+				// sels: sels,
+				html: U.html(U.$(targetSel) || U.$('main'))
+			};
+
+			history.pushState(state, '', location.href);
+			console.log('First load', {state});
 		});
 
 		</script>
