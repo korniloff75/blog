@@ -44,7 +44,7 @@ class BlogKff_sidebar extends BlogKff
 			kff.getSidebar().hidden=0;
 
 			// *AJAX menu
-			new kff.menu($sidebar, targetSel);
+			var menu= new kff.menu($sidebar, targetSel);
 			// note worked
 			// new kff.menu($sidebar, targetSel, [BH.navSelector]);
 
@@ -62,11 +62,11 @@ class BlogKff_sidebar extends BlogKff
 
 			// *Сохраняем загружаемую страницу
 			var state={};
-			state[targetSel]= {
+			state[menu.mainSelector]= {
 				href: location.href,
 				title: document.title,
 				// sels: sels,
-				html: U.html(U.$(targetSel) || U.$('main'))
+				html: U.html(menu.mainSelector)
 			};
 
 			history.pushState(state, '', location.href);

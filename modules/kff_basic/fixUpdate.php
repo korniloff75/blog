@@ -7,6 +7,11 @@
  * *Вносит изменения в основной движок, создавая резервные копии последней версии системных файлов.
  */
 
+if(isset($_GET['download'])){
+	header('Content-Disposition: attachment; filename=' . basename(__FILE__));
+	die(file_get_contents(__FILE__));
+}
+
 define('DR', $_SERVER['DOCUMENT_ROOT']);
 define('HOST', htmlspecialchars($_SERVER['HTTP_HOST']));
 define('REQUEST_URI', htmlspecialchars($_SERVER['REQUEST_URI']));

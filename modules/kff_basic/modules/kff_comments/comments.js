@@ -23,7 +23,7 @@ var commFns = {
 
 		this.refreshed = 1;
 
-		console.log('data= ', data);
+		console.log({data});
 
 		return kff.request(
 			sts.handler,
@@ -33,7 +33,7 @@ var commFns = {
 		)
 		.then(
 			out=>{
-				console.log('out=', out);
+				console.log({out});
 				commFns.refreshed = 0;
 				// commFns.$formEdit.hide();
 			},
@@ -195,7 +195,7 @@ var commFns = {
 	init: function(gl) {
 		var $form = $('#comments_form'),
 		form = $form[0],
-		$entry = $('#entry')[0];
+		entry = $('#entry')[0];
 
 		// console.log('form = ', form, $paginators);
 
@@ -212,13 +212,13 @@ var commFns = {
 
 		if(!window.BB) return;
 
-		BB.panel('#bb_bar', $entry, {
+		BB.panel('#bb_bar', entry, {
 			b: ['fa-bold'],
 			i: ['fa-italic'],
 			u: ['fa-underline'],
 			s: ['fa-strikethrough'],
 		});
-		BB.smiley('#sm_bar', $entry);
+		BB.smiley('#sm_bar', entry);
 
 		// $('#CMS').val(comm_vars.cms);
 	} // init
@@ -227,6 +227,6 @@ var commFns = {
 
 
 kff.checkLib('UIkit', '/modules/kff_basic/modules/kff_uikit-3.5.5/js/uikit.min.js').then(UIkit=>{
-	var U= window.U || UIkit.util;
+	window.U= window.U || UIkit.util;
 	commFns.init(window);
 });

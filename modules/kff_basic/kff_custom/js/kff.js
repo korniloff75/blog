@@ -280,8 +280,11 @@ var kff = {
 	menu: function($nav, mainSelector, sels) {
 		this.$nav = ($nav instanceof jQuery)? $nav: $($nav);
 
-		mainSelector = mainSelector || 'main';
-		// if(!(mainSelector instanceof Array)) mainSelector = [mainSelector];
+		mainSelector = U.$(mainSelector)? mainSelector: 'main';
+
+		if(this.$nav.menuInited){
+			console.info('this.$nav.menuInited!');
+		}
 
 		var self = this,
 			$loader = $('#loading');
@@ -326,9 +329,12 @@ var kff = {
 			.then(out=>{
 				document.title= state.title;
 				self.setActive(state.href);
+				self.$loader.hide();
 			}, err=>console.error(err));
 
 		});
+
+		this.$nav.menuInited= 1;
 	},
 
 
@@ -417,9 +423,10 @@ var kff = {
 
 // *Клик по меню
 kff.menu.prototype.clickHahdler = function ($e) {
-	// console.log($e);
 	var t= $e.target.closest('a'),
 		self= this;
+
+	// console.log({t});
 
 	if(!t || !t.href || location.search.includes('?edit')) return;
 
@@ -428,10 +435,13 @@ kff.menu.prototype.clickHahdler = function ($e) {
 
 	if(t.href === location.href+'#') return;
 
+	console.log({t});
+
 	// console.log('t.href=', t.href, location.href+'#', t.href === location.href+'#');
 	var mainSelector= this.mainSelector;
+	this.currentItem= t;
 	// $= this.mainSelector;
-	// console.log('this.mainSelector=', this.mainSelector);
+	console.log('this.mainSelector=', this.mainSelector);
 	this.$loader.show();
 	this.setActive(t.href);
 
@@ -439,49 +449,25 @@ kff.menu.prototype.clickHahdler = function ($e) {
 	if(!this.sels.includes(mainSelector)) this.sels.push(mainSelector);
 	var sels= this.sels.concat(['h1#title','.core.info','.log','#wrapEntries']);
 
-	kff.request(t.href,null,sels)
-	// .then(r=>r.resolve)
+	var req= kff.request(t.href,null,sels)
 	.then(pr=>{
-		if(!pr[mainSelector]){
-			pr.then(r=>console.info('pr is Promise', {r}));
-			pr.then(r=>handleResponse);
+		if(pr instanceof Promise){
+			pr.then(r=>{
+				console.info('pr is Promise', {r});
+				return r;
+			});
+			pr.then(this.handleResponse);
 		}
 		else{
 			console.info({pr});
-			handleResponse(pr);
+			this.handleResponse(pr);
 		}
 
-		// console.log(Object.keys(r).length && Object.keys(r) || r);
-	});
+		console.log({pr});
+	}, err=>console.log(err));
 
-	function handleResponse (r) {
-		var state={};
-		state[mainSelector]= {
-			href: t.href,
-			title: $('h1#title, h1').html(),
-			sels: sels,
-			html: r[mainSelector]
-		};
-		console.info({state});
-
-		history.pushState(state, '', t.href);
-		self.$loader.hide();
-
-		if(state[mainSelector].title)
-			document.title= state[mainSelector].title;
-
-		// *Close uk-dropdown
-		if(t.closest('.uk-dropdown')){
-			console.log('uk-dropdown',t.closest('.uk-open') );
-			var open= $e.target.closest('.uk-open');
-			open && UIkit.dropdown(open).hide();
-		}
-
-		// *After click
-		if(typeof this.after === 'function'){
-			this.after();
-		}
-	}
+	console.log({req});
+	// req.always(r=>console.log({r}));
 
 	return false;
 }
@@ -497,3 +483,40 @@ kff.menu.prototype.setActive = function setActive (href) {
 
 }
 
+
+/**
+ * Обработка ответа
+ * @param {Object} r
+ */
+kff.menu.prototype.handleResponse= function (r) {
+	var t= this.currentItem,
+		state={},
+		self= this,
+		mainSelector= this.mainSelector;
+
+	state[mainSelector]= {
+		href: t.href,
+		title: $('h1#title, h1').html(),
+		sels: mainSelector,
+		html: r[mainSelector]
+	};
+	console.info({state});
+
+	history.pushState(state, '', t.href);
+	self.$loader.hide();
+
+	if(state[mainSelector].title)
+		document.title= state[mainSelector].title;
+
+	// *Close uk-dropdown
+	if(t.closest('.uk-dropdown')){
+		console.log('uk-dropdown',t.closest('.uk-open') );
+		var open= $e.target.closest('.uk-open');
+		open && UIkit.dropdown(open).hide();
+	}
+
+	// *After click
+	if(typeof self.after === 'function'){
+		self.after();
+	}
+}
