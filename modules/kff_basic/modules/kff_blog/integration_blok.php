@@ -10,7 +10,7 @@ class BlogKff_sidebar extends BlogKff
 		'use strict';
 		// <?=__FILE__?>
 
-		kff.getSidebar().hidden=1;
+		BH.getSidebar().hidden=1;
 
 		// console.log('kff.getSidebar().hidden=', kff.getSidebar().hidden);
 
@@ -19,18 +19,19 @@ class BlogKff_sidebar extends BlogKff
 			window.U = window.U || window.UIkit && UIkit.util;
 			var uri= kff.getURI(),
 				targetSel = '.blog_content',
-				$sidebar = U.$('ul.categories', kff.getSidebar()),
+				$sidebar = U.$('ul.categories', BH.getSidebar()),
 				items= U.$$('a[data-ind]', $sidebar);
 
 			// items.some((item,ind)=>{
 			items.forEach((item,ind)=>{
 				var iUri= kff.getURI(item.href),
-					cond= uri[uri.length-1] === iUri[iUri.length-1];
+					cond= uri[uri.length-1] === iUri[iUri.length-1],
+					ukParent;
 
 				item.blockIndex= ind;
 
-				if(cond){
-					item.closest('.uk-parent').classList.add('uk-open');
+				if(cond && (ukParent= item.closest('.uk-parent'))){
+					ukParent.classList.add('uk-open');
 					// ?
 					var hidden= item.closest('[hidden]');
 					hidden&&(hidden.hidden=0);
@@ -40,17 +41,36 @@ class BlogKff_sidebar extends BlogKff
 				return cond;
 			});
 
-			kff.getSidebar().hidden=0;
+			BH.getSidebar().hidden=0;
 
 			// *AJAX menu
-			new kff.menu($sidebar, targetSel);
+			var menu= new kff.menu($sidebar, targetSel);
 			// note worked
 			// new kff.menu($sidebar, targetSel, [BH.navSelector]);
 
-			var stiky= U.attr($sidebar, 'uk-sticky') + 'offset:' + parseInt(getComputedStyle(U.$('.bgheader')).height) + ';';
-			// console.log('stiky=',stiky);
-			// !
-			U.attr($sidebar, 'uk-sticky', stiky);
+			var topBlock= U.$('.bgheader');
+
+			if(topBlock){
+				var topBlockRect= topBlock.getBoundingClientRect();
+				var stiky= U.attr($sidebar, 'uk-sticky') + ' offset:' + (topBlockRect.bottom || topBlockRect.top + topBlockRect.height) + ';';
+
+				// !
+				U.attr($sidebar, 'uk-sticky', stiky);
+			}
+
+			// console.log({stiky});
+
+			// *Сохраняем загружаемую страницу
+			var state={};
+			state[menu.mainSelector]= {
+				href: location.href,
+				title: document.title,
+				// sels: sels,
+				html: U.html(menu.mainSelector)
+			};
+
+			history.pushState(state, '', location.href);
+			console.log('First load', {state});
 		});
 
 		</script>
@@ -67,7 +87,8 @@ class BlogKff_sidebar extends BlogKff
 		$pageId= $Page->module === 'kff_blog'?
 			$Page->id : 'index';
 
-		echo '<ul uk-nav="multiple: false" class="categories uk-nav-parent-icon uk-nav-primary uk-nav-center" uk-sticky="show-on-up:true; media:@m; bottom: .sidebar; " style="background: inherit;">';
+		// show-on-up:true;
+		echo '<ul uk-nav="multiple: false" class="categories uk-nav-parent-icon uk-nav-primary uk-nav-center" uk-sticky="media:@m; bottom: .sidebar; " style="background: inherit;">';
 
 		foreach(self::getBlogMap()->sortInd('ind') as $catInd=>$catData){
 
@@ -87,7 +108,7 @@ class BlogKff_sidebar extends BlogKff
 					<?php
 
 					foreach($items as &$artData) {
-						$li= "<li data-id={$artData['id']} data-cat=$catId class=\"\">
+						$li= "<li data-id=\"{$artData['id']}\" data-cat=\"$catId\" class=\"\">
 						<a href=\"/{$pageId}/$catId/{$artData['id']}\" data-ind=\"".implode('', $artData['ind'])."\" class=\"". ($artData['id'] === self::getArtData()['id']? 'active': '') ."\" itemprop=\"url\" title=\"" . ($artData['title'] ?? $artData['name']) . "\" uk-tooltip>{$artData['name']}</a>
 
 						</li>";

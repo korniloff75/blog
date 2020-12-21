@@ -358,35 +358,49 @@ setInterval(function(){
 		$param['custom'] = $array;
 		//
 
-		$id = ($newsStorage->iss('news_'.$_POST['id']) == false && System::validPath($_POST['id']))?$_POST['id']:uniqid();
-			
+		$news = htmlspecialchars(specfilter($_POST['news']));
+
 		if($act=='addnews')
 		{
+			$id = ($newsStorage->iss('news_'.$_POST['id']) == false && System::validPath($_POST['id']))?$_POST['id']:uniqid();
 			if($newsStorage->set('news_'.$id, json_encode($param))){
 				// Добавляем ID новости в список
 				$listIdNews = json_decode($newsStorage->get('list'), true); // Получили список ввиде массива
-				$listIdNews[] = $id;// Добавили новый элемент массива в конец
+				$listIdNews[] = $id; // Добавили новый элемент массива в конец
 				$newsStorage->set('list', json_encode($listIdNews)); // Записали массив в виде json
 				// Добавляем в категории 
 				$listIdCat = json_decode($newsStorage->get('category'), true); // Получили список ввиде массива
-				$listIdCat[$id] = $param['cat'];// Добавили новый элемент массива в конец
+				$listIdCat[$id] = $param['cat']; // Добавили новый элемент массива в конец
 				$newsStorage->set('category', json_encode($listIdCat)); // Записали массив в виде json
 				echo'<div class="msg">Новость успешно опубликована</div>';
-				System::notification('Добавлена новость с заголовком: '.$param['header']);
+				System::notification('Добавлена новость с заголовком "'.$param['header'].'"');
 			}else{
 				echo'<div class="msg">Произошла ошибка при добавлении новости</div>';
 				System::notification('Произошла ошибка при добавлении новости', 'r');
 			}
+
+			// Удаление новости из черновика при публикации
+			if($newsStorage->delete('draft_'.$news)){
+				// Удаляем страницу из черновиков
+				$draftListIdNews = json_decode($newsStorage->get('draftList'), true); // Получили список ввиде массива
+				if(($key = array_search($news, $draftListIdNews)) !== false){
+					unset($draftListIdNews[$key]); // Удалили найденый элемент массива
+				}
+				$draftListIdNews = array_values($draftListIdNews); // Переиндексировали числовые индексы 
+				$newsStorage->set('draftList', json_encode($draftListIdNews)); // Записали массив в виде json
+				System::notification('Удалена новость из черновика с идентификатором '.$news.'', 'g');
+			}
 		}
 
 		if($act=='adddraft'){
+			$id = $newsStorage->iss('draft_'.$_POST['id']) == false && System::validPath($_POST['id'])?$_POST['id']:uniqid();
 			if($newsStorage->set('draft_'.$id, json_encode($param))){
 				// Добавляем ID новости в список
 				$draftListIdNews = json_decode($newsStorage->get('draftList'), true); // Получили список ввиде массива
 				$draftListIdNews[] = $id;// Добавили новый элемент массива в конец
 				$newsStorage->set('draftList', json_encode($draftListIdNews)); // Записали массив в виде json
 				echo'<div class="msg">Новость добавлена в черновик</div>';
-				System::notification('В черновик добавлена новость с заголовком: '.$param['header']);
+				System::notification('В черновик добавлена новость с заголовком "'.$param['header'].'"');
 			}else{
 				echo'<div class="msg">Произошла ошибка при добавлении новости в черновик</div>';
 				System::notification('Произошла ошибка при добавлении новости в черновик', 'r');
@@ -942,16 +956,29 @@ setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>&act
 					<td>&nbsp;</td>
 					<td><button type="button" onClick="submit();">'.($_GET['dub'] == '1'?'Опубликовать':'Сохранить').'</button> &nbsp; <a href="module.php?module='.$MODULE.'&amp;act=edit&amp;nom_page='.$nom_page.'">Вернуться назад</a></td>
 					</tr>';
-				echo'<tr>
+				echo '<tr>
 					<td>&nbsp;</td>
 					<td><button type="button" onClick="document.getElementById(\'act\').value = \'adddraft\'; submit();">Сохранить в черновик</button></td>
 				</tr>';
 			}
 			if($act == 'editdraft'){
-				echo'<tr>
-					<td>&nbsp;</td>
-					<td><button type="button" onClick="document.getElementById(\'act\').value = \'addnews\'; submit();">Опубликовать</button> &nbsp; <a href="module.php?module='.$MODULE.'&amp;act=edit&amp;nom_page='.$nom_page.'">Вернуться назад</a></td>
-				</tr>';
+				if ($newsStorage->iss('news_'.$news)){
+					echo'<tr>
+						<td>&nbsp;</td>
+						<td><button type="button" onClick="document.getElementById(\'act\').value = \'addnews\'; submit();" title="Опубликовать как новую новость">Опубликовать</button> &nbsp; <a href="module.php?module='.$MODULE.'&amp;act=edit&amp;nom_page='.$nom_page.'">Вернуться назад</a></td>
+					</tr>';
+					echo'<tr>
+						<td>&nbsp;</td>
+						<td><button type="button" onClick="document.getElementById(\'act\').value = \'addedit\'; submit();">Опубликовать с заменой существующей новости</button></td>
+					</tr>';
+				}else{
+					echo'<tr>
+						<td>&nbsp;</td>
+						<td><button type="button" onClick="document.getElementById(\'act\').value = \'addnews\'; submit();">Опубликовать</button> &nbsp; <a href="module.php?module='.$MODULE.'&amp;act=edit&amp;nom_page='.$nom_page.'">Вернуться назад</a></td>
+					</tr>';
+				}
+				
+				
 				if($_GET['dub'] == '1'){
 					echo'<tr>
 						<td>&nbsp;</td>
@@ -1040,6 +1067,17 @@ setTimeout('window.location.href = \'module.php?module=<?php echo $MODULE;?>&act
 							$listIdCat = json_decode($newsStorage->get('category'), true); // Получили список ввиде массива
 							$listIdCat[$news] = $newsParam->cat;
 							$newsStorage->set('category', json_encode($listIdCat)); // Записали массив в виде json
+						}
+						// Удаление новости из черновика при публикации
+						if($newsStorage->delete('draft_'.$news)){
+							// Удаляем страницу из черновиков
+							$draftListIdNews = json_decode($newsStorage->get('draftList'), true); // Получили список ввиде массива
+							if(($key = array_search($news, $draftListIdNews)) !== false){
+								unset($draftListIdNews[$key]); // Удалили найденый элемент массива
+							}
+							$draftListIdNews = array_values($draftListIdNews); // Переиндексировали числовые индексы 
+							$newsStorage->set('draftList', json_encode($draftListIdNews)); // Записали массив в виде json
+							System::notification('Удалена новость из черновика с идентификатором '.$news.'', 'g');
 						}
 					}
 

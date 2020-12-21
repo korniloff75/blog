@@ -1,0 +1,156 @@
+<?php
+ob_start($Config->gzip?'ob_gzhandler':null); 
+header('Content-type: text/html; charset=utf-8');
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header('X-XSS-Protection: 0');
+$activ = basename(SELF, '.php');
+if($status == 'admin'){
+	$parse_url = parse_url(REFERER);
+	if(strpos($parse_url['host'].$parse_url['path'], dirname(SERVER.SELF)) !== 0){
+		require('../pages/refer.html'); ob_end_flush(); exit();
+	}
+}
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Панель управления</title>
+<link rel="StyleSheet" type="text/css" href="include/style.min.css?<?php echo $version;?>">
+<?php
+if($status != 'admin') {
+echo'<style>
+body{background-color: #323232;}
+.logo{
+	position: absolute;
+	bottom: 0px;
+	display: block;
+	width: 100%;
+	border-top: 1px solid #444;
+	text-align: center; 
+	padding: 20px 0; 
+}.logo a{
+	font: bold 18px Arial, sans-serif; 
+	color: #666;
+	text-decoration: none;
+}.logo a:hover{
+	color: #fff;
+	text-decoration: none;
+}
+#bgwindow_window{display: none;}
+.msg{color: #fff;}
+</style>';
+}
+?>
+<link rel="icon" href="include/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="include/favicon.ico" type="image/x-icon">
+<script type="text/javascript" src="include/windows/windows.js?<?php echo $version;?>"></script>
+<link rel="StyleSheet" type="text/css" href="include/windows/windows.css?<?php echo $version;?>">
+<script type="text/javascript">
+//Транслитерация кириллицы в URL
+function urlRusLat(str) {
+    // str = str.toLowerCase(); // все в нижний регистр
+    var cyr2latChars = new Array(
+		['а', 'a'], ['б', 'b'], ['в', 'v'], ['г', 'g'],
+		['д', 'd'],  ['е', 'e'], ['ё', 'yo'], ['ж', 'zh'], ['з', 'z'],
+		['и', 'i'], ['й', 'j'], ['к', 'k'], ['л', 'l'],
+		['м', 'm'],  ['н', 'n'], ['о', 'o'], ['п', 'p'],  ['р', 'r'],
+		['с', 's'], ['т', 't'], ['у', 'u'], ['ф', 'f'],
+		['х', 'h'],  ['ц', 'c'], ['ч', 'ch'],['ш', 'sh'], ['щ', 'shch'],
+		['ъ', ''],  ['ы', 'y'], ['ь', ''],  ['э', 'e'], ['ю', 'yu'], ['я', 'ya'],
+			
+		['А', 'A'], ['Б', 'B'],  ['В', 'V'], ['Г', 'G'],
+		['Д', 'D'], ['Е', 'E'], ['Ё', 'YO'],  ['Ж', 'ZH'], ['З', 'Z'],
+		['И', 'I'], ['Й', 'J'],  ['К', 'K'], ['Л', 'L'],
+		['М', 'M'], ['Н', 'N'], ['О', 'O'],  ['П', 'P'],  ['Р', 'R'],
+		['С', 'S'], ['Т', 'T'],  ['У', 'U'], ['Ф', 'F'],
+		['Х', 'H'], ['Ц', 'C'], ['Ч', 'CH'], ['Ш', 'SH'], ['Щ', 'SHCH'],
+		['Ъ', ''],  ['Ы', 'Y'],
+		['Ь', ''],
+		['Э', 'E'],
+		['Ю', 'YU'],
+		['Я', 'YA'],
+			
+		['a', 'a'], ['b', 'b'], ['c', 'c'], ['d', 'd'], ['e', 'e'],
+		['f', 'f'], ['g', 'g'], ['h', 'h'], ['i', 'i'], ['j', 'j'],
+		['k', 'k'], ['l', 'l'], ['m', 'm'], ['n', 'n'], ['o', 'o'],
+		['p', 'p'], ['q', 'q'], ['r', 'r'], ['s', 's'], ['t', 't'],
+		['u', 'u'], ['v', 'v'], ['w', 'w'], ['x', 'x'], ['y', 'y'],
+		['z', 'z'],
+			
+		['A', 'A'], ['B', 'B'], ['C', 'C'], ['D', 'D'],['E', 'E'],
+		['F', 'F'],['G', 'G'],['H', 'H'],['I', 'I'],['J', 'J'],['K', 'K'],
+		['L', 'L'], ['M', 'M'], ['N', 'N'], ['O', 'O'],['P', 'P'],
+		['Q', 'Q'],['R', 'R'],['S', 'S'],['T', 'T'],['U', 'U'],['V', 'V'],
+		['W', 'W'], ['X', 'X'], ['Y', 'Y'], ['Z', 'Z'],
+			
+		[' ', '_'],['0', '0'],['1', '1'],['2', '2'],['3', '3'],
+		['4', '4'],['5', '5'],['6', '6'],['7', '7'],['8', '8'],['9', '9'],
+		['-', '-']
+    );
+
+	var newStr = new String();
+	
+    for (var i = 0; i < str.length; i++) {
+        var ch = str.charAt(i);
+        var newCh = '';
+        for (var j = 0; j < cyr2latChars.length; j++) {
+            if (ch == cyr2latChars[j][0]) {
+                newCh = cyr2latChars[j][1];
+            }
+        }
+        // Если найдено совпадение, то добавляется соответствие, если нет - пустая строка
+        newStr += newCh;
+    }
+    return newStr;
+}
+</script>
+<?php
+if($status == 'admin') echo $ADMIN_HEAD_HTML;
+?>
+</head>
+<body id="body">
+<?php
+if($status == 'admin'){
+?>
+<script type="text/javascript">
+var exitwindow = '<div class="a">Подтвердите выход из панели управления</div>'+
+'<div class="b"><button type="button" onClick="window.location.href = \'out.php?\';">Выход</button> <button type="button" onClick="closewindow(\'window\');">Отмена</button></div></div>';
+var endtime = '<div class="a">Время авторизации истекло</div>'+
+'<div class="b"><button type="button" onClick="window.location.href = \'index.php?\';">Авторизироваться</button> <button type="button" onClick="closewindow(\'window\');">Остаться на странице</button></div></div>';
+setTimeout(function(){
+	openwindow('window', 650, 'auto', endtime);
+}, <?php echo $Config->timeAuth * 1000;?>);
+</script>
+<a class="exit" href="javascript:void(0);" onclick="openwindow('window', 650, 'auto', exitwindow);" title="Выход"></a>
+
+<div class="topbar"></div>
+
+<div class="bar" id="bar">
+	<div class="logo" id="logo"><a href="index.php?">MYENGINE</a></div>
+	<div class="version" id="version"><?php echo 'Версия '.$version;?></div>
+	<div class="menu" id="menu">
+		<a href="index.php?" class="home <?php echo $activ=='index' || $activ=='notifications' || $activ=='license' || $activ=='module'?'activ':'';?>">Главная</a>
+		<a href="users.php?" class="users <?php echo $activ=='users'?'activ':'';?>">Пользователи</a>
+		<a href="pages.php?" class="pages <?php echo $activ=='pages' || $activ=='editor'?'activ':'';?>">Страницы</a>
+		<a href="files.php?" class="files <?php echo $activ=='files'?'activ':'';?>">Файлы</a>
+		<a href="bloks.php?" class="bloks <?php echo $activ=='bloks'?'activ':'';?>">Меню</a>
+		<a href="modules.php?" class="mdls <?php echo $activ=='modules'?'activ':'';?>">Расширения</a>
+		<a href="setting.php?" class="setting <?php echo $activ=='setting'?'activ':'';?>">Настройки</a>
+		<a href="/" class="site" target="_blank">Перейти на сайт</a>
+	</div>
+</div>
+
+
+
+
+<div class="main" id="main">
+	
+	
+<?php
+}else{
+echo'<div class="logo"><a href="//my-engine.ru" target="_blank">MYENGINE</a></div>';
+}
+?>

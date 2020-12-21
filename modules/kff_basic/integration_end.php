@@ -1,6 +1,7 @@
 <?php
 // *Обрабатываем буфер вывода для страниц
 if(!$kff::is_admPanel()) :
+$log->add('START == Только для страниц');
 
 // *Собираем весь буфер в $buf и очищаем его (не закрываем)
 $buf = ob_get_contents();
@@ -118,10 +119,11 @@ $buf = preg_replace(
 );
 
 // $log->add("Количество замен= ". $count,null,[$Page]);
-$log->add("Уровень буфера= ". ob_get_level() . ' -> flush to index');
 
 
 echo $buf;
 // *-> to flush in index.php
-
+$log->add('END == Только для страниц');
 endif; // if(!$kff::is_admPanel())
+
+$log->add("Уровень буфера= ". ob_get_level() . ' -> flush to index');

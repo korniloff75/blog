@@ -98,7 +98,7 @@ var BH = window.BH || {
 		e.preventDefault();
 		e.stopPropagation();
 
-		var items= U.$$('.uk-nav a[data-ind]', kff.getSidebar());
+		var items= U.$$('.uk-nav a[data-ind]', this.getSidebar());
 
 		items= items.sort((a,b)=>+U.attr(a, 'data-ind') - +U.attr(b, 'data-ind'));
 

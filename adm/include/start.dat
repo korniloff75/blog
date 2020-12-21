@@ -1,5 +1,5 @@
 <?php
-ob_start($Config->gzip?'ob_gzhandler':null); 
+ob_start($Config->gzip?'ob_gzhandler':null);
 header('Content-type: text/html; charset=utf-8');
 header("Cache-Control: no-store, no-cache, must-revalidate");
 header('X-XSS-Protection: 0');
@@ -29,10 +29,10 @@ body{background-color: #323232;}
 	display: block;
 	width: 100%;
 	border-top: 1px solid #444;
-	text-align: center; 
-	padding: 20px 0; 
+	text-align: center;
+	padding: 20px 0;
 }.logo a{
-	font: bold 18px Arial, sans-serif; 
+	font: bold 18px Arial, sans-serif;
 	color: #666;
 	text-decoration: none;
 }.logo a:hover{
@@ -60,7 +60,7 @@ function urlRusLat(str) {
 		['с', 's'], ['т', 't'], ['у', 'u'], ['ф', 'f'],
 		['х', 'h'],  ['ц', 'c'], ['ч', 'ch'],['ш', 'sh'], ['щ', 'shch'],
 		['ъ', ''],  ['ы', 'y'], ['ь', ''],  ['э', 'e'], ['ю', 'yu'], ['я', 'ya'],
-			
+
 		['А', 'A'], ['Б', 'B'],  ['В', 'V'], ['Г', 'G'],
 		['Д', 'D'], ['Е', 'E'], ['Ё', 'YO'],  ['Ж', 'ZH'], ['З', 'Z'],
 		['И', 'I'], ['Й', 'J'],  ['К', 'K'], ['Л', 'L'],
@@ -72,27 +72,27 @@ function urlRusLat(str) {
 		['Э', 'E'],
 		['Ю', 'YU'],
 		['Я', 'YA'],
-			
+
 		['a', 'a'], ['b', 'b'], ['c', 'c'], ['d', 'd'], ['e', 'e'],
 		['f', 'f'], ['g', 'g'], ['h', 'h'], ['i', 'i'], ['j', 'j'],
 		['k', 'k'], ['l', 'l'], ['m', 'm'], ['n', 'n'], ['o', 'o'],
 		['p', 'p'], ['q', 'q'], ['r', 'r'], ['s', 's'], ['t', 't'],
 		['u', 'u'], ['v', 'v'], ['w', 'w'], ['x', 'x'], ['y', 'y'],
 		['z', 'z'],
-			
+
 		['A', 'A'], ['B', 'B'], ['C', 'C'], ['D', 'D'],['E', 'E'],
 		['F', 'F'],['G', 'G'],['H', 'H'],['I', 'I'],['J', 'J'],['K', 'K'],
 		['L', 'L'], ['M', 'M'], ['N', 'N'], ['O', 'O'],['P', 'P'],
 		['Q', 'Q'],['R', 'R'],['S', 'S'],['T', 'T'],['U', 'U'],['V', 'V'],
 		['W', 'W'], ['X', 'X'], ['Y', 'Y'], ['Z', 'Z'],
-			
+
 		[' ', '_'],['0', '0'],['1', '1'],['2', '2'],['3', '3'],
 		['4', '4'],['5', '5'],['6', '6'],['7', '7'],['8', '8'],['9', '9'],
 		['-', '-']
     );
 
 	var newStr = new String();
-	
+
     for (var i = 0; i < str.length; i++) {
         var ch = str.charAt(i);
         var newCh = '';
@@ -147,8 +147,8 @@ setTimeout(function(){
 
 
 <div class="main" id="main">
-	
-	
+
+
 <?php
 }else{
 echo'<div class="logo"><a href="//my-engine.ru" target="_blank">MYENGINE</a></div>';

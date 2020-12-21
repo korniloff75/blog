@@ -47,6 +47,10 @@ if(Module::exists('news')){
 	margin-top: 2em;
 }
 
+input[type="checkbox"] {
+	display: inline-block;
+}
+
 @media (max-width: 500px){
 	.content .sidebar_right {
 		width: 100%;

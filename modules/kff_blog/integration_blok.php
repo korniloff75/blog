@@ -10,7 +10,7 @@ class BlogKff_sidebar extends BlogKff
 		'use strict';
 		// <?=__FILE__?>
 
-		kff.getSidebar().hidden=1;
+		BH.getSidebar().hidden=1;
 
 		// console.log('kff.getSidebar().hidden=', kff.getSidebar().hidden);
 
@@ -19,7 +19,7 @@ class BlogKff_sidebar extends BlogKff
 			window.U = window.U || window.UIkit && UIkit.util;
 			var uri= kff.getURI(),
 				targetSel = '.blog_content',
-				$sidebar = U.$('ul.categories', kff.getSidebar()),
+				$sidebar = U.$('ul.categories', BH.getSidebar()),
 				items= U.$$('a[data-ind]', $sidebar);
 
 			// items.some((item,ind)=>{
@@ -41,7 +41,7 @@ class BlogKff_sidebar extends BlogKff
 				return cond;
 			});
 
-			kff.getSidebar().hidden=0;
+			BH.getSidebar().hidden=0;
 
 			// *AJAX menu
 			var menu= new kff.menu($sidebar, targetSel);

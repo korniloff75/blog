@@ -48,16 +48,6 @@ require_once "$kff_path/integration_system.php";
 
 $log->add('AdmPanel::FIXED',null,['AdmPanel::FIXED'=>AdmPanel::FIXED]);
 
-// ?deprecated
-function fixUpdate()
-{
-	/* if(!$kff::is_adm()){
-		echo '<iframe src="/' . $kff::getAdmFolder() . '" width="100%"></iframe>';
-		die('<h2>Access denied!</h2>');
-	} */
-
-} //fixUpdate
-
 
 
 // *Проверяем маркер

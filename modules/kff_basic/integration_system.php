@@ -89,7 +89,7 @@ class Index_my_addon implements BasicClassInterface
 		{
 			self::headHtml();
 			// *Корректировка системы
-			AdmPanel::fixSystem();
+			// AdmPanel::fixSystem();
 
 			AdmPanel::addResponsive();
 		}

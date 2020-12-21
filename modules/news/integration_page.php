@@ -547,13 +547,16 @@ if($showact != 'nav' && $showact != 'category'){
 					<INPUT TYPE="hidden" NAME="ticket" VALUE="'.$ticket.'">
 					<INPUT TYPE="hidden" NAME="act" VALUE="add">
 					<div id="commentForm">
-						<p>Логин: <span id="loginReport"></span><br><input id="loginForm" type="text" name="login" value="" required></p>
-						<p>Сообщение: <span id="textReport"></span><br><textarea id="textForm" name="text" required></textarea></p>'
+						<p class="p_login">Логин: <span id="loginReport"></span><br><input id="loginForm" type="text" name="login" value="" required></p>
+						<p class="p_text">Сообщение: <span id="textReport"></span><br><textarea id="textForm" name="text" required></textarea></p>'
 						.(Module::exists('captcha')?'
-							<p><img id="captcha" src="/modules/captcha/captcha.php?'.rand(0,99999).'" alt="captcha"></p>
-							<p>Символы с картинки:<br><input id="captchaForm" type="text" name="captcha" value=""  autocomplete="off" required></p>
+							<p class="p_captcha_img" style="line-height:1;"><img id="captcha" src="/modules/captcha/captcha.php?rand='.rand(0, 99999).'" alt="captcha"  onclick="document.getElementById(\'captcha\').src = \'/modules/captcha/captcha.php?\' + Math.random()" style="cursor:pointer;">
+								<br><span style="font-size:12px; opacity: 0.7;">Для обновления символов нажмите на картинку</span>
+							</p>
+							<p class="p_captcha_input">Символы с картинки:<br><input id="captchaForm" type="text" name="captcha" value=""  autocomplete="off" required></p>
+
 						':'').
-						'<p><button type="submit" onclick="Comments.submitCommentForm();">Отправить</button></p>	
+						'<p class="p_submit"><button type="submit" onclick="Comments.submitCommentForm();">Отправить</button></p>	
 					</div>
 					</form>
 					';

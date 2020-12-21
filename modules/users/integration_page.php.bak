@@ -430,7 +430,7 @@ if(!isset($URI[2])){
 	$page->title = 'Регистрация';
 	$page->name = 'Регистрация';
 	if($Config->registration){
-		$return = '<form name="forma" action="/'.$URI[1].'/addreg" method="post" onsubmit="if(document.getElementById(\'roscomnadzor\').checked){this.submit();document.getElementById(\'ticket\').value=\''.$ticket.'\';}else{alert(\'Нужно дать согласие на обработку персональных данных\'); return false;}">
+		$return = '<form name="regform" action="/pages/403.html" method="post" onsubmit="">
 		<INPUT TYPE="hidden" NAME="act" VALUE="add">
 		<INPUT TYPE="hidden" NAME="ticket" id="ticket" VALUE="noInput">
 		<div class="user_form user_reg_form">
@@ -444,9 +444,19 @@ if(!isset($URI[2])){
 			</p>
 			<p class="p_captcha_input">Символы с картинки:<br><input type="text" name="captcha" value="" size="10"  autocomplete="off" required ></p>
 			<p class="p_roscomnadzor"><input type="checkbox" name="roscomnadzor" value="ok" id="roscomnadzor"> <label for="roscomnadzor">Я согласен на <a href="/fz152" target="_blank">обработку моих персональных данных</a></label></p>
-			<p class="p_submit"><input type="submit" name="" value="Зарегистрироваться"></p>	
+			<p class="p_submit" style="display: none;"><input type="submit" name="" value="Зарегистрироваться"></p>	
+			<p class="p_submit"><button type="button" onClick="addreg();">Зарегистрироваться</button></p>	
 		</div>
-		</form>';
+		</form>
+<script>
+function addreg(){
+	if(document.getElementById(\'roscomnadzor\').checked){
+		regform.action = "/'.$URI[1].'/addreg";
+		document.getElementById(\'ticket\').value=\''.$ticket.'\';
+		regform.submit();
+	}else{alert(\'Нужно дать согласие на обработку персональных данных\');}
+}
+</script>';
 	}else{
 		$return = '<p>Регистрация на сайте временно приостановлена</p>';
 	}

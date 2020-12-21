@@ -1,0 +1,19 @@
+.window{
+	background-color: #fff;
+	border-radius: 3px;
+	box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+}
+.window .a{
+	min-height: 40px;
+	text-align: left;
+	word-wrap: break-word;
+	padding: 30px;
+}
+.window .b{
+	background-color: #f1f1f1;
+	border-top: 1px solid #e9e9e9;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	text-align: right;
+	padding: 12px 30px 13px 30px;
+}

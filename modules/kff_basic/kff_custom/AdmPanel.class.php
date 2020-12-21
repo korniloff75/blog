@@ -114,11 +114,11 @@ class AdmPanel extends Index_my_addon
 		if(!empty($fixSystem)) foreach($fixSystem as $fp) {
 			self::$log->add(DR.$fp,null,$fixes[$fp]);
 
-			if(file_exists(DR."$fp.bak"))
-			{
+			if(file_exists(DR."$fp.bak")){
 				self::$log->add("Файл $fp уже был обработан ранее. Для его повторной обработки переименуйте файл {$fp}.bak -> $fp");
 				continue;
 			}
+
 			copy(DR.$fp,DR."$fp.bak");
 			file_put_contents(DR.$fp,$fixes[$fp]);
 

@@ -172,9 +172,9 @@ var kff = {
 		});
 	},
 
-	getSidebar: function(){
+	/* getSidebar: function(){
 		return document.querySelector('aside');
-	},
+	}, */
 
 	/**
 	 * Базовая подсветка кодов
@@ -280,7 +280,7 @@ var kff = {
 	menu: function($nav, mainSelector, sels) {
 		this.$nav = ($nav instanceof jQuery)? $nav: $($nav);
 
-		mainSelector = U.$(mainSelector)? mainSelector: 'main';
+		mainSelector = this.getContentSelector(mainSelector);
 
 		if(this.$nav.menuInited){
 			console.info('this.$nav.menuInited!');
@@ -392,17 +392,20 @@ var kff = {
 				if(!$sourceNode.length)
 					$sourceNode = $dfr;
 				else{
-					// targetNode.classList= $sourceNode[0].classList;
 					targetNode.className= $sourceNode[0].className;
 				}
 
-				// console.log(i, targetNode, $sourceNode, $sourceNode.html(), '\n');
+				// console.log({i, targetNode, $sourceNode}, $sourceNode.html(), '\n');
 
 				var newContent= $sourceNode.html();
 
 				// if($sourceNode[0].classList && $sourceNode[0].classList.length > targetNode.classList.length) targetNode.classList= $sourceNode[0].classList;
 
 				out[i]= $(targetNode).html(newContent).html();
+				// $(targetNode).html(newContent).html();
+				// out[i]= targetNode.innerHTML;
+				// out[i]= targetNode.innerHTML= newContent;
+
 			}); //forEach
 
 			window.scroll(0,0);
@@ -520,3 +523,11 @@ kff.menu.prototype.handleResponse= function (r) {
 		self.after();
 	}
 }
+
+Object.defineProperties(kff.menu.prototype, {
+	getContentSelector: {
+		value: function(mainSelector){
+			return U.$(mainSelector)? mainSelector: 'main'
+		}
+	}
+});
