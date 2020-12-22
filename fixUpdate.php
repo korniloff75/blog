@@ -51,8 +51,13 @@ $log->add('AdmPanel::FIXED',null,['AdmPanel::FIXED'=>AdmPanel::FIXED]);
 
 
 // *Проверяем маркер
-
-if(($handle = @fopen("./index.php", "r")) && ($fstr = fgets($handle))){
+if(isset($_GET['test'])){
+	AdmPanel::fixSystem();
+	echo '<pre><h2>Test mode</h2>';
+	htmlspecialchars(var_dump(AdmPanel::$fixes));
+	echo '</pre>';
+}
+elseif(($handle = @fopen("./index.php", "r")) && ($fstr = fgets($handle))){
 	// *Файл не обработан
 	if(strpos($fstr, AdmPanel::FIXED) === false){
 		fclose($handle);
@@ -67,6 +72,7 @@ if(($handle = @fopen("./index.php", "r")) && ($fstr = fgets($handle))){
 		// *Antispam
 		$usersPath= DR.'/modules/users';
 		unlink($usersPath.'/integration_page.php.bak');
+		// *Add redirect
 		require_once $usersPath.'/Antispam.php';
 
 		die('<h2>Файлы успешно обработаны!</h2><p>Для перехода в сайт -- перезагрузите эту страницу.</p>');

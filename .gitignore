@@ -4,6 +4,7 @@ node_modules
 *.7z
 *.log
 *_log
+*.test
 /dist
 /tmp
 db/*.json

@@ -280,8 +280,6 @@ var kff = {
 	menu: function($nav, mainSelector, sels) {
 		this.$nav = ($nav instanceof jQuery)? $nav: $($nav);
 
-		mainSelector = this.getContentSelector(mainSelector);
-
 		if(this.$nav.menuInited){
 			console.info('this.$nav.menuInited!');
 		}
@@ -293,7 +291,7 @@ var kff = {
 			$loader = $('<div id="loading" uk-spinner class="uk-position-center uk-position-medium uk-position-fixed" style="z-index:1000; display:none;"></div>').appendTo(document.body);
 		}
 
-		this.mainSelector= mainSelector;
+		this.mainSelector= mainSelector= this.getContentSelector(mainSelector);
 		this.sels= sels || [];
 		this.$loader= $loader;
 
@@ -317,10 +315,17 @@ var kff = {
 				self.setActive(state.href);
 			}); */
 
-			// *Добавляем заголовки
-			var html= `<h1 id="title" hidden></h1><h1>${state.title}</h1><div>${state.html}</div>`;
+			var html,
+				$dfr= $(state.html);
+			if(!$dfr.find('h1#title').length){
+				// *Добавляем заголовки
+				html= `<h1 id="title" hidden></h1><h1>${state.title}</h1><div>${state.html}</div>`;
+			}
+			else{
+				html= state.html;
+			}
 
-			// console.log('state.sels', state.sels, {html});
+			console.log('state.sels', state.sels, {$dfr});
 
 			// !
 			// console.log('render=', kff.render(state.sels, html));
@@ -462,11 +467,11 @@ kff.menu.prototype.clickHahdler = function ($e) {
 			pr.then(this.handleResponse);
 		}
 		else{
-			console.info({pr});
+			// console.info({pr});
 			this.handleResponse(pr);
 		}
 
-		console.log({pr});
+		console.info({pr});
 	}, err=>console.log(err));
 
 	console.log({req});
@@ -506,7 +511,7 @@ kff.menu.prototype.handleResponse= function (r) {
 	console.info({state});
 
 	history.pushState(state, '', t.href);
-	self.$loader.hide();
+	this.$loader.hide();
 
 	if(state[mainSelector].title)
 		document.title= state[mainSelector].title;
@@ -519,8 +524,8 @@ kff.menu.prototype.handleResponse= function (r) {
 	}
 
 	// *After click
-	if(typeof self.after === 'function'){
-		self.after();
+	if(typeof this.after === 'function'){
+		this.after();
 	}
 }
 

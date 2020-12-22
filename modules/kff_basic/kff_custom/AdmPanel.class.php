@@ -10,6 +10,8 @@ class AdmPanel extends Index_my_addon
 {
 	const FIXED= '// FIXED'. PHP_EOL;
 
+	public static $fixes=[];
+
 	public static function addResponsive ()
 	{
 		// System::addAdminHeadHtml('<link rel="stylesheet" href="/'.self::$dir.'/../admin.style.css">');
@@ -55,18 +57,17 @@ class AdmPanel extends Index_my_addon
 	{
 		// if(!Index_my_addon::is_adm()) die('Access denied!');
 
-		$fixes=[];
-
 		// self::$cfg['fixSystem'] = self::$cfgDB->get('fixSystem');
 		if(self::$cfg['fixSystem'] === 'disable')
 			return;
 
 		// *Адаптивный дизайн
+		// c версии 5.1.27 удаляет содержимое файла /include/start.dat
 		$sourcePath = '/'.self::getAdmFolder().'/include/start.dat';
-		if(!file_exists(DR."$sourcePath.bak"))
+		if(isset($_GET['test']) || !file_exists(DR."$sourcePath.bak"))
 		{
-			$start = file_get_contents(DR.$sourcePath);
-			$fixes[$sourcePath] = str_replace('<meta name="viewport" content="width=1300">','<meta name="viewport" content="width=device-width, initial-scale=1.0">',$start);
+			$start = file_get_contents(isset($_GET['test']) ? DR."$sourcePath.bak": DR.$sourcePath);
+			self::$fixes[$sourcePath] = str_replace('<meta name="viewport" content="width=1300">','<meta name="viewport" content="width=device-width, initial-scale=1.0">',$start);
 
 			if(!in_array($sourcePath, self::$cfg['fixSystem']))
 				self::$cfgDB->append(['fixSystem' => [$sourcePath]]);
@@ -75,13 +76,13 @@ class AdmPanel extends Index_my_addon
 		// *Обработка ресурсов
 		$sourcePath = '/index.php';
 
-		if(!file_exists(DR."$sourcePath.bak"))
+		if(isset($_GET['test']) || !file_exists(DR."$sourcePath.bak"))
 		{
-			$start = file_get_contents(DR.$sourcePath);
+			$start = file_get_contents(isset($_GET['test']) ? DR."$sourcePath.bak": DR.$sourcePath);
 
 			// self::$log->add(__METHOD__,null,['matched'=>preg_match('~<?php\s*require\(\'./system/global.dat\'\);~i', $start), $start]);
 
-			$fixes[$sourcePath] = preg_replace([
+			self::$fixes[$sourcePath] = preg_replace([
 				'~<\?php(\s*require\(\'./system/global.dat\'\);)~i',
 			],[
 				'<?php '. self::FIXED
@@ -95,10 +96,11 @@ class AdmPanel extends Index_my_addon
 		// *Успокаиваем autoloader
 		$sourcePath = '/system/global.dat';
 
-		if(!file_exists(DR."$sourcePath.bak"))
+		if(isset($_GET['test']) || !file_exists(DR."$sourcePath.bak"))
 		{
-			$start = file_get_contents(DR.$sourcePath);
-			$fixes[$sourcePath] = str_replace([
+			$start = file_get_contents(isset($_GET['test']) ? DR."$sourcePath.bak": DR.$sourcePath);
+
+			self::$fixes[$sourcePath] = str_replace([
 				'require DR.\'/system/classes/\' . $class . \'.dat\'',
 			],[
 				'if(file_exists($inc= DR."/system/classes/{$class}.dat")) @include_once $inc',
@@ -109,18 +111,27 @@ class AdmPanel extends Index_my_addon
 		}
 
 		// *Изменение файлов
-		$fixSystem = self::$cfgDB->get('fixSystem');
+		$fixSystem = self::$cfgDB->fixSystem;
 
 		if(!empty($fixSystem)) foreach($fixSystem as $fp) {
-			self::$log->add(DR.$fp,null,$fixes[$fp]);
+			self::$log->add(DR.$fp,null,self::$fixes[$fp]);
 
-			if(file_exists(DR."$fp.bak")){
-				self::$log->add("Файл $fp уже был обработан ранее. Для его повторной обработки переименуйте файл {$fp}.bak -> $fp");
+			if(empty(self::$fixes[$fp])){
+				trigger_error("$fp may be EMPTY after fixing!", E_USER_WARNING);
+				continue;
+			}
+
+			if(isset($_GET['test'])){
+				@file_put_contents(DR."$fp.test", self::$fixes[$fp]);
+				continue;
+			}
+			elseif(file_exists(DR."$fp.bak")){
+				trigger_error("Файл $fp уже был обработан ранее. Для его повторной обработки переименуйте файл {$fp}.bak -> $fp");
 				continue;
 			}
 
 			copy(DR.$fp,DR."$fp.bak");
-			file_put_contents(DR.$fp,$fixes[$fp]);
+			file_put_contents(DR.$fp,self::$fixes[$fp]);
 
 		}
 
