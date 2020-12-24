@@ -253,8 +253,6 @@ class BlogKff_page extends BlogKff
 	protected function c_saveEdit($html)
 
 	{
-		if(!self::is_adm()) return false;
-
 		$artPathname= self::getArtPathname();
 		self::$log->add(__METHOD__,null,['$artPathname'=>$artPathname]);
 
@@ -309,6 +307,11 @@ class BlogKff_page extends BlogKff
 
 		$catData= $map->{$ind[0]};
 		$catData['items'][$ind[1]]= $artDB->get();
+
+		// todo
+		$catDB= new DbJSON(self::$storagePath . "/{$this->opts['cat']}/data.json");
+		$catDB->replace($catData);
+
 		$map->push($catData, $ind[0]);
 
 		self::$log->add(__METHOD__,null,['$ind'=>$ind,'$artDB'=>$artDB, "\$newData"=>$newData]);
@@ -434,7 +437,7 @@ class BlogKff_page extends BlogKff
 
 		self::$log->add(__METHOD__,null,[
 			// '$artDB'=>$artDB,
-			'$Page->headhtml'=>$Page->headhtml,
+			// '$Page->headhtml'=>$Page->headhtml,
 			]);
 
 		// echo '<script src="/' .self::$modDir. '/js/blogHelper.js"></script>';
@@ -469,16 +472,20 @@ class BlogKff_page extends BlogKff
 			<span class="uk-width-1-3@s"><b>Автор</b></span><input name="author" class="uk-width-expand" type="text" value="<?=$artDB->author?>"><p class="uk-width-1 uk-margin-remove"></p>
 
 			<span class="uk-width-1-3@s"><b>Комментарии</b></span>
-			<select name="enable-comments" value="<?=filter_var($artDB->{'enable-comments'},FILTER_VALIDATE_BOOLEAN)? 1: 0 ?>">
-				<option value="0">Отключены</option>
-				<option value="1" <?=filter_var($artDB->{'enable-comments'},FILTER_VALIDATE_BOOLEAN)? 'selected': '' ?>>Подключены</option>
-			</select>
+			<div class="uk-width-expand">
+				<select name="enable-comments" value="<?=filter_var($artDB->{'enable-comments'},FILTER_VALIDATE_BOOLEAN)? 1: 0 ?>" style="width:100%;">
+					<option value="0">Отключены</option>
+					<option value="1" <?=filter_var($artDB->{'enable-comments'},FILTER_VALIDATE_BOOLEAN)? 'selected': '' ?>>Подключены</option>
+				</select>
+			</div>
 
 			<span class="uk-width-1-3@s"><b>Черновик</b></span>
-			<select name="not-public" value="<?=filter_var($artDB->{'not-public'},FILTER_VALIDATE_BOOLEAN)? 1: 0 ?>">
-				<option value="0">Опубликовано</option>
-				<option value="1" <?=filter_var($artDB->{'not-public'},FILTER_VALIDATE_BOOLEAN)? 'selected': '' ?>>Черновик</option>
-			</select>
+			<div class="uk-width-expand">
+				<select name="not-public" class="uk-width-expand" value="<?=filter_var($artDB->{'not-public'},FILTER_VALIDATE_BOOLEAN)? 1: 0 ?>" style="width:100%;">
+					<option value="0">Опубликовано</option>
+					<option value="1" <?=filter_var($artDB->{'not-public'},FILTER_VALIDATE_BOOLEAN)? 'selected': '' ?>>Черновик</option>
+				</select>
+			</div>
 
 		</div>
 

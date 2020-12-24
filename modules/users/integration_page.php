@@ -477,6 +477,26 @@ function addreg(){
 		}
 	})(document);
 	</script>';
+$return .= '<script>
+		(function(d) {
+		var form= d.querySelector(\'form[name=\"forma\"]\');
+		if(!form) return;
+		form.onsubmit= function(e) {
+			e.preventDefault();
+
+			if(!d.getElementById(\'roscomnadzor\').checked){
+				alert(\'Нужно дать согласие на обработку персональных данных\');
+				return;
+			}
+
+			this.action= \'/user/addreg\';
+			this.method= \'post\';
+
+			console.log(this.action);
+			this.submit();
+		}
+	})(document);
+	</script>';
 }else{
 		$return = '<p>Регистрация на сайте временно приостановлена</p>';
 	}

@@ -9,6 +9,12 @@ class BlogKff_sidebar extends BlogKff
 		<script>
 		'use strict';
 		// <?=__FILE__?>
+		// Костыль для страниц с неподгруженным блогом
+		var BH= BH || {
+			getSidebar: function(){
+				return document.querySelector('aside');
+			},
+		}
 
 		BH.getSidebar().hidden=1;
 
@@ -65,8 +71,8 @@ class BlogKff_sidebar extends BlogKff
 			state[menu.mainSelector]= {
 				href: location.href,
 				title: document.title,
-				// sels: sels,
-				html: U.html(menu.mainSelector)
+				sels: menu.sels,
+				html: U.html('main')
 			};
 
 			history.pushState(state, '', location.href);

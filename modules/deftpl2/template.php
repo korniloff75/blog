@@ -141,12 +141,8 @@ $Page->get_content();
 </article>
 </main>
 
-<!-- <div class="sidebar_left">
-<?php $page->get_column('left','<aside><h2>#name#</h2><div class="aside_content">#content#</div></aside>');?>
-</div> -->
-
 <div class="sidebar sidebar_right">
-<?php $page->get_column('right','<aside><h2>#name#</h2><div class="aside_content">#content#</div></aside>');?>
+	<?php $page->get_column('right','<aside><h2>#name#</h2><div class="aside_content">#content#</div></aside>');?>
 </div>
 
 </div>

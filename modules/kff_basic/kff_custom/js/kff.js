@@ -292,14 +292,16 @@ var kff = {
 		}
 
 		this.mainSelector= mainSelector= this.getContentSelector(mainSelector);
-		this.sels= sels || [];
+
+		// Собираем селекторы для обновления
+		sels= sels || [];
+		if(!sels.includes(mainSelector)) sels.push(mainSelector);
+		this.sels= sels.concat(['h1#title','.core.info','.log','#wrapEntries']);
+
 		this.$loader= $loader;
 
 		this.$nav.on('click', this.clickHahdler.bind(this));
-		/* this.$nav.on({
-			click: this.clickHahdler,
-			// touch: self.clickHahdler,
-		}); */
+
 
 		// *AJAX history
 		$(window).on('popstate', function($e) {
@@ -316,21 +318,23 @@ var kff = {
 			}); */
 
 			var html,
-				$dfr= $(state.html);
+				$dfr= $(`<div>${state.html}</div>`);
+
+			// $dfr.find('h1#title').remove();
+
 			if(!$dfr.find('h1#title').length){
 				// *Добавляем заголовки
-				html= `<h1 id="title" hidden></h1><h1>${state.title}</h1><div>${state.html}</div>`;
+				// html= `<h1 id="title" hidden></h1><h1>${state.title}</h1><div>${state.html}</div>`;
 			}
 			else{
-				html= state.html;
+				// html= state.html;
 			}
 
-			console.log('state.sels', state.sels, {$dfr});
+			html= `<h1 id="title">${state.title}</h1><div>${state.html}</div>`;
 
-			// !
-			// console.log('render=', kff.render(state.sels, html));
-			// kff.render(state.sels, html)
-			kff.render([mainSelector, '#title'], html)
+			console.log('state.sels', state.sels, {mainSelector, $dfr});
+
+			kff.render(state.sels, state.html)
 			.then(out=>{
 				document.title= state.title;
 				self.setActive(state.href);
@@ -375,8 +379,9 @@ var kff = {
 
 			// var $dfr= $(document.createDocumentFragment()),
 			var $dfr= $('<div/>'),
+				handled= [],
 				// out = {$dfr: $dfr};
-				out = {};
+				out = {sels,response};
 
 			// console.log({response});
 
@@ -390,7 +395,10 @@ var kff = {
 					i= 'main';
 					targetNode= document.querySelector(i);
 					stop= 1;
-				};
+					if(handled.includes('main')) return;
+				}
+
+				handled.push(i);
 
 				var $sourceNode = $dfr.find(i);
 
@@ -406,6 +414,7 @@ var kff = {
 
 				// if($sourceNode[0].classList && $sourceNode[0].classList.length > targetNode.classList.length) targetNode.classList= $sourceNode[0].classList;
 
+				// ?
 				out[i]= $(targetNode).html(newContent).html();
 				// $(targetNode).html(newContent).html();
 				// out[i]= targetNode.innerHTML;
@@ -419,9 +428,11 @@ var kff = {
 			sels.includes('.log') && this.highlight('.log');
 			// *title
 			// sels.includes('h1#title') && (document.title= $sourceNode);
-			return out;
-		});
 
+			return out;
+			// return $dfr;
+			// return response;
+		});
 
 		// return response;
 	}
@@ -453,11 +464,11 @@ kff.menu.prototype.clickHahdler = function ($e) {
 	this.$loader.show();
 	this.setActive(t.href);
 
-	// Собираем селекторы для обновления
+	/* // Собираем селекторы для обновления
 	if(!this.sels.includes(mainSelector)) this.sels.push(mainSelector);
-	var sels= this.sels.concat(['h1#title','.core.info','.log','#wrapEntries']);
+	var sels= this.sels.concat(['h1#title','.core.info','.log','#wrapEntries']); */
 
-	var req= kff.request(t.href,null,sels)
+	var req= kff.request(t.href,null,this.sels)
 	.then(pr=>{
 		if(pr instanceof Promise){
 			pr.then(r=>{
@@ -496,7 +507,7 @@ kff.menu.prototype.setActive = function setActive (href) {
  * Обработка ответа
  * @param {Object} r
  */
-kff.menu.prototype.handleResponse= function (r) {
+kff.menu.prototype.handleResponse= function (renderOut) {
 	var t= this.currentItem,
 		state={},
 		self= this,
@@ -505,13 +516,16 @@ kff.menu.prototype.handleResponse= function (r) {
 	state[mainSelector]= {
 		href: t.href,
 		title: $('h1#title, h1').html(),
-		sels: mainSelector,
-		html: r[mainSelector]
+		// sels: mainSelector,
+		sels: renderOut.sels,
+		html: renderOut.response,
 	};
-	console.info({state});
+	console.info('handleResponse', {state});
 
 	history.pushState(state, '', t.href);
+	// debugger;
 	this.$loader.hide();
+	console.log('loader', this.$loader);
 
 	if(state[mainSelector].title)
 		document.title= state[mainSelector].title;
